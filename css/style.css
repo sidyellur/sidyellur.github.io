@@ -8203,13 +8203,11 @@ textarea.form-control {
   text-transform: uppercase;
   letter-spacing: 5px; }
 
-.desc {
-  font-weight: 600;
-  font-size: 25px; }
+
 
 .heading-section h2 {
   font-weight: 800; 
-  font-size: 40px;
+  font-size: 30px;
 }  
 
 .img,
