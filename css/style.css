@@ -8203,9 +8203,14 @@ textarea.form-control {
   text-transform: uppercase;
   letter-spacing: 5px; }
 
-.heading-section h2 {
+.heading-section desc h2 {
   font-weight: 600;
   font-size: 25px; }
+
+.heading-section h2 {
+  font-weight: 800; 
+  font-size: 40px;
+}  
 
 .img,
 .author-img,
