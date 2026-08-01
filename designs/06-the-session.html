@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Siddharth Yellur</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Siddharth Yellur — engineer building developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer; and Black Diamond Brawl, a downhill snowboarding combat racer.">
+<meta name="color-scheme" content="dark light">
+<style>
+/* THE SESSION — Siddharth Yellur
+   One file. Zero external requests. No images. System fonts only.
+   ------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+:root {
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --bg:      #05080a;
+  --panel:   #080c0e;
+  --bar:     #0c1214;
+  --edge:    #1a2a26;
+  --edge2:   #233a34;
+  --fg:      #c9ded3;
+  --dim:     #86a096;
+  --dimmer:  #6b837b;
+  --accent:  #6ee7a0;
+  --accent2: #ffc46b;
+  --blue:    #8ab6e8;
+  --danger:  #ff9182;
+  --glow:    rgba(110,231,160,.16);
+}
+
+body.amber {
+  --edge:    #2e2718;
+  --edge2:   #40361f;
+  --fg:      #e9dfc8;
+  --dim:     #b39d78;
+  --dimmer:  #94805f;
+  --accent:  #ffc46b;
+  --accent2: #6ee7a0;
+  --glow:    rgba(255,196,107,.16);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+/* very subtle phosphor bloom + scanline — never enough to hurt reading */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.014) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(0,0,0,.42) 100%);
+}
+body.readmode::after { display: none; }
+
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.vh {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute; left: 8px; top: -60px;
+  z-index: 200;
+  background: var(--accent); color: #04120b;
+  padding: .5rem .8rem; border-radius: 4px;
+  text-decoration: none; font-weight: 700;
+  transition: top .15s;
+}
+.skip:focus { top: 8px; }
+body.readmode .skip { display: none; }
+
+/* window chrome */
+
+.wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(0px, 2.4vh, 26px) clamp(0px, 2.5vw, 26px);
+  display: flex;
+}
+
+.win {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--edge2);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 24px 60px -20px rgba(0,0,0,.9);
+  position: relative;
+  min-height: 0;
+  height: calc(100vh - clamp(0px, 4.8vh, 52px));
+  height: calc(100dvh - clamp(0px, 4.8vh, 52px));
+}
+
+@media (max-width: 640px) {
+  .wrap { padding: 0; }
+  .win {
+    border-radius: 0;
+    border-left: 0; border-right: 0; border-top: 0;
+    height: 100vh; height: 100dvh;
+  }
+}
+
+/* title bar — also the page header */
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .5rem .75rem;
+  background: linear-gradient(180deg, var(--bar), #070b0d);
+  border-bottom: 1px solid var(--edge);
+  flex: 0 0 auto;
+}
+.lights { display: flex; gap: 6px; flex: 0 0 auto; }
+.lights i {
+  width: 11px; height: 11px; border-radius: 50%;
+  display: block;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.lights i:nth-child(1) { background: #d75f57; }
+.lights i:nth-child(2) { background: #d8b14a; }
+.lights i:nth-child(3) { background: #4fae57; }
+
+h1 { margin: 0; }
+
+.h1slot { display: block; min-width: 0; flex: 0 1 auto; overflow: hidden; }
+
+.titlebar h1 {
+  font-family: var(--mono);
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.titlebar h1 .tsub { color: var(--dimmer); font-weight: 400; }
+
+.spacer { flex: 1 1 auto; min-width: 0; }
+
+.tbtn {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid var(--edge2);
+  color: var(--dim);
+  border-radius: 5px;
+  padding: .22rem .6rem;
+  font-size: .75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .12s, border-color .12s, background .12s;
+}
+.tbtn:hover { color: var(--accent); border-color: var(--accent); background: rgba(110,231,160,.06); }
+.btn-short { display: none; }
+@media (max-width: 560px) {
+  .titlebar h1 .tsub { display: none; }
+  .btn-full { display: none; }
+  .btn-short { display: inline; }
+}
+
+/* output */
+
+.term {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: text;
+  position: relative;
+}
+
+.out {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: .9rem clamp(.75rem, 2.4vw, 1.4rem) .4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--edge2) transparent;
+  position: relative;
+  z-index: 2;
+}
+.out::-webkit-scrollbar { width: 9px; }
+.out::-webkit-scrollbar-thumb { background: var(--edge2); border-radius: 9px; }
+
+.ln {
+  max-width: 82ch;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  animation: in .16s ease-out both;
+}
+@keyframes in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+.ln.echo { color: var(--fg); margin-top: .35rem; }
+.ln.head {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: .78rem;
+  margin-top: .5rem;
+}
+.ln.title { color: var(--fg); font-weight: 700; font-size: 1.05rem; letter-spacing: .01em; margin-top: .3rem; }
+.ln.tag { color: var(--accent); }
+.ln.meta { color: var(--dimmer); font-size: .8125rem; }
+.ln.dim { color: var(--dim); }
+.ln.body { color: var(--fg); }
+.ln.bul {
+  color: var(--fg);
+  padding-left: 1.8ch;
+  position: relative;
+  margin: .22rem 0;
+}
+.ln.bul::before { content: "·"; position: absolute; left: 0; color: var(--accent); }
+.ln.exitline { color: var(--dimmer); font-size: .8125rem; }
+.ln.err { color: var(--danger); }
+.ln.err b { color: var(--accent2); }
+.ln.ok { color: var(--accent); }
+.ln.boot { color: var(--dim); font-size: .8125rem; }
+.ln.boot b { color: var(--accent); font-weight: 600; }
+
+.ps { color: var(--accent); }
+.ps .path { color: var(--blue); }
+.cmdtxt { color: var(--fg); }
+.tk { color: var(--accent2); }
+.tk2 { color: var(--blue); }
+.num { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.banner {
+  display: inline-block;
+  margin: .55rem 0 .35rem;
+  padding: .5rem 1.15rem .6rem;
+  border: 1px solid var(--edge2);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: rgba(255,255,255,.03);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: clamp(10px, 2.6vw, 14px);
+  line-height: 1.5;
+  white-space: pre;
+  overflow-x: auto;
+  max-width: 100%;
+  text-shadow: 0 0 10px var(--glow);
+}
+.banner b { font-weight: 700; letter-spacing: .02em; }
+.banner .bsub { color: var(--dim); text-shadow: none; }
+
+.pre {
+  margin: .55rem 0;
+  padding: .6rem .8rem;
+  background: rgba(255,255,255,.028);
+  border: 1px solid var(--edge);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 5px 5px 0;
+  overflow-x: auto;
+  font-size: .8125rem;
+  line-height: 1.55;
+  white-space: pre;
+}
+.pre .k { color: var(--accent2); }
+.pre .s { color: var(--accent); }
+.pre .n { color: var(--blue); }
+.pre .p { color: var(--dim); }
+
+.cmdline {
+  margin: .55rem 0;
+  padding: .5rem .75rem;
+  background: rgba(110,231,160,.05);
+  border: 1px dashed var(--edge2);
+  border-radius: 5px;
+  color: var(--accent);
+  overflow-x: auto;
+  white-space: pre;
+  font-size: .8125rem;
+}
+
+.row { display: flex; gap: 1ch; margin: .05rem 0; }
+.row .k { flex: 0 0 15ch; color: var(--accent); }
+.row .v { flex: 1 1 auto; min-width: 0; color: var(--dim); }
+@media (max-width: 560px) {
+  .row { display: block; }
+  .row .v { display: block; padding-left: 2ch; }
+}
+
+.cols { display: flex; flex-wrap: wrap; gap: .1rem 2.2ch; color: var(--blue); }
+.cols b { font-weight: 400; }
+.cols .d { color: var(--accent); }
+
+.neo { display: flex; gap: 1.8rem; flex-wrap: wrap; align-items: flex-start; }
+.neo pre { margin: 0; color: var(--accent); font-size: .8125rem; line-height: 1.3; text-shadow: 0 0 10px var(--glow); }
+.neo .info { min-width: 0; flex: 1 1 22ch; }
+
+.slope {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin: .7rem 0;
+  border: 1px solid var(--edge2);
+  border-radius: 5px;
+}
+
+.lnk { color: var(--accent2); text-decoration: none; border-bottom: 1px solid rgba(255,196,107,.4); }
+.lnk:hover { border-bottom-color: currentColor; }
+
+/* prompt */
+
+.promptrow {
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+  padding: .25rem clamp(.75rem, 2.4vw, 1.4rem) .5rem;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.promptrow.pending { visibility: hidden; }
+
+.ps1 { flex: 0 0 auto; color: var(--accent); white-space: nowrap; }
+.ps1 .path { color: var(--blue); }
+.ps1 .sig { color: var(--fg); }
+@media (max-width: 480px) { .ps1 .host, .ps1 .sep { display: none; } }
+
+.inwrap { position: relative; flex: 1 1 auto; min-width: 0; }
+
+#cmd {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--fg);
+  font: inherit;
+  padding: 0;
+  caret-color: transparent;
+}
+.inwrap.native #cmd { caret-color: var(--accent); }
+
+.curs {
+  position: absolute;
+  left: calc(var(--col, 0) * 1ch);
+  top: .1em;
+  width: 1ch;
+  height: 1.15em;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--glow);
+  pointer-events: none;
+  animation: blink 1.05s steps(1) infinite;
+}
+.inwrap.native .curs { display: none; }
+.inwrap.blur .curs {
+  animation: none;
+  background: transparent;
+  box-shadow: none;
+  outline: 1px solid var(--dimmer);
+  outline-offset: -1px;
+}
+@keyframes blink { 0%,55% { opacity: 1; } 56%,100% { opacity: 0; } }
+
+/* chips */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: .1rem clamp(.75rem, 2.4vw, 1.4rem) .6rem;
+  flex: 0 0 auto;
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
+}
+.chip {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--edge2);
+  color: var(--dim);
+  border-radius: 999px;
+  padding: .2rem .7rem;
+  font-size: .78rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .12s, border-color .12s, background .12s, transform .12s;
+}
+.chip:hover { color: var(--accent); border-color: var(--accent); background: rgba(110,231,160,.08); transform: translateY(-1px); }
+.chip.key { color: var(--accent); border-color: var(--accent); background: rgba(110,231,160,.1); font-weight: 600; }
+.chip.esc { color: var(--accent2); border-color: rgba(255,196,107,.5); }
+.chip.esc:hover { color: #0d0a04; background: var(--accent2); border-color: var(--accent2); }
+
+/* status bar */
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 1.2ch;
+  flex-wrap: wrap;
+  padding: .3rem clamp(.75rem, 2.4vw, 1.4rem);
+  background: var(--bar);
+  border-top: 1px solid var(--edge);
+  font-size: .75rem;
+  color: var(--dimmer);
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.status .st { color: var(--dim); }
+.status .st b { color: var(--accent); font-weight: 600; }
+.status .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--glow);
+}
+.status.busy .dot { background: var(--accent2); animation: pulse .7s ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: .3; } to { opacity: 1; } }
+.status .right { margin-left: auto; display: flex; gap: 2.6ch; }
+
+#snowcv { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
+/* plain view */
+
+.plainview {
+  display: block;
+  min-height: 100vh;
+  background: #0c0f11;
+  color: #e3e8e6;
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.7;
+}
+html.js .plainview { display: none; }
+html.js body.readmode .plainview { display: block; }
+body.readmode { background: #0c0f11; }
+body.readmode .wrap { display: none; }
+
+/* no JavaScript: the plain view is the whole site */
+html:not(.js) .wrap { display: none; }
+html:not(.js) body::after { display: none; }
+html:not(.js) .backbtn { display: none; }
+html:not(.js) .skip { display: none; }
+
+.pv {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(1.4rem, 5vw, 3.2rem) clamp(1.1rem, 5vw, 2rem) 4rem;
+}
+.pv-top {
+  display: flex; align-items: flex-start; gap: 1rem 1.5rem; flex-wrap: wrap;
+  padding-bottom: 1.4rem; margin-bottom: .4rem;
+  border-bottom: 1px solid rgba(255,255,255,.13);
+}
+.pv-top > div { flex: 1 1 18rem; min-width: 0; }
+.pv h2:first-of-type { border-top: 0; padding-top: 0; margin-top: 2rem; }
+.pv-top h1 {
+  font-family: var(--sans);
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  font-weight: 650;
+  letter-spacing: -.022em;
+  line-height: 1.15;
+  margin: 0;
+}
+.pv-top h1 .tsub { display: none; }
+.pv-lede { color: #a9b4b0; font-size: 1.02rem; margin: .5rem 0 0; max-width: 34rem; }
+.pv h2 {
+  font-size: 1.28rem; letter-spacing: -.01em; margin: 2.6rem 0 .5rem;
+  padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.09);
+}
+.pv h3 { font-size: 1.1rem; margin: 2.1rem 0 .2rem; letter-spacing: -.005em; }
+.pv h3 .ver { font-weight: 400; color: #98a5a1; font-size: .8rem; margin-left: .5rem; }
+.pv p { margin: .7rem 0; }
+.pv .stack { font-family: var(--mono); font-size: .82rem; color: #9db0aa; margin: .2rem 0 .7rem; }
+.pv .inst {
+  font-family: var(--mono); font-size: .82rem;
+  background: rgba(255,255,255,.05); border-left: 2px solid #6ee7a0;
+  padding: .55rem .8rem; margin: .8rem 0; overflow-x: auto; white-space: pre;
+  color: #cfe3da;
+}
+.pv ul { margin: .7rem 0; padding-left: 1.15rem; }
+.pv li { margin: .45rem 0; }
+.pv code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.08); padding: .08em .34em; border-radius: 3px; }
+.pv a { color: #7fdca6; }
+.pv a:hover { color: #a8f0c6; }
+.pv .note { color: #a9b4b0; font-size: .96rem; }
+.pv .arch { list-style: none; padding: 0; }
+.pv .arch li { margin: .55rem 0; }
+.pv .arch .d { color: #98a5a1; font-size: .92rem; }
+.pv footer {
+  margin-top: 3rem; padding-top: 1.3rem;
+  border-top: 1px solid rgba(255,255,255,.09);
+  color: #98a5a1; font-size: .92rem;
+}
+.pv .backbtn {
+  background: transparent; border: 1px solid rgba(255,255,255,.24);
+  color: #cfe3da; border-radius: 6px; padding: .4rem .8rem;
+  font-size: .85rem; cursor: pointer; margin-left: auto; white-space: nowrap;
+  font-family: var(--mono);
+}
+.pv .backbtn:hover { border-color: #6ee7a0; color: #6ee7a0; }
+.pv .slope { max-width: 100%; border-color: rgba(255,255,255,.14); }
+
+@media (prefers-color-scheme: light) {
+  .plainview { background: #fbfaf7; color: #1c2321; }
+  body.readmode { background: #fbfaf7; }
+  .pv-top { border-bottom-color: rgba(0,0,0,.14); }
+  .pv h2 { border-top-color: rgba(0,0,0,.11); }
+  .pv-lede, .pv .note, .pv .arch .d, .pv footer { color: #55625d; }
+  .pv .stack { color: #4a5854; }
+  .pv h3 .ver { color: #55625d; }
+  .pv .inst { background: #f0efe9; border-left-color: #16744a; color: #232c29; }
+  .pv code { background: rgba(0,0,0,.07); }
+  .pv a { color: #126b3a; }
+  .pv a:hover { color: #0a4d29; }
+  .pv .backbtn { border-color: rgba(0,0,0,.26); color: #1c2321; }
+  .pv .backbtn:hover { border-color: #126b3a; color: #126b3a; }
+  .pv .slope { border-color: rgba(0,0,0,.15); }
+  .pv footer { border-top-color: rgba(0,0,0,.11); }
+}
+
+/* reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .ln { animation: none; }
+  .curs { animation: none; }
+  .chip:hover { transform: none; }
+}
+</style>
+<script>document.documentElement.className = "js";</script>
+</head>
+<body>
+
+<a class="skip" href="#cmd" id="skiplink">Skip to the command input</a>
+
+<div class="wrap">
+  <div class="win">
+
+    <header class="titlebar">
+      <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="h1slot" id="h1term"></span>
+      <span class="spacer"></span>
+      <button type="button" class="tbtn" id="toPlain">
+        <span class="btn-full">Plain text version</span><span class="btn-short">Plain text</span>
+      </button>
+    </header>
+
+    <main class="term" id="term">
+      <div class="out" id="out" role="log" aria-live="polite" aria-relevant="additions" aria-label="Terminal output"></div>
+
+      <div class="promptrow pending" id="promptrow">
+        <label for="cmd" class="vh">Type a command and press Enter. Tab completes, Up and Down walk the history, Escape leaves the input.</label>
+        <span class="ps1" aria-hidden="true"><span class="host">sid@yellur</span><span class="sep">:</span><span class="path">~</span><span class="sig">$</span></span>
+        <span class="inwrap blur" id="inwrap">
+          <input id="cmd" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="cmdhint">
+          <span class="curs" aria-hidden="true"></span>
+        </span>
+      </div>
+      <p id="cmdhint" class="vh">Try help, projects, or open cleat. Every command is also a button below the prompt, and the plain text version has all of the same content.</p>
+
+      <nav class="chips" id="chips" aria-label="Quick commands"></nav>
+    </main>
+
+    <footer class="status" id="status">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="st">state: <b id="stState">booting</b></span>
+      <span class="right">
+        <span>pty attached</span>
+        <span id="stExit">exit 0</span>
+      </span>
+    </footer>
+
+  </div>
+</div>
+
+<!-- ===== PLAIN VIEW — the escape hatch, and the no-JS default ===== -->
+<div class="plainview">
+<article class="pv">
+
+  <div class="pv-top">
+    <div id="h1home">
+      <h1 id="pageh1">Siddharth Yellur<span class="tsub"> — ~/session</span></h1>
+      <p class="pv-lede">Engineer. I build developer tooling for AI agents — and, lately, a snowboarding game.</p>
+    </div>
+    <button type="button" class="backbtn" id="toTerm">Back to the terminal</button>
+  </div>
+
+  <h2>About</h2>
+  <p>
+    Most of my work sits in the same place: the gap between an AI agent and the machine it is
+    supposed to be operating. Agents forget everything between sessions, and they read terminals by
+    scraping text that was never meant to be parsed. Both of those are fixable, so I have been
+    fixing them. <a href="https://github.com/sidyellur/tether">tether</a> gives an agent durable,
+    associative memory; <a href="https://github.com/sidyellur/cleat">cleat</a> gives it a real
+    persistent shell that reports structured results instead of escape-code soup.
+  </p>
+  <p>
+    On the side, <a href="https://github.com/sidyellur/black-diamond-brawl">Black Diamond Brawl</a>
+    is a downhill snowboarding combat racer built solo, mostly to learn how the old pseudo-3D racers
+    actually worked. It contains no image files at all — every sprite and gradient is generated in
+    code at boot.
+  </p>
+  <p class="note">
+    M.S. Computer Science, University of Florida. B.E. Computer Science, Anna University.
+  </p>
+
+  <h2>Projects</h2>
+
+  <h3>tether <span class="ver">v0.5.1 · a shared memory layer for personal agents</span></h3>
+  <p class="stack">Python · MCP · SQLite / FTS5 · libSQL / Turso · local static embeddings</p>
+  <div class="inst">claude mcp add tether -- uvx tether-memory</div>
+  <p>
+    An MCP server backed by a local SQLite file. Any MCP-compatible agent can
+    <code>remember</code>, <code>recall</code>, <code>link</code> and <code>forget</code> durable
+    notes — facts about you, your projects, your preferences — so context follows you between
+    sessions instead of dying with each one.
+  </p>
+  <ul>
+    <li>Runs local-only with zero configuration. Point it at a hosted libSQL/Turso primary and the
+      same file becomes an embedded replica that syncs memory across every device in
+      near-real-time.</li>
+    <li><code>recall</code> is hybrid: keyword results from FTS5 fused with semantic vector results,
+      so "automobile" finds a note about your "car". The embedding model is small and static and
+      runs locally — no network, no API key.</li>
+    <li>It follows an <strong>associative usage graph</strong> to related memories. Edges come from
+      three local deterministic sources: semantic nearest-neighbours, explicit <code>link()</code>
+      calls, and <em>hebbian</em> edges — memories recalled together get wired together over time.
+      Every hit carries a <code>via</code> receipt explaining why it surfaced.</li>
+    <li>Recall is <strong>seed-dominant</strong>: top direct matches are locked in place and
+      associations only fill slots below them, so turning association on never demotes a good
+      hit.</li>
+    <li>The store self-organizes. A hub-curated boot index surfaces "load-bearing" memories (highest
+      behavioral degree) alongside recent ones, and an opt-in sweep soft-archives memories that are
+      both old and behaviorally isolated. Nothing is ever hard-deleted.</li>
+    <li>Optional crystallization detects dense clusters of related memories and offers them up to be
+      <em>named</em> as principles. tether finds the structure; the agent supplies the words.</li>
+    <li>Every feature degrades cleanly to plain keyword recall. It is deliberately a convenience
+      layer — more useful when present, never breaking the agent when degraded.</li>
+    <li>Returning query-centered excerpts instead of full bodies cut a recall response from
+      <strong>66.9KB to 2.0KB</strong>.</li>
+  </ul>
+  <p><a href="https://github.com/sidyellur/tether">github.com/sidyellur/tether</a> · PyPI:
+    <code>tether-memory</code></p>
+
+  <h3>cleat <span class="ver">a headless terminal layer for AI agents</span></h3>
+  <p class="stack">Python · MCP · PTY / termios · OSC 133 · pyte</p>
+  <div class="inst">claude mcp add cleat -- uvx cleat</div>
+  <p>
+    cleat runs a <em>persistent</em> shell session behind a PTY, parses its byte stream for OSC 133
+    shell-integration marks, and exposes it to an agent over MCP as structured results —
+    <code>stdout</code>, a real <code>exit_code</code>, files touched — instead of raw escape-code
+    soup.
+  </p>
+  <div class="inst">{ "stdout": "...", "exit_code": 0, "completed": true, "state": "idle" }</div>
+  <ul>
+    <li>The core insight: when you scrape a PTY, <strong>the exit code isn't in the stream at
+      all</strong>. The shell knows <code>$?</code> but never prints it. cleat injects OSC 133 marks
+      into the shells it spawns and parses them back out.</li>
+    <li>The session is persistent, so <code>cd</code>, <code>export</code>, activated venvs and
+      <code>ssh</code> sessions all carry across calls — something a fresh subprocess per command
+      cannot do.</li>
+    <li>Every response carries a <code>state</code> derived from termios flags and the foreground
+      process group — facts only the process holding the PTY can read, not guessed from output
+      timing. The states are <code>idle</code>, <code>running</code>, <code>awaiting-input</code>,
+      <code>password</code> and <code>tui</code>.</li>
+    <li>It refuses to type into a <code>password</code> prompt without explicit human consent.</li>
+    <li><strong>Nonce-authenticated marks.</strong> A command can print a fake OSC 133 sequence to
+      its own stdout to forge a clean exit code. Each session gets a fresh
+      <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat injects; a mark with a
+      missing or wrong <code>k=</code> is ignored outright and surfaced as
+      <code>spoofed_marks</code>, so the agent can tell when a program lied about how it
+      finished.</li>
+    <li>Terminal-agnostic. It is not a terminal emulator, and not a modification to yours.</li>
+  </ul>
+  <p><a href="https://github.com/sidyellur/cleat">github.com/sidyellur/cleat</a> · PyPI:
+    <code>cleat</code></p>
+
+  <h3>Black Diamond Brawl <span class="ver">v1 complete · v2 visual overhaul complete</span></h3>
+  <p class="stack">Phaser 3 · TypeScript · Vite · segment-based pseudo-3D renderer</p>
+  <svg class="slope" id="slopeArt" viewBox="0 0 320 130" role="img" aria-label="Illustration of a pseudo-3D snow slope receding to a horizon, with pine trees on either side and a rider in the foreground.">
+    <defs>
+      <linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#12314f"/><stop offset="1" stop-color="#5b83a6"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="320" height="130" fill="#7fa2c0"/>
+    <rect x="0" y="0" width="320" height="26" fill="url(#skyg)"/>
+    <polygon points="0,26 78,10 128,26" fill="#25384c"/>
+    <polygon points="150,26 226,6 300,26" fill="#2c4258"/>
+    <polygon points="320,26 262,14 210,26" fill="#25384c"/>
+    <rect x="0" y="26" width="320" height="104" fill="#e8eff5"/>
+    <polygon points="146,26 174,26 180,31 140,31" fill="#dfe9f1"/>
+    <polygon points="140,31 180,31 190,39 130,39" fill="#f4f9fc"/>
+    <polygon points="130,39 190,39 206,50 114,50" fill="#dbe6ef"/>
+    <polygon points="114,50 206,50 228,65 92,65" fill="#f4f9fc"/>
+    <polygon points="92,65 228,65 258,83 62,83" fill="#dbe6ef"/>
+    <polygon points="62,83 258,83 296,104 24,104" fill="#f4f9fc"/>
+    <polygon points="24,104 296,104 320,130 0,130" fill="#dbe6ef"/>
+    <polygon points="97,50 101,50 100,66 98,66" fill="#3d3026"/>
+    <polygon points="99,52 92,52 99,32 106,52" fill="#1f5540"/>
+    <polygon points="99,42 94,42 99,26 104,42" fill="#2a6b50"/>
+    <polygon points="51,64 57,64 56,86 52,86" fill="#3d3026"/>
+    <polygon points="54,68 42,68 54,36 66,68" fill="#1f5540"/>
+    <polygon points="54,52 46,52 54,28 62,52" fill="#2a6b50"/>
+    <polygon points="247,54 253,54 252,72 248,72" fill="#3d3026"/>
+    <polygon points="250,57 240,57 250,30 260,57" fill="#1f5540"/>
+    <polygon points="284,72 292,72 291,100 285,100" fill="#3d3026"/>
+    <polygon points="288,76 272,76 288,34 304,76" fill="#1f5540"/>
+    <polygon points="288,56 278,56 288,26 298,56" fill="#2a6b50"/>
+    <ellipse cx="196" cy="76" rx="9" ry="3" fill="#c3d2de"/>
+    <ellipse cx="196" cy="74" rx="9" ry="4" fill="#dbe6ef"/>
+    <ellipse cx="112" cy="95" rx="12" ry="4" fill="#c3d2de"/>
+    <ellipse cx="112" cy="93" rx="12" ry="5" fill="#dbe6ef"/>
+    <ellipse cx="160" cy="128" rx="22" ry="5" fill="#2b3f52" fill-opacity=".28"/>
+    <polygon points="140,124 182,124 178,129 144,129" fill="#c8452f"/>
+    <rect x="154" y="100" width="13" height="24" rx="4" fill="#1c2733"/>
+    <rect x="145" y="104" width="30" height="6" rx="3" fill="#2c3f52"/>
+    <circle cx="160" cy="95" r="7" fill="#e8a33d"/>
+    <rect x="153" y="92" width="14" height="4" rx="2" fill="#1c2733"/>
+  </svg>
+  <p>
+    A Road Rash-style downhill snowboarding combat racer, built solo as a learning project. Each run
+    is a single race down a fixed-length, seeded, procedurally generated slope ending at a finish
+    line.
+  </p>
+  <ul>
+    <li>Dodge trees, rocks and moguls; catch trick air off moguls and hill crests (crests launch you
+      automatically at speed); shove or ski-pole your way past AI rivals racing the same course.</li>
+    <li>Score comes from finishing fast, landing hits on rivals, near-misses and tricks. Wipe out
+      hard before the line and the run ends early.</li>
+    <li>A classic <strong>segment-based pseudo-3D renderer</strong> gives the behind-the-rider "road
+      rushing at you" look — OutRun / Road Rash style — with pixel art sprites.</li>
+    <li><strong>All art and atmosphere is generated in code at boot. There are no image files in the
+      repository at all.</strong> Colour is governed by a palette module and enforced by a build
+      gate that fails if any gameplay-relevant edge drops below ΔL* 12, or any sprite outline below
+      ΔL* 25 against the snow behind it.</li>
+    <li>Ships with a headless seeded combat simulation and a solvability model, so balance is
+      verified without a browser.</li>
+  </ul>
+  <p><a href="https://github.com/sidyellur/black-diamond-brawl">github.com/sidyellur/black-diamond-brawl</a></p>
+
+  <h2>Tools I have shipped with</h2>
+  <p class="note">
+    <strong>Languages</strong> — Python, TypeScript, JavaScript, Java.<br>
+    <strong>Agent plumbing</strong> — MCP servers, PTY and termios, OSC 133 shell integration, pyte,
+    structured tool results.<br>
+    <strong>Storage and retrieval</strong> — SQLite, FTS5, libSQL / Turso embedded replicas, hybrid
+    keyword and vector search, local static embeddings.<br>
+    <strong>Front end and games</strong> — Phaser 3, Vite, Vue.js, React, canvas and procedural art.
+  </p>
+
+  <h2>Earlier work</h2>
+  <ul class="arch">
+    <li><a href="https://github.com/sidyellur/Vue-Weather-App">Vue Weather App</a>
+      <span class="d">— Vue.js + OpenWeather API</span></li>
+    <li><a href="https://github.com/sidyellur/RBT-Min-Heap-">Red-Black Tree / Min-Heap city builder</a>
+      <span class="d">— Java, academic</span></li>
+    <li><a href="https://github.com/sidyellur/TicTacToe">TicTacToe</a>
+      <span class="d">— React</span></li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>
+    <a href="https://github.com/sidyellur">github.com/sidyellur</a><br>
+    <a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">linkedin.com/in/siddharth-yellur</a>
+  </p>
+
+  <footer>
+    <p>This is the plain reading view. The same content is also available as an interactive terminal
+      session — nothing is exclusive to either one.</p>
+  </footer>
+
+</article>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var doc = document;
+  var body = doc.body;
+  var out = doc.getElementById("out");
+  var input = doc.getElementById("cmd");
+  var inwrap = doc.getElementById("inwrap");
+  var promptrow = doc.getElementById("promptrow");
+  var chipsEl = doc.getElementById("chips");
+  var statusEl = doc.getElementById("status");
+  var stState = doc.getElementById("stState");
+  var stExit = doc.getElementById("stExit");
+  var term = doc.getElementById("term");
+
+  var reduced = false;
+  try { reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+
+  var canHover = true;
+  try { canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches; } catch (e) {}
+
+  var startedAt = Date.now();
+  var ranCount = 0;
+
+  /* helpers */
+
+  var ENT = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return ENT[c]; });
+  }
+
+  function own(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+  }
+
+  function makeLine(item) {
+    var cls = "", html = "";
+    if (Object.prototype.toString.call(item) === "[object Array]") {
+      cls = item[0]; html = item[1];
+    } else {
+      html = item;
+    }
+    var d = doc.createElement("div");
+    d.className = "ln" + (cls ? " " + cls : "");
+    d.innerHTML = (html === "" || html === null || typeof html === "undefined") ? "&nbsp;" : html;
+    return d;
+  }
+
+  function atBottom() {
+    return out.scrollHeight - out.scrollTop - out.clientHeight < 80;
+  }
+  function toBottom() { out.scrollTop = out.scrollHeight; }
+
+  /* streaming */
+
+  var queue = [];
+  var streamTimer = null;
+  var pendingExit = 0;
+
+  function setState(name, busy) {
+    stState.textContent = name;
+    if (busy) statusEl.classList.add("busy");
+    else statusEl.classList.remove("busy");
+  }
+
+  function stream(lines, code) {
+    pendingExit = code || 0;
+    for (var i = 0; i < lines.length; i++) queue.push(lines[i]);
+    setState("running", true);
+    if (reduced) { flushNow(); return; }
+    if (streamTimer === null) tick();
+  }
+
+  function tick() {
+    if (!queue.length) { streamTimer = null; finishStream(); return; }
+    var stick = atBottom();
+    out.appendChild(makeLine(queue.shift()));
+    if (stick) toBottom();
+    streamTimer = setTimeout(tick, 13);
+  }
+
+  function flushNow() {
+    if (streamTimer !== null) { clearTimeout(streamTimer); streamTimer = null; }
+    if (!queue.length) return;
+    while (queue.length) out.appendChild(makeLine(queue.shift()));
+    toBottom();
+    finishStream();
+  }
+
+  function finishStream() {
+    setState("idle", false);
+    stExit.textContent = "exit " + pendingExit;
+  }
+
+  /* content */
+
+  var GH = "https://github.com/sidyellur";
+  var LI = "https://www.linkedin.com/in/siddharth-yellur-682351142/";
+
+  function link(href, text) {
+    return '<a class="lnk" href="' + href + '" target="_blank" rel="noopener noreferrer">' + text + "</a>";
+  }
+  function kv(k, v) {
+    return '<div class="row"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>";
+  }
+
+  var BANNER =
+    "<b>S I D D H A R T H   Y E L L U R</b>\n" +
+    '<span class="bsub">engineer · tooling for AI agents</span>';
+
+  var slopeHTML = (function () {
+    var n = doc.getElementById("slopeArt");
+    if (!n) return "";
+    var c = n.cloneNode(true);
+    c.removeAttribute("id");
+    return c.outerHTML;
+  })();
+
+  var C = {};
+
+  C.welcome = function () {
+    return [
+      ["banner", BANNER],
+      "",
+      ["body", "Engineer. I build developer tooling for AI agents — and, lately, a snowboarding game."],
+      ["dim", "This whole page is a shell session. It is also just a page: every word of it is one click away in plain HTML."],
+      ""
+    ];
+  };
+
+  C.help = function () {
+    return [
+      ["head", "commands"],
+      kv("help", "this list"),
+      kv("ls [dir]", "list what is here"),
+      kv("about", "who you are reading about"),
+      kv("projects", "the three headliners"),
+      kv("open &lt;name&gt;", "tether &middot; cleat &middot; brawl &nbsp;(alias: cat)"),
+      kv("skills", "tools actually shipped with"),
+      kv("archive", "earlier, smaller work"),
+      kv("contact", "github and linkedin"),
+      kv("links", "every url on one screen"),
+      kv("state", "session status, cleat-style"),
+      kv("neofetch", "system info"),
+      kv("snow", "let it"),
+      kv("theme", "green &harr; amber"),
+      kv("history", "commands run this session"),
+      kv("clear", "wipe the screen &nbsp;(ctrl+L)"),
+      kv("plain", "leave the terminal, read plain HTML"),
+      "",
+      ["dim", "Tab completes. Up and Down walk the history. Every command is also a button below the prompt."],
+      ""
+    ];
+  };
+
+  C.ls = function (args) {
+    var target = String(args[0] || "").replace(/\/$/, "").toLowerCase();
+    if (target === "projects") {
+      return [
+        ["cols", '<b class="d">tether/</b> <b class="d">cleat/</b> <b class="d">black-diamond-brawl/</b>'],
+        ["dim", "open tether · open cleat · open brawl"],
+        ""
+      ];
+    }
+    if (target === "archive") return C.archive();
+    if (target && target !== "~" && target !== ".") return null;
+    return [
+      ["cols", '<b>about.txt</b> <b class="d">projects/</b> <b>skills.txt</b> <b>contact.txt</b> <b class="d">archive/</b> <b>README.md</b>'],
+      ["dim", "6 entries · 3 active projects · nothing hard-deleted"],
+      ""
+    ];
+  };
+
+  C.about = function () {
+    return [
+      ["head", "about"],
+      ["body", "Most of my work sits in the same place: the gap between an AI agent and the machine it is supposed to be operating."],
+      ["body", "Agents forget everything between sessions, and they read terminals by scraping text that was never meant to be parsed. Both of those are fixable, so I have been fixing them."],
+      "",
+      ["bul", '<span class="tk">tether</span> gives an agent durable, associative memory that survives the session.'],
+      ["bul", '<span class="tk">cleat</span> gives it a real persistent shell that reports structured results instead of escape-code soup.'],
+      ["bul", '<span class="tk">Black Diamond Brawl</span> is a downhill snowboarding combat racer with no image files in it. Every pixel is generated in code at boot.'],
+      "",
+      ["dim", "M.S. Computer Science, University of Florida. B.E. Computer Science, Anna University."],
+      ["dim", "Next: try 'projects', or go straight to 'open cleat'."],
+      ""
+    ];
+  };
+
+  C.projects = function () {
+    return [
+      ["head", "projects"],
+      ["title", "tether"],
+      ["tag", "a shared memory layer for personal agents"],
+      ["meta", "v0.5.1 · python · mcp · sqlite/fts5 · libsql/turso"],
+      ["dim", "&rarr; open tether"],
+      "",
+      ["title", "cleat"],
+      ["tag", "a headless terminal layer for AI agents"],
+      ["meta", "python · mcp · pty/termios · osc 133 · pyte"],
+      ["dim", "&rarr; open cleat"],
+      "",
+      ["title", "Black Diamond Brawl"],
+      ["tag", "a downhill snowboarding combat racer"],
+      ["meta", "phaser 3 · typescript · vite · segment-based pseudo-3d"],
+      ["dim", "&rarr; open brawl"],
+      ""
+    ];
+  };
+
+  C.tether = function () {
+    return [
+      ["title", "tether"],
+      ["tag", "a shared memory layer for personal agents"],
+      ["meta", "v0.5.1 · python · mcp · sqlite / fts5 · libsql / turso · local static embeddings"],
+      ["cmdline", "$ claude mcp add tether -- uvx tether-memory"],
+      ["body", 'An MCP server backed by a local SQLite file. Any MCP-compatible agent can <span class="tk">remember</span>, <span class="tk">recall</span>, <span class="tk">link</span> and <span class="tk">forget</span> durable notes — facts about you, your projects, your preferences — so context follows you between sessions instead of dying with each one.'],
+      "",
+      ["bul", "Runs local-only with zero configuration. Point it at a hosted libSQL/Turso primary and the same file becomes an embedded replica that syncs memory across every device in near-real-time."],
+      ["bul", '<span class="tk">recall</span> is hybrid: keyword results from FTS5 fused with semantic vector results, so "automobile" finds a note about your "car". The embedding model is small and static and runs locally — no network, no API key.'],
+      ["bul", 'It follows an <b>associative usage graph</b> to related memories. Edges come from three local deterministic sources: semantic nearest-neighbours, explicit <span class="tk">link()</span> calls, and <i>hebbian</i> edges — memories recalled together get wired together over time. Every hit carries a <span class="tk">via</span> receipt explaining why it surfaced.'],
+      ["bul", "Recall is <b>seed-dominant</b>: top direct matches are locked in place and associations only fill the slots below them, so turning association on never demotes a good hit."],
+      ["bul", 'The store self-organizes. A hub-curated boot index surfaces "load-bearing" memories (highest behavioral degree) alongside recent ones, and an opt-in sweep soft-archives memories that are both old and behaviorally isolated. Nothing is ever hard-deleted.'],
+      ["bul", "Optional crystallization detects dense clusters of related memories and offers them up to be <i>named</i> as principles. tether finds the structure; the agent supplies the words."],
+      ["bul", "Every feature degrades cleanly to plain keyword recall. It is deliberately a convenience layer — more useful when present, never breaking the agent when degraded."],
+      "",
+      ["ok", 'Returning query-centered excerpts instead of full bodies cut a recall response from <span class="num">66.9KB</span> to <span class="num">2.0KB</span>.'],
+      "",
+      ["dim", link(GH + "/tether", "github.com/sidyellur/tether") + " &nbsp;·&nbsp; pypi: tether-memory"],
+      ""
+    ];
+  };
+
+  C.cleat = function () {
+    return [
+      ["title", "cleat"],
+      ["tag", "a headless terminal layer for AI agents"],
+      ["meta", "python · mcp · pty / termios · osc 133 · pyte"],
+      ["cmdline", "$ claude mcp add cleat -- uvx cleat"],
+      ["body", 'Runs a <i>persistent</i> shell session behind a PTY, parses its byte stream for OSC 133 shell-integration marks, and exposes it to an agent over MCP as structured results — <span class="tk">stdout</span>, a real <span class="tk">exit_code</span>, files touched — instead of raw escape-code soup.'],
+      ["pre",
+        '<span class="p">{</span>\n' +
+        '  <span class="k">"stdout"</span><span class="p">:</span> <span class="s">"..."</span><span class="p">,</span>\n' +
+        '  <span class="k">"exit_code"</span><span class="p">:</span> <span class="n">0</span><span class="p">,</span>\n' +
+        '  <span class="k">"completed"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>\n' +
+        '  <span class="k">"state"</span><span class="p">:</span> <span class="s">"idle"</span>\n' +
+        '<span class="p">}</span>'],
+      ["bul", "The core insight: when you scrape a PTY, <b>the exit code isn't in the stream at all</b>. The shell knows $? but never prints it. cleat injects OSC 133 marks into the shells it spawns and parses them back out."],
+      ["bul", 'The session is persistent, so <span class="tk">cd</span>, <span class="tk">export</span>, activated venvs and <span class="tk">ssh</span> sessions all carry across calls — something a fresh subprocess per command cannot do.'],
+      ["bul", 'Every response carries a <span class="tk">state</span> derived from termios flags and the foreground process group — facts only the process holding the PTY can read, not guessed from output timing. States: <span class="tk2">idle</span>, <span class="tk2">running</span>, <span class="tk2">awaiting-input</span>, <span class="tk2">password</span>, <span class="tk2">tui</span>.'],
+      ["bul", 'It refuses to type into a <span class="tk2">password</span> prompt without explicit human consent.'],
+      ["bul", '<b>Nonce-authenticated marks.</b> A command can print a fake OSC 133 sequence to its own stdout to forge a clean exit code. Each session gets a fresh <span class="tk">secrets.token_hex(8)</span> nonce embedded in every mark cleat injects; a mark with a missing or wrong <span class="tk">k=</span> is ignored outright and surfaced as <span class="tk">spoofed_marks</span>, so the agent can tell when a program lied about how it finished.'],
+      ["bul", "Terminal-agnostic. Not a terminal emulator, not a modification to yours."],
+      "",
+      ["dim", link(GH + "/cleat", "github.com/sidyellur/cleat") + " &nbsp;·&nbsp; pypi: cleat"],
+      ""
+    ];
+  };
+
+  C.brawl = function () {
+    var lines = [
+      ["title", "Black Diamond Brawl"],
+      ["tag", "a downhill snowboarding combat racer"],
+      ["meta", "v1 complete (9 phases) · v2 visual overhaul complete"],
+      ["meta", "phaser 3 · typescript · vite · segment-based pseudo-3d renderer"]
+    ];
+    if (slopeHTML) lines.push(["", slopeHTML]);
+    return lines.concat([
+      ["body", "A Road Rash-style downhill snowboarding combat racer, built solo as a learning project. Each run is a single race down a fixed-length, seeded, procedurally generated slope ending at a finish line."],
+      "",
+      ["bul", "Dodge trees, rocks and moguls; catch trick air off moguls and hill crests (crests launch you automatically at speed); shove or ski-pole your way past AI rivals racing the same course."],
+      ["bul", "Score comes from finishing fast, landing hits on rivals, near-misses and tricks. Wipe out hard before the line and the run ends early."],
+      ["bul", 'Classic <b>segment-based pseudo-3D renderer</b> for the behind-the-rider "road rushing at you" look — OutRun / Road Rash style — with pixel art sprites.'],
+      ["bul", "<b>All art and atmosphere is generated in code at boot. There are no image files in the repository at all.</b> Colour is governed by a palette module and enforced by a build gate that fails if any gameplay-relevant edge drops below ΔL* 12, or any sprite outline below ΔL* 25 against the snow behind it."],
+      ["bul", "Ships with a headless seeded combat simulation and a solvability model, so balance is verified without a browser."],
+      "",
+      ["dim", link(GH + "/black-diamond-brawl", "github.com/sidyellur/black-diamond-brawl")],
+      ""
+    ]);
+  };
+
+  C.skills = function () {
+    return [
+      ["head", "tools actually shipped with"],
+      kv("languages", "python · typescript · javascript · java"),
+      kv("agents", "mcp servers · pty &amp; termios · osc 133 · pyte · structured tool results"),
+      kv("storage", "sqlite · fts5 · libsql / turso embedded replicas · hybrid keyword + vector search · local static embeddings"),
+      kv("front end", "phaser 3 · vite · vue.js · react · canvas &amp; procedural art"),
+      "",
+      ["dim", "No percentage bars. They never meant anything."],
+      ""
+    ];
+  };
+
+  C.archive = function () {
+    return [
+      ["head", "archive · earlier work"],
+      kv(link(GH + "/Vue-Weather-App", "Vue Weather App"), "vue.js + openweather api"),
+      kv(link(GH + "/RBT-Min-Heap-", "RBT / Min-Heap"), "red-black tree + min-heap city builder · java, academic"),
+      kv(link(GH + "/TicTacToe", "TicTacToe"), "react"),
+      "",
+      ["dim", "Small, old, and left where they are. Soft-archived, not deleted."],
+      ""
+    ];
+  };
+
+  C.contact = function () {
+    return [
+      ["head", "contact"],
+      kv("github", link(GH, "github.com/sidyellur")),
+      kv("linkedin", link(LI, "linkedin.com/in/siddharth-yellur")),
+      "",
+      ["dim", "That is the whole list. No forms, no trackers, no newsletter."],
+      ""
+    ];
+  };
+
+  C.links = function () {
+    return [
+      ["head", "links"],
+      kv("tether", link(GH + "/tether", "github.com/sidyellur/tether")),
+      kv("cleat", link(GH + "/cleat", "github.com/sidyellur/cleat")),
+      kv("brawl", link(GH + "/black-diamond-brawl", "github.com/sidyellur/black-diamond-brawl")),
+      kv("weather", link(GH + "/Vue-Weather-App", "github.com/sidyellur/Vue-Weather-App")),
+      kv("rbt", link(GH + "/RBT-Min-Heap-", "github.com/sidyellur/RBT-Min-Heap-")),
+      kv("tictactoe", link(GH + "/TicTacToe", "github.com/sidyellur/TicTacToe")),
+      kv("github", link(GH, "github.com/sidyellur")),
+      kv("linkedin", link(LI, "linkedin.com/in/siddharth-yellur")),
+      ""
+    ];
+  };
+
+  C.state = function () {
+    var up = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+    return [
+      ["dim", "roughly the shape of what cleat hands back to an agent:"],
+      ["pre",
+        '<span class="p">{</span>\n' +
+        '  <span class="k">"session"</span><span class="p">:</span> <span class="s">"sid@yellur"</span><span class="p">,</span>\n' +
+        '  <span class="k">"state"</span><span class="p">:</span> <span class="s">"idle"</span><span class="p">,</span>\n' +
+        '  <span class="k">"completed"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>\n' +
+        '  <span class="k">"exit_code"</span><span class="p">:</span> <span class="n">0</span><span class="p">,</span>\n' +
+        '  <span class="k">"uptime_s"</span><span class="p">:</span> <span class="n">' + up + '</span><span class="p">,</span>\n' +
+        '  <span class="k">"commands_run"</span><span class="p">:</span> <span class="n">' + ranCount + '</span><span class="p">,</span>\n' +
+        '  <span class="k">"spoofed_marks"</span><span class="p">:</span> <span class="n">0</span>\n' +
+        '<span class="p">}</span>'],
+      ""
+    ];
+  };
+
+  C.neofetch = function () {
+    var up = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+    var logo =
+      "  ╭─────────╮\n" +
+      "  │ ▚     ▞ │\n" +
+      "  │    ▁    │\n" +
+      "  │  ▝───▘  │\n" +
+      "  ╰─────────╯\n" +
+      "    ▔▔▔▔▔▔▔";
+    var info =
+      kv("user", "sid@yellur") +
+      kv("shell", "cleat (persistent pty)") +
+      kv("marks", "osc 133, nonce-signed") +
+      kv("uptime", up + "s") +
+      kv("projects", "3 active · 3 archived") +
+      kv("memory", "tether · durable, associative") +
+      kv("images", "0 files — all art in code") +
+      kv("theme", body.classList.contains("amber") ? "amber" : "phosphor green");
+    return [
+      ["", '<div class="neo"><pre>' + esc(logo) + '</pre><div class="info">' + info + "</div></div>"],
+      ""
+    ];
+  };
+
+  /* snow */
+
+  var snowOn = false, snowCv = null, snowCtx = null, flakes = [], snowRaf = null;
+
+  function sizeSnow() {
+    if (!snowCv) return;
+    var r = term.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    snowCv.width = Math.max(1, Math.floor(r.width * dpr));
+    snowCv.height = Math.max(1, Math.floor(r.height * dpr));
+    snowCv.style.width = r.width + "px";
+    snowCv.style.height = r.height + "px";
+    snowCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    snowCv._w = r.width;
+    snowCv._h = r.height;
+  }
+
+  function snowFrame() {
+    if (!snowOn || !snowCv) return;
+    var w = snowCv._w, h = snowCv._h, i, f;
+    snowCtx.clearRect(0, 0, w, h);
+    snowCtx.fillStyle = "#dff3e8";
+    for (i = 0; i < flakes.length; i++) {
+      f = flakes[i];
+      f.y += f.v;
+      f.x += Math.sin((f.y + f.p) / 42) * 0.35;
+      if (f.y > h + 4) { f.y = -4; f.x = Math.random() * w; }
+      if (f.x < -4) f.x = w + 4;
+      if (f.x > w + 4) f.x = -4;
+      snowCtx.globalAlpha = f.a;
+      snowCtx.fillRect(f.x, f.y, f.s, f.s);
+    }
+    snowCtx.globalAlpha = 1;
+    snowRaf = window.requestAnimationFrame(snowFrame);
+  }
+
+  function toggleSnow() {
+    if (reduced) {
+      return { lines: [["dim", "prefers-reduced-motion is on, so the snow stays put. That is the right call."], ""], code: 0 };
+    }
+    if (snowOn) {
+      snowOn = false;
+      if (snowRaf) window.cancelAnimationFrame(snowRaf);
+      snowRaf = null;
+      if (snowCv && snowCv.parentNode) snowCv.parentNode.removeChild(snowCv);
+      snowCv = null;
+      return { lines: [["dim", "snow off. the slope is closed."], ""], code: 0 };
+    }
+    snowCv = doc.createElement("canvas");
+    snowCv.id = "snowcv";
+    snowCv.setAttribute("aria-hidden", "true");
+    term.appendChild(snowCv);
+    snowCtx = snowCv.getContext("2d");
+    sizeSnow();
+    flakes = [];
+    var n = Math.round(Math.min(110, Math.max(24, (snowCv._w * snowCv._h) / 7000)));
+    for (var i = 0; i < n; i++) {
+      flakes.push({
+        x: Math.random() * snowCv._w,
+        y: Math.random() * snowCv._h,
+        v: 0.25 + Math.random() * 0.75,
+        s: Math.random() < 0.75 ? 1 : 2,
+        a: 0.22 + Math.random() * 0.42,
+        p: Math.random() * 400
+      });
+    }
+    snowOn = true;
+    snowFrame();
+    return { lines: [["ok", "snow on. run 'snow' again to stop it."], ""], code: 0 };
+  }
+
+  window.addEventListener("resize", function () { if (snowOn) sizeSnow(); });
+
+  /* command table */
+
+  var PROJECTS = { tether: C.tether, cleat: C.cleat, brawl: C.brawl };
+  var PROJ_ALIAS = {
+    "tether": "tether", "tether.md": "tether", "tether-memory": "tether",
+    "cleat": "cleat", "cleat.md": "cleat",
+    "brawl": "brawl", "bdb": "brawl", "black-diamond-brawl": "brawl",
+    "black": "brawl", "blackdiamondbrawl": "brawl", "brawl.md": "brawl",
+    "game": "brawl", "snowboard": "brawl"
+  };
+
+  function openProject(args) {
+    var raw = String(args[0] || "").toLowerCase().replace(/\/$/, "");
+    if (!raw) {
+      return {
+        lines: [
+          ["err", "open: which one? &nbsp; <b>tether</b> &nbsp; <b>cleat</b> &nbsp; <b>brawl</b>"],
+          ""
+        ],
+        code: 2
+      };
+    }
+    var key = own(PROJ_ALIAS, raw) ? PROJ_ALIAS[raw] : null;
+    if (!key) {
+      return {
+        lines: [
+          ["err", "open: no such project: " + esc(raw)],
+          ["dim", "try: open tether · open cleat · open brawl"],
+          ""
+        ],
+        code: 2
+      };
+    }
+    return { lines: PROJECTS[key](), code: 0 };
+  }
+
+  var hist = [];
+  var histIdx = -1;
+  var draft = "";
+  var tabbedEmpty = false;
+
+  var HANDLERS = {
+    help: function () { return { lines: C.help(), code: 0 }; },
+    ls: function (a) {
+      var r = C.ls(a);
+      if (r === null) {
+        return { lines: [["err", "ls: no such directory: " + esc(a[0])], ["dim", "try: ls · ls projects · ls archive"], ""], code: 2 };
+      }
+      return { lines: r, code: 0 };
+    },
+    about: function () { return { lines: C.about(), code: 0 }; },
+    projects: function () { return { lines: C.projects(), code: 0 }; },
+    open: openProject,
+    skills: function () { return { lines: C.skills(), code: 0 }; },
+    archive: function () { return { lines: C.archive(), code: 0 }; },
+    contact: function () { return { lines: C.contact(), code: 0 }; },
+    links: function () { return { lines: C.links(), code: 0 }; },
+    state: function () { return { lines: C.state(), code: 0 }; },
+    neofetch: function () { return { lines: C.neofetch(), code: 0 }; },
+    snow: function () { return toggleSnow(); },
+    readme: function () { return { lines: C.welcome().concat(C.about()), code: 0 }; },
+
+    history: function () {
+      if (!hist.length) return { lines: [["dim", "nothing yet."], ""], code: 0 };
+      var lines = [];
+      for (var i = 0; i < hist.length; i++) {
+        lines.push(["dim", '<span class="num">' + (i + 1) + '</span>  <span class="cmdtxt">' + esc(hist[i]) + "</span>"]);
+      }
+      lines.push("");
+      return { lines: lines, code: 0 };
+    },
+
+    clear: function () {
+      out.innerHTML = "";
+      return { lines: [], code: 0, quiet: true };
+    },
+
+    theme: function () {
+      body.classList.toggle("amber");
+      var amber = body.classList.contains("amber");
+      try { localStorage.setItem("sy_theme", amber ? "amber" : "green"); } catch (e) {}
+      return { lines: [["ok", "theme: " + (amber ? "amber" : "phosphor green")], ""], code: 0 };
+    },
+
+    plain: function () {
+      setView("plain");
+      return { lines: [], code: 0, quiet: true };
+    },
+
+    /* easter eggs */
+    sudo: function () {
+      return {
+        lines: [
+          ["err", "sid is not in the sudoers file. This incident has been reported."],
+          ["dim", "(It has not. There is no server — this page made zero network requests to render.)"],
+          ""
+        ],
+        code: 1
+      };
+    },
+    rm: function () {
+      return {
+        lines: [
+          ["err", "rm: refusing. Nothing here is ever hard-deleted."],
+          ["dim", "That is a tether rule, and it turns out to be a good one. Try 'archive'."],
+          ""
+        ],
+        code: 1
+      };
+    },
+    exit: function () {
+      return {
+        lines: [
+          ["body", "There is no exit. The session is persistent — that is the entire point of cleat."],
+          ["dim", "If you want the door: type 'plain', or use the button at the top right."],
+          ""
+        ],
+        code: 0
+      };
+    },
+    man: function (a) {
+      return { lines: [["dim", "No manual entry for " + (a[0] ? esc(a[0]) : "anything") + ". This shell ships exactly one page: 'help'."], ""], code: 16 };
+    },
+    whoami: function () {
+      return { lines: [["body", "siddharth yellur"], ["dim", "for the longer answer, type 'about'."], ""], code: 0 };
+    },
+    pwd: function () { return { lines: [["body", "/home/sid"], ""], code: 0 }; },
+    date: function () { return { lines: [["body", esc(new Date().toString())], ""], code: 0 }; },
+    echo: function (a) { return { lines: [["body", a.length ? esc(a.join(" ")) : "&nbsp;"], ""], code: 0 }; },
+    uname: function () {
+      return { lines: [["body", "cleat 1.0 · headless terminal layer · pty attached · marks: osc133 (nonce-signed)"], ""], code: 0 };
+    }
+  };
+
+  var ALIAS = {
+    cat: "open", show: "open", "?": "help", h: "help", commands: "help",
+    dir: "ls", l: "ls", ll: "ls", me: "about", bio: "about", info: "about",
+    work: "projects", proj: "projects", stack: "skills", tech: "skills",
+    email: "contact", social: "contact", url: "links", urls: "links",
+    older: "archive", earlier: "archive", old: "archive",
+    cls: "clear", reset: "clear", quit: "exit", logout: "exit",
+    "readme.md": "readme", "about.txt": "about", "skills.txt": "skills",
+    "contact.txt": "contact", text: "plain", html: "plain", read: "plain",
+    su: "sudo", ff: "neofetch", fetch: "neofetch", status: "state"
+  };
+
+  var COMPLETIONS = [
+    "about", "archive", "cat", "clear", "contact", "date", "echo", "exit",
+    "help", "history", "links", "ls", "man", "neofetch", "open", "plain",
+    "projects", "pwd", "skills", "snow", "state", "sudo", "theme", "uname", "whoami"
+  ];
+
+  /* run */
+
+  function echoCmd(raw) {
+    out.appendChild(makeLine([
+      "echo",
+      '<span class="ps">sid@yellur:<span class="path">~</span>$</span> <span class="cmdtxt">' + esc(raw) + "</span>"
+    ]));
+    toBottom();
+  }
+
+  function run(raw) {
+    flushNow();
+    var line = String(raw).replace(/^\s+|\s+$/g, "");
+    echoCmd(line);
+
+    if (line === "") { stream([""], 0); return; }
+
+    hist.push(line);
+    if (hist.length > 200) hist.shift();
+    histIdx = -1;
+    draft = "";
+    ranCount++;
+
+    var parts = line.split(/\s+/);
+    var cmd = parts[0].toLowerCase();
+    var args = parts.slice(1);
+    if (own(ALIAS, cmd)) cmd = ALIAS[cmd];
+
+    var fn = own(HANDLERS, cmd) ? HANDLERS[cmd] : null;
+
+    if (!fn) {
+      stream([
+        ["err", "command not found: " + esc(parts[0]) + " &nbsp;—&nbsp; try <b>help</b>"],
+        ["exitline", "exit 127"],
+        ""
+      ], 127);
+      return;
+    }
+
+    var res = fn(args) || { lines: [], code: 0 };
+    var lines = res.lines || [];
+    var code = res.code || 0;
+    if (!res.quiet) lines = lines.concat([["exitline", "exit " + code], ""]);
+    stream(lines, code);
+  }
+
+  /* input plumbing */
+
+  function syncCursor() {
+    var pos = input.selectionStart;
+    if (pos === null || typeof pos === "undefined") pos = input.value.length;
+    inwrap.style.setProperty("--col", pos);
+    if (input.value.length > 42) inwrap.classList.add("native");
+    else inwrap.classList.remove("native");
+  }
+
+  function moveCaretEnd() {
+    var n = input.value.length;
+    try { input.setSelectionRange(n, n); } catch (e) {}
+    syncCursor();
+  }
+
+  input.addEventListener("input", syncCursor);
+  input.addEventListener("click", syncCursor);
+  input.addEventListener("keyup", syncCursor);
+  input.addEventListener("focus", function () { inwrap.classList.remove("blur"); syncCursor(); });
+  input.addEventListener("blur", function () { inwrap.classList.add("blur"); });
+
+  input.addEventListener("keydown", function (e) {
+    var k = e.key;
+
+    if (k === "Enter") {
+      e.preventDefault();
+      var v = input.value;
+      input.value = "";
+      syncCursor();
+      run(v);
+      return;
+    }
+
+    if (k === "Tab") {
+      /* never trap the keyboard: shift+tab always leaves, and a second Tab on an
+         empty line moves focus on to the command buttons */
+      if (e.shiftKey) { tabbedEmpty = false; return; }
+      if (input.value === "" && tabbedEmpty) { tabbedEmpty = false; return; }
+      e.preventDefault();
+      tabbedEmpty = (input.value === "");
+      complete();
+      return;
+    }
+    tabbedEmpty = false;
+
+    if (k === "Escape") {
+      e.preventDefault();
+      if (input.value !== "") { input.value = ""; syncCursor(); }
+      else input.blur();
+      return;
+    }
+
+    if (k === "ArrowUp") {
+      e.preventDefault();
+      if (!hist.length) return;
+      if (histIdx === -1) { draft = input.value; histIdx = hist.length - 1; }
+      else if (histIdx > 0) { histIdx--; }
+      input.value = hist[histIdx];
+      moveCaretEnd();
+      return;
+    }
+
+    if (k === "ArrowDown") {
+      e.preventDefault();
+      if (histIdx === -1) return;
+      if (histIdx < hist.length - 1) { histIdx++; input.value = hist[histIdx]; }
+      else { histIdx = -1; input.value = draft; }
+      moveCaretEnd();
+      return;
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (k === "l" || k === "L")) {
+      e.preventDefault();
+      flushNow();
+      out.innerHTML = "";
+      stExit.textContent = "exit 0";
+      return;
+    }
+
+    if (e.ctrlKey && (k === "c" || k === "C")) {
+      var sel = window.getSelection ? String(window.getSelection()) : "";
+      if (!sel) {
+        e.preventDefault();
+        echoCmd(input.value + "^C");
+        input.value = "";
+        syncCursor();
+        stExit.textContent = "exit 130";
+      }
+      return;
+    }
+
+    if (e.ctrlKey && (k === "u" || k === "U")) {
+      e.preventDefault();
+      input.value = "";
+      syncCursor();
+    }
+  });
+
+  function complete() {
+    var v = input.value;
+    var lead = v.replace(/^\s+/, "");
+    var parts = lead.split(/\s+/);
+    var pool, frag, isCmdPool;
+
+    if (parts.length <= 1 && !/\s$/.test(v)) {
+      pool = COMPLETIONS;
+      frag = String(parts[0] || "").toLowerCase();
+      isCmdPool = true;
+    } else {
+      var head = parts[0].toLowerCase();
+      if (own(ALIAS, head)) head = ALIAS[head];
+      if (head === "open") pool = ["tether", "cleat", "brawl"];
+      else if (head === "ls") pool = ["projects", "archive"];
+      else return;
+      frag = String(parts[1] || "").toLowerCase();
+      isCmdPool = false;
+    }
+
+    var hits = [], i;
+    for (i = 0; i < pool.length; i++) {
+      if (pool[i].indexOf(frag) === 0) hits.push(pool[i]);
+    }
+    if (!hits.length) return;
+
+    var common = hits[0], j;
+    for (i = 1; i < hits.length; i++) {
+      j = 0;
+      while (j < common.length && j < hits[i].length && common.charAt(j) === hits[i].charAt(j)) j++;
+      common = common.slice(0, j);
+    }
+
+    if (isCmdPool) {
+      input.value = common + (hits.length === 1 ? " " : "");
+    } else {
+      input.value = parts[0] + " " + common;
+    }
+    moveCaretEnd();
+
+    if (hits.length > 1) {
+      var row = [];
+      for (i = 0; i < hits.length; i++) row.push('<span class="tk">' + hits[i] + "</span>");
+      out.appendChild(makeLine(["cols", row.join("&nbsp;&nbsp;")]));
+      toBottom();
+    }
+  }
+
+  /* clicking the terminal focuses the input — this is what makes phones work */
+  function focusFromClick(e) {
+    var t = e.target;
+    if (t && t.closest && t.closest("a, button, canvas, input")) return;
+    var sel = window.getSelection ? String(window.getSelection()) : "";
+    if (sel) return;
+    if (booting) return;
+    input.focus();
+  }
+  term.addEventListener("mouseup", focusFromClick);
+  term.addEventListener("touchend", focusFromClick);
+
+  /* chips */
+
+  var CHIPS = [
+    ["help", "help", true],
+    ["about", "about", false],
+    ["projects", "projects", false],
+    ["open tether", "open tether", false],
+    ["open cleat", "open cleat", false],
+    ["open brawl", "open brawl", false],
+    ["skills", "skills", false],
+    ["archive", "archive", false],
+    ["contact", "contact", false],
+    ["neofetch", "neofetch", false],
+    ["clear", "clear", false],
+    ["plain text ↗", "plain", false, "esc"]
+  ];
+
+  (function buildChips() {
+    for (var i = 0; i < CHIPS.length; i++) {
+      var b = doc.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (CHIPS[i][2] ? " key" : "") + (CHIPS[i][3] ? " " + CHIPS[i][3] : "");
+      b.textContent = CHIPS[i][0];
+      b.setAttribute("data-cmd", CHIPS[i][1]);
+      chipsEl.appendChild(b);
+    }
+  })();
+
+  chipsEl.addEventListener("click", function (e) {
+    var t = e.target && e.target.closest ? e.target.closest("[data-cmd]") : null;
+    if (!t) return;
+    if (booting) skipBoot();
+    var cmd = t.getAttribute("data-cmd");
+    if (cmd === "plain") { setView("plain"); return; }
+    input.value = "";
+    syncCursor();
+    run(cmd);
+    if (canHover) input.focus();
+  });
+
+  /* views */
+
+  /* the document has exactly one <h1>; it lives in whichever view is showing */
+  var pageH1 = doc.getElementById("pageh1");
+  var h1term = doc.getElementById("h1term");
+  var h1home = doc.getElementById("h1home");
+
+  function placeH1(where) {
+    if (where === "term") {
+      if (pageH1.parentNode !== h1term) h1term.appendChild(pageH1);
+    } else if (pageH1.parentNode !== h1home) {
+      h1home.insertBefore(pageH1, h1home.firstChild);
+    }
+  }
+
+  function setView(v) {
+    if (v === "plain") {
+      placeH1("plain");
+      body.classList.add("readmode");
+      try { localStorage.setItem("sy_view", "plain"); } catch (e) {}
+      window.scrollTo(0, 0);
+      var back = doc.getElementById("toTerm");
+      if (back) back.focus();
+    } else {
+      placeH1("term");
+      body.classList.remove("readmode");
+      try { localStorage.setItem("sy_view", "term"); } catch (e) {}
+      if (canHover && !booting) input.focus();
+      toBottom();
+    }
+  }
+
+  doc.getElementById("toPlain").addEventListener("click", function () { setView("plain"); });
+  doc.getElementById("toTerm").addEventListener("click", function () { setView("term"); });
+
+  doc.getElementById("skiplink").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (booting) skipBoot();
+    input.focus();
+  });
+
+  /* boot */
+
+  var BOOT = [
+    ["boot", "cleat session opened &middot; pty attached"],
+    ["boot", "[ <b>ok</b> ] shell integration (osc 133) armed &middot; marks nonce-signed"],
+    ["boot", "[ <b>ok</b> ] mounted /home/sid"],
+    ["boot", "[ <b>ok</b> ] indexed 3 projects, 3 archived"],
+    ["boot", "[ <b>ok</b> ] tether attached &middot; memory persists across sessions"],
+    ""
+  ];
+
+  var HINT_TEXT = "type 'help', press Tab, or click a command below.";
+  var HINT_HTML = 'type <span class="tk">help</span>, press <span class="tk">Tab</span>, or click a command below.';
+
+  var booting = true;
+  var bootTimer = null;
+  var bootIdx = 0;
+
+  function renderBootFinal() {
+    var i, w = C.welcome();
+    for (i = 0; i < BOOT.length; i++) out.appendChild(makeLine(BOOT[i]));
+    for (i = 0; i < w.length; i++) out.appendChild(makeLine(w[i]));
+    out.appendChild(makeLine(["ok", HINT_HTML]));
+    out.appendChild(makeLine(""));
+  }
+
+  function endBoot() {
+    booting = false;
+    if (bootTimer) { clearTimeout(bootTimer); bootTimer = null; }
+    promptrow.classList.remove("pending");
+    setState("idle", false);
+    stExit.textContent = "exit 0";
+    toBottom();
+    doc.removeEventListener("keydown", skipKey, true);
+    doc.removeEventListener("pointerdown", skipPointer, true);
+    if (canHover && !body.classList.contains("readmode")) input.focus();
+  }
+
+  function skipBoot() {
+    if (!booting) return;
+    booting = false;
+    if (bootTimer) { clearTimeout(bootTimer); bootTimer = null; }
+    out.innerHTML = "";
+    renderBootFinal();
+    endBoot();
+  }
+
+  function skipKey(e) {
+    if (!booting) return;
+    if (e.key === "Tab" || e.key === "Shift" || e.key === "Control" || e.key === "Alt" || e.key === "Meta") return;
+    skipBoot();
+  }
+  function skipPointer() { if (booting) skipBoot(); }
+
+  function typeHint() {
+    var d = doc.createElement("div");
+    d.className = "ln ok";
+    out.appendChild(d);
+    var i = 0;
+    (function step() {
+      if (!booting) return;
+      i++;
+      d.textContent = HINT_TEXT.slice(0, i);
+      toBottom();
+      if (i < HINT_TEXT.length) {
+        bootTimer = setTimeout(step, 11);
+      } else {
+        d.innerHTML = HINT_HTML;
+        out.appendChild(makeLine(""));
+        endBoot();
+      }
+    })();
+  }
+
+  function bootStep() {
+    if (!booting) return;
+    if (bootIdx < BOOT.length) {
+      out.appendChild(makeLine(BOOT[bootIdx++]));
+      toBottom();
+      bootTimer = setTimeout(bootStep, 70);
+      return;
+    }
+    var w = C.welcome();
+    for (var i = 0; i < w.length; i++) out.appendChild(makeLine(w[i]));
+    toBottom();
+    bootTimer = setTimeout(typeHint, 110);
+  }
+
+  /* start */
+
+  (function start() {
+    try {
+      if (localStorage.getItem("sy_theme") === "amber") body.classList.add("amber");
+    } catch (e) {}
+
+    var wantPlain = false;
+    try { if (localStorage.getItem("sy_view") === "plain") wantPlain = true; } catch (e) {}
+    var h = String(location.hash || "").toLowerCase();
+    var q = String(location.search || "").toLowerCase();
+    if (h.indexOf("plain") > -1 || q.indexOf("plain") > -1) wantPlain = true;
+    if (h.indexOf("term") > -1 || q.indexOf("term") > -1) wantPlain = false;
+    if (wantPlain) body.classList.add("readmode");
+    placeH1(wantPlain ? "plain" : "term");
+
+    syncCursor();
+
+    if (reduced) {
+      renderBootFinal();
+      endBoot();
+      return;
+    }
+
+    doc.addEventListener("keydown", skipKey, true);
+    doc.addEventListener("pointerdown", skipPointer, true);
+    setState("booting", true);
+    bootTimer = setTimeout(bootStep, 80);
+  })();
+
+})();
+</script>
+
+</body>
+</html>

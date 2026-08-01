@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siddharth Yellur</title>
+<meta name="description" content="Siddharth Yellur — engineer. Developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer; and Black Diamond Brawl, a downhill snowboarding combat racer.">
+<style>
+/* ============================================================
+   SIDDHARTH YELLUR — 12 COLUMNS, BLACK, WHITE, SIGNAL RED
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --paper: #ffffff;
+  --ink:   #000000;
+  --red:   #ff3b00;
+  --rule:  #d6d6d6;
+
+  --max: 1440px;
+  --pad: clamp(16px, 3.4vw, 56px);
+  --gut: clamp(10px, 1.5vw, 24px);
+
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* decisive steps — nothing in between */
+  --t-display: clamp(3.05rem, 15.1vw, 13.4rem);
+  --t-huge:    clamp(2.1rem, 7.2vw, 5.4rem);
+  --t-big:     clamp(1.45rem, 3.4vw, 2.6rem);
+  --t-lead:    clamp(1.05rem, 1.7vw, 1.5rem);
+  --t-body:    clamp(0.95rem, 1.02vw, 1.0625rem);
+  --t-micro:   0.6875rem;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--red); color: #fff; }
+
+/* ---------- the grid, made visible ---------- */
+
+.gridlines {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 150ms steps(2, end);
+}
+html.gridlines-off .gridlines { opacity: 0; }
+.gridlines__inner {
+  height: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gut);
+}
+.gridlines i { border-left: 1px solid var(--rule); }
+.gridlines i:last-child { border-right: 1px solid var(--rule); }
+
+/* ---------- container + column system ---------- */
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+.g {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gut);
+  align-items: start;
+}
+
+/* ---------- rules ---------- */
+
+.rule-heavy { height: 4px; background: var(--ink); }
+.rule-mid   { height: 2px; background: var(--ink); }
+
+/* ---------- micro type ---------- */
+
+.micro {
+  font-size: var(--t-micro);
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  font-weight: 700;
+}
+.micro--thin { font-weight: 400; letter-spacing: 0.19em; }
+
+/* ---------- links ---------- */
+
+a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--red);
+  transition: background-color 150ms steps(1, end), color 150ms steps(1, end);
+}
+a:hover { background: var(--red); border-bottom-color: var(--red); color: var(--ink); }
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.topbar { padding-top: clamp(14px, 2vw, 26px); }
+.topbar__id  { grid-column: 1 / span 5; }
+.topbar__nav { grid-column: 7 / span 6; }
+
+.topbar__nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 clamp(12px, 2vw, 30px);
+}
+.topbar__nav a { border-bottom: 2px solid transparent; padding-bottom: 1px; }
+.topbar__nav a:hover { border-bottom-color: var(--red); background: var(--red); }
+
+.masthead { margin-top: clamp(10px, 1.4vw, 18px); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+h1 {
+  margin: clamp(10px, 1.6vw, 22px) 0 0;
+  font-size: var(--t-display);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  font-weight: 700;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+h1 .l2 { display: block; }
+h1 .dot { color: var(--red); }
+
+.hero__sub {
+  margin: clamp(14px, 2vw, 26px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gut);
+  align-items: end;
+}
+.hero__role { grid-column: 1 / span 7; }
+.hero__seq  { grid-column: 9 / span 4; }
+
+/* --- the graphic gesture: built out of the page grid itself --- */
+
+.gesture {
+  margin: clamp(16px, 2.2vw, 30px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: repeat(3, clamp(22px, 4.4vw, 58px));
+  gap: var(--gut);
+}
+.gs-a { grid-column: 1 / span 6;  grid-row: 1 / span 3; background: var(--red); }
+.gs-b { grid-column: 7 / span 3;  grid-row: 1 / span 3; background: var(--ink);
+        clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+.gs-c { grid-column: 11 / span 2; grid-row: 1 / span 2; background: var(--red); }
+.gs-d { grid-column: 10 / span 3; grid-row: 3 / span 1; background: var(--ink); }
+
+/* --- lead paragraph + fact table --- */
+
+.intro { margin-top: clamp(22px, 3vw, 44px); }
+.intro__lead  { grid-column: 1 / span 7; }
+.intro__facts { grid-column: 9 / span 4; }
+
+.lead {
+  margin: 0;
+  font-size: var(--t-lead);
+  line-height: 1.34;
+  letter-spacing: -0.015em;
+  max-width: 30ch;
+}
+.lead + .lead { margin-top: 0.9em; }
+.lead b { font-weight: 700; }
+
+/* metadata tables */
+
+.tbl { border-top: 2px solid var(--ink); }
+.tbl__row {
+  display: grid;
+  grid-template-columns: 7.2rem minmax(0, 1fr);
+  gap: 0 var(--gut);
+  padding: 9px 0 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.tbl__k {
+  font-size: var(--t-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  font-weight: 700;
+  padding-top: 2px;
+}
+.tbl__v { font-size: 0.875rem; line-height: 1.4; }
+.tbl__v span { display: block; }
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+
+.sec { margin-top: clamp(56px, 8vw, 128px); }
+.sec__head { padding-top: 10px; align-items: baseline; }
+.sec__num {
+  grid-column: 1 / span 2;
+  font-size: var(--t-big);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--red);
+  line-height: 1;
+}
+h2 {
+  grid-column: 3 / span 6;
+  margin: 0;
+  font-size: var(--t-big);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.sec__note { grid-column: 9 / span 4; }
+.sec__note p { margin: 0; font-size: 0.8125rem; line-height: 1.4; max-width: 34ch; }
+
+/* ============================================================
+   PROJECT MODULES — the repetition is the design
+   ============================================================ */
+
+.proj {
+  border-top: 3px solid var(--ink);
+  margin-top: clamp(28px, 4vw, 54px);
+  padding-top: 14px;
+}
+
+.proj__idx {
+  grid-column: 1 / span 1;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--red);
+}
+.proj__main { grid-column: 2 / span 7; }
+.proj__meta { grid-column: 9 / span 4; }
+
+h3 {
+  margin: 0;
+  font-size: var(--t-huge);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  overflow-wrap: break-word;
+}
+.proj__kicker {
+  margin: 12px 0 0;
+  font-size: var(--t-lead);
+  line-height: 1.24;
+  letter-spacing: -0.02em;
+  max-width: 26ch;
+}
+.proj__abs {
+  margin: clamp(14px, 1.8vw, 22px) 0 0;
+  max-width: 62ch;
+}
+
+.proj__meta .tbl__row { grid-template-columns: 5.2rem minmax(0, 1fr); }
+
+/* command line block */
+.cmd {
+  margin: 14px 0 0;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  padding: 12px 12px 13px;
+  overflow-x: auto;
+  white-space: pre;
+}
+.cmd .p { color: var(--red); }
+
+/* figure block */
+.fig {
+  margin-top: clamp(18px, 2.4vw, 30px);
+  border-top: 2px solid var(--ink);
+  padding-top: 12px;
+}
+.fig__n {
+  display: block;
+  margin-top: 6px;
+  font-size: clamp(2.4rem, 5.2vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--red);
+  overflow-wrap: break-word;
+}
+.fig__n small { font-size: 0.42em; letter-spacing: -0.02em; }
+.fig__c { margin: 12px 0 0; font-size: 0.8125rem; line-height: 1.4; }
+.fig__json {
+  margin-top: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  line-height: 1.65;
+  padding: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.fig__json b { color: var(--red); font-weight: 400; }
+
+/* numbered feature rows */
+.proj__body { margin-top: clamp(24px, 3.2vw, 44px); }
+.feats {
+  grid-column: 2 / span 7;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+.proj__aside { grid-column: 9 / span 4; }
+
+.feats li {
+  display: grid;
+  grid-template-columns: 3.2rem 10.5rem minmax(0, 1fr);
+  gap: 0 var(--gut);
+  padding: 13px 0 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.feats__n {
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  padding-top: 3px;
+}
+.feats__t {
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding-top: 3px;
+}
+.feats p { margin: 0; font-size: 0.9375rem; line-height: 1.5; max-width: 58ch; }
+.feats code, .inline-code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+.proj__abs code { font-family: var(--mono); font-size: 0.86em; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+
+/* ============================================================
+   ARCHIVE
+   ============================================================ */
+
+.arch {
+  grid-column: 2 / span 10;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px solid var(--ink);
+}
+.arch li {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 15rem) minmax(0, 1fr) minmax(0, 9rem);
+  gap: 0 var(--gut);
+  align-items: baseline;
+  padding: 13px 0 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.arch__n { font-size: var(--t-micro); font-weight: 700; letter-spacing: 0.1em; color: var(--red); }
+.arch__t { font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; }
+.arch__d { font-size: 0.8125rem; }
+.arch__l { font-size: var(--t-micro); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+
+.contact { margin-top: clamp(24px, 3.4vw, 46px); }
+.contact__list {
+  grid-column: 2 / span 7;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 3px solid var(--ink);
+}
+.contact__side { grid-column: 9 / span 4; }
+.contact__list li { border-bottom: 1px solid var(--rule); }
+.contact__list a {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 0 var(--gut);
+  align-items: baseline;
+  padding: 16px 0 18px;
+  border-bottom: 0;
+  font-size: var(--t-big);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  overflow-wrap: break-word;
+}
+.contact__list a:hover { background: var(--red); }
+.contact__list .k {
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  align-self: start;
+  padding-top: 6px;
+}
+.contact__list a:hover .k { color: var(--ink); }
+.contact__list .h {
+  display: block;
+  font-size: var(--t-micro);
+  letter-spacing: 0.16em;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin-top: 9px;
+  word-break: break-all;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer { margin-top: clamp(60px, 9vw, 130px); padding-bottom: clamp(52px, 6vw, 90px); }
+.foot { padding-top: 12px; }
+.foot__a { grid-column: 1 / span 4; }
+.foot__b { grid-column: 5 / span 4; }
+.foot__c { grid-column: 9 / span 4; }
+.foot p {
+  margin: 0;
+  font-size: var(--t-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  line-height: 1.7;
+}
+.foot .lo { text-transform: none; letter-spacing: 0; font-size: 0.8125rem; line-height: 1.45; max-width: 34ch; }
+
+/* ============================================================
+   GRID TOGGLE
+   ============================================================ */
+
+.gridbtn {
+  position: fixed;
+  left: var(--pad);
+  bottom: 14px;
+  z-index: 3;
+  font-family: var(--sans);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  padding: 7px 10px 6px;
+  cursor: pointer;
+  transition: background-color 150ms steps(1, end), color 150ms steps(1, end);
+}
+.gridbtn:hover { background: var(--ink); color: var(--paper); }
+.gridbtn b { color: var(--red); font-weight: 700; }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: var(--t-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-bottom: 0;
+  z-index: 9;
+}
+.skip:focus { left: 0; }
+.skip:hover { background: var(--ink); color: #fff; }
+
+/* ============================================================
+   RESPONSIVE — the grid collapses, the alignment does not
+   ============================================================ */
+
+@media (max-width: 1080px) {
+  .feats li { grid-template-columns: 2.9rem 8.5rem minmax(0, 1fr); }
+  .arch li { grid-template-columns: 2.9rem minmax(0, 12rem) minmax(0, 1fr); }
+  .arch__l { grid-column: 2 / -1; margin-top: 6px; }
+}
+
+@media (max-width: 900px) {
+  .g { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .g > * { grid-column: 1 / -1 !important; }
+
+  .gridlines__inner { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .gridlines i:nth-child(n + 7) { display: none; }
+
+  .topbar__nav { margin-top: 10px; }
+
+  .hero__sub { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .hero__role { grid-column: 1 / -1; }
+  .hero__seq  { grid-column: 1 / -1; margin-top: 8px; }
+
+  .lead { max-width: 34ch; }
+  .intro__facts { margin-top: 26px; }
+
+  .sec__head { row-gap: 4px; }
+  .sec__note { margin-top: 12px; }
+
+  .proj__idx { margin-bottom: 2px; }
+  .proj__meta { margin-top: 26px; }
+  .proj__aside { margin-top: 26px; }
+
+  .feats li { grid-template-columns: 2.6rem minmax(0, 1fr); }
+  .feats__n { grid-column: 1; grid-row: 1; }
+  .feats__t { grid-column: 2; grid-row: 1; }
+  .feats p { grid-column: 2; grid-row: 2; margin-top: 6px; }
+
+  .arch li { grid-template-columns: 2.6rem minmax(0, 1fr); row-gap: 4px; }
+  .arch__t, .arch__d { grid-column: 2; }
+  .arch__l { grid-column: 2; margin-top: 2px; }
+
+  .contact__list a { grid-template-columns: 2.6rem minmax(0, 1fr); }
+
+  .foot__b, .foot__c { margin-top: 18px; }
+
+  .gesture { grid-template-rows: repeat(3, clamp(20px, 5vw, 44px)); }
+}
+
+@media (max-width: 460px) {
+  .tbl__row { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+  .proj__meta .tbl__row { grid-template-columns: minmax(0, 1fr); }
+  .gridlines__inner { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gridlines i:nth-child(n + 5) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media print {
+  .gridlines, .gridbtn { display: none; }
+  a { border-bottom: 0; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="gridlines" aria-hidden="true">
+  <div class="gridlines__inner">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header>
+    <div class="g topbar">
+      <div class="topbar__id micro">Siddharth Yellur &nbsp;/&nbsp; Engineer</div>
+      <nav class="topbar__nav micro" aria-label="Primary">
+        <ul>
+          <li><a href="#work">01 Work</a></li>
+          <li><a href="#archive">02 Archive</a></li>
+          <li><a href="#contact">03 Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="rule-heavy masthead"></div>
+
+    <h1>Siddharth<span class="l2">Yellur<span class="dot">.</span></span></h1>
+
+    <div class="hero__sub">
+      <div class="hero__role micro">Developer tooling for AI agents &nbsp;·&nbsp; Systems &nbsp;·&nbsp; Games</div>
+      <div class="hero__seq micro micro--thin">Index 01&ndash;03 &nbsp;·&nbsp; Twelve columns</div>
+    </div>
+
+    <div class="gesture" aria-hidden="true">
+      <span class="gs-a"></span>
+      <span class="gs-b"></span>
+      <span class="gs-c"></span>
+      <span class="gs-d"></span>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <div class="g intro">
+      <div class="intro__lead">
+        <p class="lead">I build <b>developer tooling for AI agents</b> &mdash; memory that survives the end of a session, and a terminal that reports what actually happened.</p>
+        <p class="lead">Lately, also a downhill snowboarding combat racer that draws every pixel of its own art at boot.</p>
+      </div>
+      <div class="intro__facts">
+        <div class="tbl">
+          <div class="tbl__row">
+            <div class="tbl__k">Focus</div>
+            <div class="tbl__v">Agent infrastructure, protocol work, local&#8209;first systems</div>
+          </div>
+          <div class="tbl__row">
+            <div class="tbl__k">Stack</div>
+            <div class="tbl__v">Python &nbsp;·&nbsp; TypeScript &nbsp;·&nbsp; MCP &nbsp;·&nbsp; SQLite &nbsp;·&nbsp; PTY internals</div>
+          </div>
+          <div class="tbl__row">
+            <div class="tbl__k">Education</div>
+            <div class="tbl__v">
+              <span>M.S. Computer Science &mdash; University of Florida</span>
+              <span>B.E. Computer Science &mdash; Anna University</span>
+            </div>
+          </div>
+          <div class="tbl__row">
+            <div class="tbl__k">Contact</div>
+            <div class="tbl__v"><a href="https://github.com/sidyellur">GitHub</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 01 SELECTED WORK ================= -->
+
+    <section class="sec" id="work" aria-labelledby="work-h">
+      <div class="rule-heavy"></div>
+      <div class="g sec__head">
+        <div class="sec__num">01</div>
+        <h2 id="work-h">Selected work</h2>
+        <div class="sec__note">
+          <p>Three projects, built and shipped solo. Source is public for all three.</p>
+        </div>
+      </div>
+
+      <!-- ---- 01 tether ---- -->
+      <article class="proj">
+        <div class="g">
+          <div class="proj__idx">01</div>
+          <div class="proj__main">
+            <h3>tether</h3>
+            <p class="proj__kicker">A shared memory layer for personal agents.</p>
+            <p class="proj__abs">An MCP server backed by a single local SQLite file. Any MCP&#8209;compatible agent can <code>remember</code>, <code>recall</code>, <code>link</code> and <code>forget</code> durable notes &mdash; facts about you, your projects, your preferences &mdash; so context follows you between sessions instead of dying with each one.</p>
+          </div>
+          <div class="proj__meta">
+            <div class="tbl">
+              <div class="tbl__row">
+                <div class="tbl__k">Tech</div>
+                <div class="tbl__v">Python &nbsp;·&nbsp; MCP &nbsp;·&nbsp; SQLite / FTS5 &nbsp;·&nbsp; libSQL / Turso &nbsp;·&nbsp; local static embeddings</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Status</div>
+                <div class="tbl__v">v0.5.1 &nbsp;·&nbsp; PyPI: tether&#8209;memory</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Source</div>
+                <div class="tbl__v"><a href="https://github.com/sidyellur/tether">github.com/sidyellur/tether</a></div>
+              </div>
+            </div>
+            <div class="cmd"><span class="p">$</span> claude mcp add tether -- uvx tether-memory</div>
+          </div>
+        </div>
+
+        <div class="g proj__body">
+          <ol class="feats">
+            <li>
+              <span class="feats__n">.01</span>
+              <span class="feats__t">Local by default</span>
+              <p>Runs local&#8209;only with zero configuration. Point it at a hosted libSQL/Turso primary and the same file becomes an embedded replica, syncing memory across every device in near&#8209;real&#8209;time.</p>
+            </li>
+            <li>
+              <span class="feats__n">.02</span>
+              <span class="feats__t">Hybrid recall</span>
+              <p>Keyword results from FTS5 are fused with semantic vector results, so &ldquo;automobile&rdquo; finds the note about your &ldquo;car&rdquo;. The embedding model is small, static and runs locally &mdash; no network, no API key.</p>
+            </li>
+            <li>
+              <span class="feats__n">.03</span>
+              <span class="feats__t">Associative graph</span>
+              <p>Recall follows an associative usage graph to related memories. Edges come from three deterministic local sources: semantic nearest&#8209;neighbours, explicit <code>link()</code> calls, and <em>hebbian</em> edges &mdash; memories recalled together get wired together over time. Every hit carries a <code>via</code> receipt explaining why it surfaced.</p>
+            </li>
+            <li>
+              <span class="feats__n">.04</span>
+              <span class="feats__t">Seed&#8209;dominant</span>
+              <p>Top direct matches are locked in place and associations only fill the slots below them, so turning association on never demotes a good hit.</p>
+            </li>
+            <li>
+              <span class="feats__n">.05</span>
+              <span class="feats__t">Self&#8209;organizing</span>
+              <p>A hub&#8209;curated boot index surfaces load&#8209;bearing memories &mdash; the ones with the highest behavioral degree &mdash; alongside recent ones. An opt&#8209;in sweep soft&#8209;archives memories that are both old and behaviorally isolated. Nothing is ever hard&#8209;deleted.</p>
+            </li>
+            <li>
+              <span class="feats__n">.06</span>
+              <span class="feats__t">Crystallization</span>
+              <p>Optional: it detects dense clusters of related memories and offers them up to be <em>named</em> as principles. tether finds the structure; the agent supplies the words.</p>
+            </li>
+            <li>
+              <span class="feats__n">.07</span>
+              <span class="feats__t">Degrades cleanly</span>
+              <p>Every feature falls back to plain keyword recall. It is deliberately a convenience layer &mdash; more useful when present, never breaking the agent when degraded.</p>
+            </li>
+          </ol>
+          <div class="proj__aside">
+            <div class="fig">
+              <div class="micro">Measured</div>
+              <span class="fig__n">2.0<small>KB</small></span>
+              <p class="fig__c">Recall response size, down from 66.9KB, by returning query&#8209;centered excerpts instead of full bodies.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- 02 cleat ---- -->
+      <article class="proj">
+        <div class="g">
+          <div class="proj__idx">02</div>
+          <div class="proj__main">
+            <h3>cleat</h3>
+            <p class="proj__kicker">A headless terminal layer for AI agents.</p>
+            <p class="proj__abs">Runs a <em>persistent</em> shell session behind a PTY, parses its byte stream for OSC&nbsp;133 shell&#8209;integration marks, and exposes it to an agent over MCP as structured results &mdash; <code>stdout</code>, a real <code>exit_code</code>, files touched &mdash; instead of raw escape&#8209;code soup.</p>
+          </div>
+          <div class="proj__meta">
+            <div class="tbl">
+              <div class="tbl__row">
+                <div class="tbl__k">Tech</div>
+                <div class="tbl__v">Python &nbsp;·&nbsp; MCP &nbsp;·&nbsp; PTY / termios &nbsp;·&nbsp; OSC 133 &nbsp;·&nbsp; pyte</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Status</div>
+                <div class="tbl__v">PyPI: cleat</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Source</div>
+                <div class="tbl__v"><a href="https://github.com/sidyellur/cleat">github.com/sidyellur/cleat</a></div>
+              </div>
+            </div>
+            <div class="cmd"><span class="p">$</span> claude mcp add cleat -- uvx cleat</div>
+          </div>
+        </div>
+
+        <div class="g proj__body">
+          <ol class="feats">
+            <li>
+              <span class="feats__n">.01</span>
+              <span class="feats__t">The exit code problem</span>
+              <p>The core insight: when you scrape a PTY, the exit code isn&rsquo;t in the stream at all. The shell knows <code>$?</code> but never prints it. cleat injects OSC&nbsp;133 marks into the shells it spawns and parses them back out.</p>
+            </li>
+            <li>
+              <span class="feats__n">.02</span>
+              <span class="feats__t">Persistent session</span>
+              <p><code>cd</code>, <code>export</code>, activated venvs and <code>ssh</code> sessions all carry across calls &mdash; something a fresh subprocess per command cannot do.</p>
+            </li>
+            <li>
+              <span class="feats__n">.03</span>
+              <span class="feats__t">Real state</span>
+              <p>Every response carries a <code>state</code> derived from termios flags and the foreground process group &mdash; facts only the process holding the PTY can read, never guessed from output timing. States: <code>idle</code>, <code>running</code>, <code>awaiting&#8209;input</code>, <code>password</code>, <code>tui</code>.</p>
+            </li>
+            <li>
+              <span class="feats__n">.04</span>
+              <span class="feats__t">Consent at the prompt</span>
+              <p>It refuses to type into a <code>password</code> prompt without explicit human consent.</p>
+            </li>
+            <li>
+              <span class="feats__n">.05</span>
+              <span class="feats__t">Nonce&#8209;authed marks</span>
+              <p>A command can print a fake OSC&nbsp;133 sequence to its own stdout to forge a clean exit code. Each session gets a fresh <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat injects; a mark with a missing or wrong <code>k=</code> is ignored outright and surfaced as <code>spoofed_marks</code>, so the agent can tell when a program lied about how it finished.</p>
+            </li>
+            <li>
+              <span class="feats__n">.06</span>
+              <span class="feats__t">Terminal&#8209;agnostic</span>
+              <p>Not a terminal emulator, and not a modification to yours.</p>
+            </li>
+          </ol>
+          <div class="proj__aside">
+            <div class="fig">
+              <div class="micro">Structured result</div>
+              <div class="fig__json">{
+  <b>"stdout"</b>: "&hellip;",
+  <b>"exit_code"</b>: 0,
+  <b>"completed"</b>: true,
+  <b>"state"</b>: "idle"
+}</div>
+              <p class="fig__c">What the agent receives, in place of escape&#8209;code soup.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- 03 Black Diamond Brawl ---- -->
+      <article class="proj">
+        <div class="g">
+          <div class="proj__idx">03</div>
+          <div class="proj__main">
+            <h3>Black Diamond Brawl</h3>
+            <p class="proj__kicker">A downhill snowboarding combat racer.</p>
+            <p class="proj__abs">A Road Rash&#8209;style downhill snowboarding combat racer, built solo as a learning project. Each run is a single race down a fixed&#8209;length, seeded, procedurally generated slope, ending at a finish line.</p>
+          </div>
+          <div class="proj__meta">
+            <div class="tbl">
+              <div class="tbl__row">
+                <div class="tbl__k">Tech</div>
+                <div class="tbl__v">Phaser 3 &nbsp;·&nbsp; TypeScript &nbsp;·&nbsp; Vite &nbsp;·&nbsp; segment&#8209;based pseudo&#8209;3D renderer</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Status</div>
+                <div class="tbl__v">v1 complete, 9 phases &nbsp;·&nbsp; v2 visual overhaul complete</div>
+              </div>
+              <div class="tbl__row">
+                <div class="tbl__k">Source</div>
+                <div class="tbl__v"><a href="https://github.com/sidyellur/black-diamond-brawl">github.com/sidyellur/black&#8209;diamond&#8209;brawl</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="g proj__body">
+          <ol class="feats">
+            <li>
+              <span class="feats__n">.01</span>
+              <span class="feats__t">The run</span>
+              <p>Dodge trees, rocks and moguls. Catch trick air off moguls and hill crests &mdash; crests launch you automatically at speed. Shove or ski&#8209;pole your way past AI rivals racing the same course.</p>
+            </li>
+            <li>
+              <span class="feats__n">.02</span>
+              <span class="feats__t">Scoring</span>
+              <p>Score comes from finishing fast, landing hits on rivals, near&#8209;misses, and tricks. Wipe out hard before the line and the run ends early.</p>
+            </li>
+            <li>
+              <span class="feats__n">.03</span>
+              <span class="feats__t">Pseudo&#8209;3D renderer</span>
+              <p>A classic segment&#8209;based pseudo&#8209;3D renderer gives the behind&#8209;the&#8209;rider, road&#8209;rushing&#8209;at&#8209;you look &mdash; the OutRun and Road Rash lineage &mdash; with pixel art sprites.</p>
+            </li>
+            <li>
+              <span class="feats__n">.04</span>
+              <span class="feats__t">Art without assets</span>
+              <p>All art and atmosphere is generated in code at boot; there are no image files in the repository at all. Colour is governed by a palette module and enforced by a build gate that fails if any gameplay&#8209;relevant edge drops below &Delta;L* 12, or any sprite outline below &Delta;L* 25 against the snow behind it.</p>
+            </li>
+            <li>
+              <span class="feats__n">.05</span>
+              <span class="feats__t">Verified headless</span>
+              <p>Ships with a headless seeded combat simulation and a solvability model, so balance is verified without a browser.</p>
+            </li>
+          </ol>
+          <div class="proj__aside">
+            <div class="fig">
+              <div class="micro">Asset count</div>
+              <span class="fig__n">0</span>
+              <p class="fig__c">Image files in the repository. Every sprite, gradient and weather effect is drawn in code at boot.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================= 02 ARCHIVE ================= -->
+
+    <section class="sec" id="archive" aria-labelledby="arch-h">
+      <div class="rule-heavy"></div>
+      <div class="g sec__head">
+        <div class="sec__num">02</div>
+        <h2 id="arch-h">Archive</h2>
+        <div class="sec__note">
+          <p>Earlier and smaller. Kept for the record.</p>
+        </div>
+      </div>
+
+      <div class="g proj__body">
+        <ol class="arch">
+          <li>
+            <span class="arch__n">.01</span>
+            <span class="arch__t">Vue Weather App</span>
+            <span class="arch__d">Vue.js front end against the OpenWeather API.</span>
+            <span class="arch__l"><a href="https://github.com/sidyellur/Vue-Weather-App">Source</a></span>
+          </li>
+          <li>
+            <span class="arch__n">.02</span>
+            <span class="arch__t">Red&#8209;Black Tree / Min&#8209;Heap</span>
+            <span class="arch__d">City builder in Java. Academic work on balanced trees and priority queues.</span>
+            <span class="arch__l"><a href="https://github.com/sidyellur/RBT-Min-Heap-">Source</a></span>
+          </li>
+          <li>
+            <span class="arch__n">.03</span>
+            <span class="arch__t">TicTacToe</span>
+            <span class="arch__d">React.</span>
+            <span class="arch__l"><a href="https://github.com/sidyellur/TicTacToe">Source</a></span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= 03 CONTACT ================= -->
+
+    <section class="sec" id="contact" aria-labelledby="con-h">
+      <div class="rule-heavy"></div>
+      <div class="g sec__head">
+        <div class="sec__num">03</div>
+        <h2 id="con-h">Contact</h2>
+        <div class="sec__note">
+          <p>Two places. Both current.</p>
+        </div>
+      </div>
+
+      <div class="g contact">
+        <ul class="contact__list">
+          <li>
+            <a href="https://github.com/sidyellur">
+              <span class="k">.01</span>
+              <span class="u">GitHub<span class="h">github.com/sidyellur</span></span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">
+              <span class="k">.02</span>
+              <span class="u">LinkedIn<span class="h">linkedin.com/in/siddharth&#8209;yellur&#8209;682351142</span></span>
+            </a>
+          </li>
+        </ul>
+        <div class="contact__side">
+          <div class="tbl">
+            <div class="tbl__row">
+              <div class="tbl__k">Install</div>
+              <div class="tbl__v">Both MCP servers install in a single line from PyPI, with <span class="inline-code">uvx</span>.</div>
+            </div>
+            <div class="tbl__row">
+              <div class="tbl__k">Degrees</div>
+              <div class="tbl__v">
+                <span>M.S. CS &mdash; University of Florida</span>
+                <span>B.E. CS &mdash; Anna University</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="rule-mid"></div>
+    <div class="g foot">
+      <div class="foot__a"><p>Siddharth Yellur</p></div>
+      <div class="foot__b"><p><a href="https://github.com/sidyellur">GitHub</a> &nbsp;/&nbsp; <a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></p></div>
+      <div class="foot__c">
+        <p class="lo">Set in the system grotesque, on twelve columns. No image files and no external requests &mdash; every mark on this page is type, rule or CSS.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<button class="gridbtn" id="gridbtn" type="button" aria-pressed="true">Grid <b id="gridstate">On</b></button>
+
+<script>
+(function () {
+  var btn = document.getElementById('gridbtn');
+  var label = document.getElementById('gridstate');
+  var root = document.documentElement;
+
+  function set(on) {
+    root.classList.toggle('gridlines-off', !on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    label.textContent = on ? 'On' : 'Off';
+  }
+
+  btn.addEventListener('click', function () {
+    set(root.classList.contains('gridlines-off'));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'g' && e.key !== 'G') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    set(root.classList.contains('gridlines-off'));
+  });
+})();
+</script>
+
+</body>
+</html>

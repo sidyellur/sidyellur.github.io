@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eight candidate redesigns — Siddharth Yellur</title>
+<meta name="description" content="Eight complete candidate designs for the sidyellur.github.io redesign. Open each, then pick one.">
+<style>
+  :root{
+    --bg:#0c0d10; --surface:#141519; --line:#25272e;
+    --fg:#e9e9e7; --dim:#9a9ba2; --faint:#6d6f77;
+    --accent:#e9a05c; --wild:#7fd4c1;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
+    line-height:1.6;overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:clamp(2.5rem,7vw,5.5rem) clamp(1.15rem,4vw,2.5rem) 5rem}
+  header{border-bottom:1px solid var(--line);padding-bottom:2.25rem;margin-bottom:3rem}
+  .eyebrow{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 1rem
+  }
+  h1{
+    font-size:clamp(1.9rem,5.2vw,3.1rem);line-height:1.08;letter-spacing:-.025em;
+    font-weight:600;margin:0 0 1.1rem;max-width:20ch
+  }
+  .lede{color:var(--dim);font-size:clamp(1rem,2.2vw,1.1rem);max-width:62ch;margin:0}
+  .lede code{font-family:var(--mono);font-size:.85em;color:var(--fg);
+    background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.1em .4em}
+
+  h2{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--faint);font-weight:500;margin:3.5rem 0 1.5rem;
+    display:flex;align-items:center;gap:.9rem
+  }
+  h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+
+  .card{
+    background:var(--surface);padding:1.6rem 1.5rem 1.5rem;display:flex;flex-direction:column;
+    text-decoration:none;color:inherit;position:relative;
+    transition:background .16s ease;
+  }
+  .card:hover,.card:focus-visible{background:#1a1c21}
+  .card:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+  .num{
+    font-family:var(--mono);font-size:.72rem;color:var(--faint);letter-spacing:.1em;
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem
+  }
+  .tag{
+    font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+    border:1px solid var(--line);border-radius:99px;padding:.2rem .55rem;color:var(--dim)
+  }
+  .card.wild .tag{color:var(--wild);border-color:rgba(127,212,193,.35)}
+  .card h3{
+    font-size:1.3rem;letter-spacing:-.015em;font-weight:600;margin:0 0 .55rem;
+  }
+  .card.wild h3{color:var(--wild)}
+  .card p{color:var(--dim);font-size:.92rem;margin:0 0 1.1rem;flex:1}
+  .meta{
+    font-family:var(--mono);font-size:.68rem;color:var(--faint);
+    display:flex;flex-wrap:wrap;gap:.35rem .9rem;border-top:1px solid var(--line);padding-top:.85rem
+  }
+  .open{color:var(--accent)}
+  .card.wild .open{color:var(--wild)}
+
+  .note{
+    margin-top:3.5rem;border:1px solid var(--line);border-left:2px solid var(--accent);
+    border-radius:0 8px 8px 0;background:var(--surface);padding:1.35rem 1.5rem
+  }
+  .note h3{margin:0 0 .6rem;font-size:.95rem;font-weight:600}
+  .note p{margin:0 0 .7rem;color:var(--dim);font-size:.9rem}
+  .note p:last-child{margin-bottom:0}
+  .note ul{margin:.4rem 0 .7rem;padding-left:1.1rem;color:var(--dim);font-size:.9rem}
+  .note li{margin-bottom:.3rem}
+  code{font-family:var(--mono);font-size:.85em}
+  a{color:var(--accent)}
+  footer{margin-top:4rem;padding-top:1.75rem;border-top:1px solid var(--line);
+    color:var(--faint);font-size:.82rem;font-family:var(--mono)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Redesign · 8 candidates</p>
+  <h1>Pick one.</h1>
+  <p class="lede">
+    Eight complete, independently built candidate sites. Every one is a single self-contained
+    <code>index.html</code> with zero external requests, no image files and system fonts only —
+    so whichever you choose ships as-is. All eight carry identical content, so you're comparing
+    design, not copy.
+  </p>
+</header>
+
+<h2>Considered directions</h2>
+<div class="grid">
+
+  <a class="card" href="01-midnight-minimal.html">
+    <div class="num"><span>01</span><span class="tag">Considered</span></div>
+    <h3>Midnight Minimal</h3>
+    <p>Near-black, warm off-white, a single amber accent used on almost nothing. Hairline rules
+       instead of cards, no shadows, huge vertical air. Typography carries the whole page. The
+       restrained default a good engineer builds for themselves.</p>
+    <div class="meta"><span>25 KB</span><span>dark only</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card" href="02-editorial.html">
+    <div class="num"><span>02</span><span class="tag">Considered</span></div>
+    <h3>Editorial</h3>
+    <p>Paper white, Georgia throughout, oxblood accent. Each project is set as a feature article —
+       drop cap, margin column of metadata, pull-quotes on the striking facts. Reads like something
+       from a magazine rather than a portfolio template.</p>
+    <div class="meta"><span>35 KB</span><span>light only</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card" href="03-swiss-grid.html">
+    <div class="num"><span>03</span><span class="tag">Considered</span></div>
+    <h3>Swiss Grid</h3>
+    <p>White, black, signal red. A real 12-column overlay you can toggle on with the <code>g</code>
+       key, oversized display type, and the hero artwork built from the page grid itself. Projects
+       repeat as one strict module. Designed with a ruler.</p>
+    <div class="meta"><span>36 KB</span><span>light only</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card" href="04-systems.html">
+    <div class="num"><span>04</span><span class="tag">Considered</span></div>
+    <h3>Systems</h3>
+    <p>The Linear/Vercel-docs register. Genuine light <em>and</em> dark with a toggle that overrides
+       the OS and persists, copy-to-clipboard install commands with a triple fallback, hand-drawn SVG
+       icons. The most conventionally shippable of the eight.</p>
+    <div class="meta"><span>51 KB</span><span>light + dark</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card" href="05-warm-craft.html">
+    <div class="num"><span>05</span><span class="tag">Considered</span></div>
+    <h3>Warm Craft</h3>
+    <p>Cream paper built from three layers of CSS texture, sage and terracotta, hand-drawn wobbly
+       rules and a single-stroke motif per project. Slight rotations break the machine grid. Calm
+       and human — the quiet counterpoint to everything else here.</p>
+    <div class="meta"><span>29 KB</span><span>light only</span><span class="open">Open →</span></div>
+  </a>
+</div>
+
+<h2>Experimental</h2>
+<div class="grid">
+
+  <a class="card wild" href="06-the-session.html">
+    <div class="num"><span>06</span><span class="tag">Experimental</span></div>
+    <h3>The Session</h3>
+    <p>The site is a working shell. Boot sequence, real interpreter with 33 commands, tab completion,
+       history, genuine exit codes, <code>state: idle</code> in the status bar. Mirrors what
+       <strong>cleat</strong> does. With JS off it's a clean static reading page — that's the default,
+       not a fallback.</p>
+    <div class="meta"><span>69 KB</span><span>interactive</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card wild" href="07-the-graph.html">
+    <div class="num"><span>07</span><span class="tag">Experimental</span></div>
+    <h3>The Graph</h3>
+    <p>A 24-node force-directed memory graph you explore by following edges. Every panel opens with a
+       <code>via:</code> receipt naming the edge you arrived through. Hebbian edges start at
+       <em>zero</em> and only exist once you've browsed — you wire your own path. This is
+       <strong>tether</strong>'s recall, made literal.</p>
+    <div class="meta"><span>54 KB</span><span>canvas</span><span class="open">Open →</span></div>
+  </a>
+
+  <a class="card wild" href="08-the-run.html">
+    <div class="num"><span>08</span><span class="tag">Experimental</span></div>
+    <h3>The Run</h3>
+    <p>Scrolling rides a seeded procedurally generated snow slope — a real OutRun-style segment
+       renderer, 2,721 segments, 1,493 sprites placed by a mulberry32 PRNG, sections bound to gates
+       with trail ratings, finish line at the contact panel. Same technique <strong>Black Diamond
+       Brawl</strong> uses, and the same rule: every pixel generated in code.</p>
+    <div class="meta"><span>57 KB</span><span>canvas</span><span class="open">Open →</span></div>
+  </a>
+</div>
+
+<div class="note">
+  <h3>What changed in the content, and why</h3>
+  <p>Every candidate drops the stale material and features the work you asked for. Details are in
+     <a href="CONTENT-BRIEF.md">CONTENT-BRIEF.md</a>, the single source of truth all eight were built from.</p>
+  <ul>
+    <li><strong>Featured:</strong> tether, cleat and Black Diamond Brawl, written with their real
+        technical substance rather than one-liners. Earlier work is a small secondary list.</li>
+    <li><strong>Removed:</strong> the "grad student seeking roles starting 2021" framing, the phone
+        number, the .edu address, the skill percentage bars, the quarantine counter, and the 2020
+        resume PDF link. The new bio is role-agnostic so it won't go stale again.</li>
+    <li><strong>Left out:</strong> <code>cue</code> — that repo is private, and it's a concerts app
+        rather than the AI tooling in scope.</li>
+    <li><strong>Contact:</strong> GitHub and LinkedIn only. Adding an email back is a one-line change.</li>
+  </ul>
+  <p><strong>Unrelated but worth doing:</strong> the old <code>index.html</code> had a live Google Maps
+     API key committed in plaintext. Every candidate drops it, but it has been public in the repo's
+     history for years — rotate it in the Google Cloud console regardless of which design wins.</p>
+</div>
+
+<div class="note">
+  <h3>Once you've picked</h3>
+  <p>Say the number. The winner gets promoted to the repo root as <code>index.html</code>, the
+     abandoned template assets (<code>css/</code>, <code>js/</code>, <code>fonts/</code>,
+     <code>scss/</code>, <code>blog.html</code>, <code>prepros-6.config</code>) get deleted, and this
+     <code>designs/</code> directory comes out. Mixing pieces across candidates is fine too.</p>
+</div>
+
+<footer>8 candidates · self-contained · no build step · no dependencies</footer>
+
+</div>
+</body>
+</html>

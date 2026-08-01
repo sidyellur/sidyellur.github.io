@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="run">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siddharth Yellur</title>
+<meta name="description" content="Siddharth Yellur — engineer building developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer; and Black Diamond Brawl, a downhill snowboarding combat racer.">
+<meta name="color-scheme" content="dark light">
+<style>
+/* ============================================================
+   The Run — every visual on this page is generated in code.
+   No image files. No external requests. One file.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --page:        #0a1220;
+  --panel:       rgba(9, 16, 27, 0.965);
+  --panel-solid: #0b1320;
+  --panel-edge:  rgba(139, 178, 224, 0.24);
+  --text:        #e9f0f8;
+  --head:        #ffffff;
+  --muted:       #a7bad0;
+  --faint:       #8397ad;
+  --accent:      #ff7038;
+  --ice:         #7cc0ff;
+  --rule:        rgba(139, 178, 224, 0.18);
+  --chip:        rgba(124, 192, 255, 0.10);
+  --code-bg:     #060c15;
+  --shadow:      0 30px 70px -26px rgba(2, 8, 18, 0.9);
+  --bar:         rgba(7, 13, 22, 0.88);
+}
+
+html[data-mode="calm"] {
+  --page:        #f5f8fb;
+  --panel:       #ffffff;
+  --panel-solid: #ffffff;
+  --panel-edge:  #dde5ee;
+  --text:        #1b2733;
+  --head:        #0c1620;
+  --muted:       #4c5b6b;
+  --faint:       #66757f;
+  --accent:      #bd3f11;
+  --ice:         #0f5aa6;
+  --rule:        #e2e9f0;
+  --chip:        #eef3f8;
+  --code-bg:     #f0f4f8;
+  --shadow:      none;
+  --bar:         rgba(255, 255, 255, 0.94);
+}
+
+html { overflow-x: hidden; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- the slope ------------------------------------------------ */
+#slope {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+html[data-mode="calm"] #slope { display: none; }
+
+.shell { position: relative; z-index: 2; }
+
+a { color: inherit; }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 60;
+  background: var(--accent); color: #180a04; font-weight: 700;
+  padding: 10px 16px; border-radius: 0 0 8px 0; text-decoration: none;
+}
+.skip:focus { left: 0; }
+
+/* --- top bar -------------------------------------------------- */
+.bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 14px;
+  height: 56px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--rule);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.mark {
+  font-weight: 800; font-size: 14px; letter-spacing: .03em;
+  color: var(--head); text-decoration: none; white-space: nowrap;
+  display: flex; align-items: center; gap: 8px; flex: none;
+}
+.mark .dia { color: var(--accent); font-size: 10px; }
+.bar nav {
+  flex: 1 1 auto; min-width: 0;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.bar nav::-webkit-scrollbar { display: none; }
+.bar ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; gap: 2px; white-space: nowrap;
+}
+.bar nav a {
+  display: inline-block; padding: 6px 10px; border-radius: 7px;
+  font-size: 13px; color: var(--muted);
+  text-decoration: none; font-weight: 600;
+}
+.bar nav a:hover { color: var(--head); background: var(--chip); }
+
+.calm-btn {
+  flex: none;
+  font: 600 11.5px/1 var(--mono);
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text); background: var(--chip);
+  border: 1px solid var(--panel-edge); border-radius: 999px;
+  padding: 9px 13px; cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+}
+.calm-btn:hover { border-color: var(--accent); color: var(--head); }
+.calm-btn .led {
+  width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: var(--accent); box-shadow: 0 0 8px var(--accent);
+}
+html[data-mode="calm"] .calm-btn .led { background: #3f9a5e; box-shadow: none; }
+
+/* --- layout --------------------------------------------------- */
+.stop {
+  position: relative;
+  min-height: 94vh;
+  display: flex; align-items: center;
+  padding: 13vh 20px;
+}
+.stop.hero { min-height: 100vh; padding-top: 84px; }
+.inner { width: 100%; max-width: 1160px; margin: 0 auto; }
+.push { display: flex; }
+.push.right { justify-content: flex-end; }
+
+/* --- panels --------------------------------------------------- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 16px;
+  padding: clamp(22px, 3.4vw, 40px);
+  box-shadow: var(--shadow);
+  max-width: 68ch;
+  width: 100%;
+}
+.panel.wide { max-width: 78ch; }
+
+/* --- trail markers -------------------------------------------- */
+.marker {
+  display: flex; align-items: baseline; gap: 10px;
+  font: 600 11px/1.5 var(--mono);
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 12px;
+  flex-wrap: wrap;
+}
+.marker .sym { font-size: 13px; letter-spacing: .1em; }
+.sym.green { color: #45b167; }
+.sym.blue  { color: #58a0e8; }
+.sym.black { color: var(--head); }
+html[data-mode="calm"] .sym.black { color: #10161d; }
+html[data-mode="calm"] .sym.blue { color: #1f66b8; }
+html[data-mode="calm"] .sym.green { color: #1f8446; }
+.marker .num { color: var(--accent); }
+
+h1 {
+  margin: 0 0 18px;
+  font-size: clamp(40px, 8.2vw, 82px);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  color: var(--head);
+}
+h2 {
+  margin: 0 0 4px;
+  font-size: clamp(28px, 4.4vw, 44px);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  font-weight: 800;
+  color: var(--head);
+}
+h3 {
+  margin: 30px 0 10px;
+  font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 700;
+  color: var(--ice);
+}
+.kicker {
+  margin: 0 0 20px;
+  font-size: 14.5px; color: var(--muted);
+  font-family: var(--mono);
+}
+.lede {
+  font-size: clamp(18px, 2.2vw, 20.5px);
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0 0 20px;
+}
+p { margin: 0 0 16px; max-width: 66ch; }
+p:last-child { margin-bottom: 0; }
+.muted { color: var(--muted); }
+em { font-style: italic; }
+
+/* --- lists ---------------------------------------------------- */
+ul.beats { list-style: none; margin: 0; padding: 0; }
+ul.beats > li {
+  position: relative;
+  padding: 14px 0 14px 26px;
+  border-top: 1px solid var(--rule);
+  max-width: 68ch;
+}
+ul.beats > li::before {
+  content: "";
+  position: absolute; left: 2px; top: 25px;
+  width: 8px; height: 8px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+ul.beats b { color: var(--head); font-weight: 700; }
+
+/* --- code / chips --------------------------------------------- */
+code, .mono { font-family: var(--mono); font-size: 0.9em; }
+p code, li code {
+  background: var(--chip); color: var(--ice);
+  padding: 1px 5px; border-radius: 4px;
+}
+pre {
+  margin: 0 0 18px;
+  background: var(--code-bg);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  padding: 13px 15px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--text);
+}
+pre .cm { color: var(--faint); }
+pre .ky { color: var(--accent); }
+pre .st { color: #6dc795; }
+html[data-mode="calm"] pre .st { color: #17734a; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 22px 0 0; padding: 0; list-style: none; }
+.chips li {
+  font: 600 10.5px/1 var(--mono);
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); background: var(--chip);
+  border: 1px solid var(--panel-edge);
+  border-radius: 999px; padding: 7px 11px;
+}
+
+.stat {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin: 22px 0 0; padding: 16px 18px;
+  border: 1px solid var(--panel-edge);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px 10px 10px 3px;
+  background: var(--chip);
+}
+.stat .big {
+  font: 800 clamp(18px, 3vw, 25px)/1.15 var(--mono);
+  letter-spacing: -0.02em; color: var(--head);
+}
+.stat .why { font-size: 14px; color: var(--muted); max-width: 44ch; }
+
+.golinks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.go {
+  display: inline-flex; align-items: center; gap: 9px;
+  font: 700 13px/1 var(--sans);
+  text-decoration: none; color: var(--head);
+  border: 1px solid var(--panel-edge); border-radius: 999px;
+  padding: 12px 18px; background: transparent;
+}
+.go:hover { border-color: var(--accent); background: var(--chip); }
+.go .arw { color: var(--accent); font-weight: 800; }
+.go.solid { background: var(--accent); border-color: var(--accent); color: #1a0803; }
+.go.solid .arw { color: #1a0803; }
+html[data-mode="calm"] .go.solid { color: #fff; }
+html[data-mode="calm"] .go.solid .arw { color: #fff; }
+
+/* --- hero ----------------------------------------------------- */
+.hero .panel { max-width: 60ch; }
+.hero-sub { font-size: clamp(16px, 2vw, 18px); color: var(--muted); max-width: 54ch; }
+.scroll-cue {
+  margin-top: 26px;
+  font: 600 11px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase;
+  color: var(--faint);
+  display: flex; align-items: center; gap: 10px;
+}
+.scroll-cue .tick { display: inline-block; width: 34px; height: 1px; background: var(--accent); }
+
+/* --- HUD ------------------------------------------------------ */
+.hud {
+  position: fixed; left: 16px; bottom: 16px; z-index: 30;
+  background: rgba(7, 13, 22, 0.88);
+  border: 1px solid rgba(139, 178, 224, 0.28);
+  border-radius: 10px;
+  padding: 10px 13px;
+  font-family: var(--mono);
+  color: #dfeaf6;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  display: grid; grid-template-columns: auto auto; gap: 2px 16px;
+  pointer-events: none;
+}
+.hud .lbl { font-size: 9px; letter-spacing: .18em; color: #8ba4bd; text-transform: uppercase; align-self: center; }
+.hud .val { font-size: 15px; font-weight: 700; text-align: right; }
+.hud .u { font-size: 9px; color: #8ba4bd; font-weight: 500; margin-left: 3px; letter-spacing: .1em; }
+html[data-mode="calm"] .hud { display: none; }
+
+/* --- vertical run rail ---------------------------------------- */
+.rail {
+  position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+  z-index: 30; width: 168px; height: 56vh; min-height: 300px;
+  pointer-events: none;
+}
+.rail .spine {
+  position: absolute; left: 158px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg, rgba(11,19,32,.35), rgba(11,19,32,.7));
+  border-radius: 2px;
+}
+.rail .tick {
+  position: absolute; right: 0; transform: translateY(-50%);
+  display: flex; align-items: center; gap: 7px;
+  font: 700 9.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: #cfdfef; white-space: nowrap;
+  background: rgba(9, 16, 27, 0.86);
+  border: 1px solid rgba(139, 178, 224, 0.28);
+  border-radius: 999px;
+  padding: 5px 7px 5px 10px;
+  opacity: .72;
+}
+.rail .tick .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #cfdfef; flex: none;
+}
+.rail .tick.on { color: #fff; opacity: 1; border-color: #ff7038; }
+.rail .tick.on .dot { background: #ff7038; box-shadow: 0 0 8px #ff7038; }
+.rail .rider {
+  position: absolute; left: 152px; width: 15px; height: 15px;
+  transform: translateY(-50%) rotate(45deg);
+  border: 2px solid #ff7038;
+  background: rgba(9, 16, 27, 0.8);
+  border-radius: 2px;
+}
+html[data-mode="calm"] .rail { display: none; }
+@media (max-width: 1100px) { .rail { display: none; } }
+
+/* --- earlier work --------------------------------------------- */
+.olds { list-style: none; margin: 0; padding: 0; }
+.olds li { border-top: 1px solid var(--rule); }
+.olds a {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 12px;
+  padding: 14px 2px; text-decoration: none;
+}
+.olds a:hover .nm { color: var(--accent); }
+.olds .nm { font-weight: 700; color: var(--head); }
+.olds .ds { font-size: 13.5px; color: var(--muted); font-family: var(--mono); }
+
+/* --- finish --------------------------------------------------- */
+.finish-band {
+  height: 14px; width: 100%; margin: 0 0 22px;
+  border-radius: 3px;
+  background-image:
+    linear-gradient(45deg, var(--head) 25%, transparent 25%, transparent 75%, var(--head) 75%),
+    linear-gradient(45deg, var(--head) 25%, transparent 25%, transparent 75%, var(--head) 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  background-color: #10161f;
+  border: 1px solid var(--panel-edge);
+}
+html[data-mode="calm"] .finish-band { background-color: #eef3f8; }
+
+footer {
+  position: relative; z-index: 2;
+  padding: 40px 20px 64px;
+  border-top: 1px solid var(--rule);
+  background: var(--panel-solid);
+}
+.colophon {
+  font: 400 13px/1.75 var(--mono);
+  color: var(--faint);
+  max-width: 78ch;
+}
+.colophon b { color: var(--muted); font-weight: 700; }
+
+/* --- responsive ----------------------------------------------- */
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .stop { padding: 8vh 14px; min-height: auto; }
+  .stop.hero { min-height: 86vh; padding-top: 80px; }
+  .push.right { justify-content: flex-start; }
+  .hud { left: 10px; bottom: 10px; padding: 8px 10px; gap: 1px 12px; }
+  .hud .val { font-size: 13px; }
+  ul.beats > li { padding-left: 22px; }
+  .colophon { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<canvas id="slope" aria-hidden="true"></canvas>
+
+<div class="shell">
+
+<header class="bar">
+  <a class="mark" href="#top"><span class="dia" aria-hidden="true">&#9670;</span> Siddharth Yellur</a>
+  <nav aria-label="Sections">
+    <ul>
+      <li><a href="#base">Base</a></li>
+      <li><a href="#tether">tether</a></li>
+      <li><a href="#cleat">cleat</a></li>
+      <li><a href="#brawl">Black Diamond Brawl</a></li>
+      <li><a href="#earlier">Earlier</a></li>
+      <li><a href="#finish">Contact</a></li>
+    </ul>
+  </nav>
+  <button class="calm-btn" id="calm" type="button" aria-pressed="false">
+    <span class="led" aria-hidden="true"></span><span id="calm-label">Calm mode</span>
+  </button>
+</header>
+
+<main id="main">
+
+  <!-- ===== HERO ===== -->
+  <section class="stop hero" id="top">
+    <div class="inner">
+      <div class="panel">
+        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> The run &middot; <span class="num">start</span></p>
+        <h1>Siddharth Yellur</h1>
+        <p class="lede">I build the unglamorous layer underneath AI agents &mdash; memory that survives the session, a terminal that reports what actually happened &mdash; and, lately, a video game.</p>
+        <p class="hero-sub">You are looking down a mountain that does not exist. The piste, the pines, the gates and the peaks on the horizon were all generated in code when this page loaded; there is not a single image file here. That is the rule the game further down holds itself to, so it seemed only fair.</p>
+        <div class="scroll-cue"><span class="tick" aria-hidden="true"></span> Scroll to drop in</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BASE ===== -->
+  <section class="stop" id="base" data-gate="BASE" data-sym="&#9679;">
+    <div class="inner"><div class="push right">
+      <div class="panel">
+        <p class="marker"><span class="sym green" aria-hidden="true">&#9679;</span> Gate <span class="num">01</span> &middot; Green circle</p>
+        <h2>Tooling for things that don&rsquo;t remember</h2>
+        <p class="kicker">what I work on</p>
+        <p>Most of what I build sits one layer below the interesting part. An agent is only as good as what it can recall and what it can actually run, and both of those turn out to be much harder than they look from the outside.</p>
+        <p><b>tether</b> gives an agent durable memory in a local SQLite file that can quietly become a synced replica across every machine you own. <b>cleat</b> gives it a real, persistent shell and a truthful answer about how a command ended. Both are MCP servers, both install in one line, and both are built to degrade rather than break.</p>
+        <p><b>Black Diamond Brawl</b> is the opposite of unglamorous: a downhill snowboarding combat racer built solo, where every pixel is generated at boot and a build gate fails the whole thing if a tree stops being visible against the snow.</p>
+        <p class="muted">M.S. Computer Science, University of Florida. B.E. Computer Science, Anna University.</p>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ===== TETHER ===== -->
+  <section class="stop" id="tether" data-gate="TETHER" data-sym="&#9670;">
+    <div class="inner">
+      <div class="panel wide">
+        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">02</span> &middot; Black diamond</p>
+        <h2>tether</h2>
+        <p class="kicker">a shared memory layer for personal agents &middot; v0.5.1 &middot; Python</p>
+
+        <p class="lede">An MCP server backed by a plain SQLite file. Any MCP-compatible agent can <code>remember</code>, <code>recall</code>, <code>link</code> and <code>forget</code> durable notes &mdash; facts about you, your projects, your preferences &mdash; so context follows you between sessions instead of dying with each one.</p>
+
+<pre><span class="cm"># install</span>
+claude mcp add tether -- uvx tether-memory</pre>
+
+        <h3>Why it&rsquo;s interesting</h3>
+        <ul class="beats">
+          <li><b>Local-first, zero configuration.</b> It runs entirely off one file on your disk. Point it at a hosted libSQL/Turso primary and that same file becomes an embedded replica &mdash; memory syncs across every device in near-real-time, and nothing about the local API changes.</li>
+          <li><b>Recall is hybrid.</b> Keyword results from FTS5 are fused with semantic vector results, so &ldquo;automobile&rdquo; finds the note about your &ldquo;car&rdquo;. The embedding model is small and static and runs locally: no network call, no API key.</li>
+          <li><b>An associative usage graph.</b> Hits pull in related memories along edges from three local, deterministic sources: semantic nearest-neighbours, explicit <code>link()</code> calls, and <em>hebbian</em> edges &mdash; memories recalled together get wired together over time. Every hit carries a <code>via</code> receipt explaining why it surfaced.</li>
+          <li><b>Recall is seed-dominant.</b> Top direct matches are locked in place and associations only fill the slots below them. Turning association on can never demote a good hit &mdash; which is what makes the feature safe to leave switched on.</li>
+          <li><b>The store self-organizes.</b> A hub-curated boot index surfaces load-bearing memories &mdash; the ones with the highest behavioral degree &mdash; alongside recent ones. An opt-in sweep soft-archives memories that are both old <em>and</em> behaviorally isolated. Nothing is ever hard-deleted.</li>
+          <li><b>Optional crystallization.</b> It detects dense clusters of related memories and offers them up to be <em>named</em> as principles. tether finds the structure; the agent supplies the words.</li>
+          <li><b>Everything degrades cleanly</b> to plain keyword recall. It is deliberately a convenience layer: more useful when present, never breaking the agent when degraded.</li>
+        </ul>
+
+        <div class="stat">
+          <span class="big">66.9&nbsp;KB &rarr; 2.0&nbsp;KB</span>
+          <span class="why">one recall response, after returning query-centered excerpts instead of full bodies</span>
+        </div>
+
+        <ul class="chips">
+          <li>Python</li><li>MCP</li><li>SQLite / FTS5</li><li>libSQL / Turso</li><li>local static embeddings</li>
+        </ul>
+
+        <div class="golinks">
+          <a class="go solid" href="https://github.com/sidyellur/tether"><span class="arw" aria-hidden="true">&rarr;</span> tether on GitHub</a>
+          <a class="go" href="https://pypi.org/project/tether-memory/"><span class="arw" aria-hidden="true">&rarr;</span> tether-memory on PyPI</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CLEAT ===== -->
+  <section class="stop" id="cleat" data-gate="CLEAT" data-sym="&#9670;">
+    <div class="inner"><div class="push right">
+      <div class="panel wide">
+        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">03</span> &middot; Black diamond</p>
+        <h2>cleat</h2>
+        <p class="kicker">a headless terminal layer for AI agents &middot; Python</p>
+
+        <p class="lede">cleat runs a <em>persistent</em> shell session behind a PTY, parses its byte stream for OSC 133 shell-integration marks, and exposes it to an agent over MCP as structured results &mdash; <code>stdout</code>, a real <code>exit_code</code>, the files that were touched &mdash; instead of raw escape-code soup.</p>
+
+<pre><span class="cm"># install</span>
+claude mcp add cleat -- uvx cleat
+
+<span class="cm"># what the agent actually receives</span>
+{ <span class="ky">"stdout"</span>: <span class="st">"..."</span>, <span class="ky">"exit_code"</span>: 0, <span class="ky">"completed"</span>: true, <span class="ky">"state"</span>: <span class="st">"idle"</span> }</pre>
+
+        <h3>Why it&rsquo;s interesting</h3>
+        <ul class="beats">
+          <li><b>The exit code isn&rsquo;t in the stream at all.</b> That is the core insight. A shell knows <code>$?</code> but never prints it, so no amount of scraping a PTY will recover it. cleat injects OSC 133 marks into the shells it spawns and parses them back out.</li>
+          <li><b>The session persists.</b> <code>cd</code>, <code>export</code>, activated venvs and <code>ssh</code> sessions all carry across calls &mdash; something a fresh subprocess per command fundamentally cannot do.</li>
+          <li><b>State is read, not guessed.</b> Every response carries a <code>state</code> derived from termios flags and the foreground process group: facts only the process holding the PTY can see, rather than inferences from output timing. The states are <code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code> and <code>tui</code>.</li>
+          <li><b>It refuses to type into a <code>password</code> prompt</b> without explicit human consent.</li>
+          <li><b>Marks are nonce-authenticated.</b> A command could print a fake OSC 133 sequence to its own stdout and forge a clean exit code. So each session gets a fresh <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat injects; a mark with a missing or wrong <code>k=</code> is ignored outright and surfaced as <code>spoofed_marks</code>, so the agent can tell when a program lied about how it finished.</li>
+          <li><b>Terminal-agnostic.</b> Not a terminal emulator, and not a modification to yours.</li>
+        </ul>
+
+        <ul class="chips">
+          <li>Python</li><li>MCP</li><li>PTY / termios</li><li>OSC 133</li><li>pyte</li>
+        </ul>
+
+        <div class="golinks">
+          <a class="go solid" href="https://github.com/sidyellur/cleat"><span class="arw" aria-hidden="true">&rarr;</span> cleat on GitHub</a>
+          <a class="go" href="https://pypi.org/project/cleat/"><span class="arw" aria-hidden="true">&rarr;</span> cleat on PyPI</a>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ===== BLACK DIAMOND BRAWL ===== -->
+  <section class="stop" id="brawl" data-gate="BLACK DIAMOND BRAWL" data-sym="&#9670;&#9670;">
+    <div class="inner">
+      <div class="panel wide">
+        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;&#9670;</span> Gate <span class="num">04</span> &middot; Double black diamond</p>
+        <h2>Black Diamond Brawl</h2>
+        <p class="kicker">a downhill snowboarding combat racer &middot; v1 complete, 9 phases &middot; v2 visual overhaul complete</p>
+
+        <p class="lede">A Road Rash-style downhill snowboarding combat racer, built solo as a learning project. Each run is a single race down a fixed-length, seeded, procedurally generated slope, ending at a finish line.</p>
+
+        <h3>Why it&rsquo;s interesting</h3>
+        <ul class="beats">
+          <li><b>The run itself.</b> Dodge trees, rocks and moguls. Catch trick air off moguls and hill crests &mdash; crests launch you automatically at speed. Shove or ski-pole your way past AI rivals racing the same course.</li>
+          <li><b>Scoring rewards commitment.</b> Points come from finishing fast, landing hits on rivals, near-misses and tricks. Wipe out hard before the line and the run ends early.</li>
+          <li><b>A classic segment-based pseudo-3D renderer</b> gives it the behind-the-rider, slope-rushing-at-you look &mdash; OutRun and Road Rash &mdash; with pixel art sprites. It is the same projection driving the mountain behind this page: a list of segments with world-space z, projected out to trapezoidal bands and painted back to front.</li>
+          <li><b>All art and atmosphere is generated in code at boot. There are no image files in the repository at all.</b> Colour is governed by a palette module and enforced by a build gate that fails the build if any gameplay-relevant edge drops below &Delta;L* 12, or any sprite outline below &Delta;L* 25 against the snow behind it.</li>
+          <li><b>Balance is verified without a browser.</b> It ships with a headless seeded combat simulation and a solvability model, so a course can be proven survivable before anyone plays it.</li>
+        </ul>
+
+        <ul class="chips">
+          <li>Phaser 3</li><li>TypeScript</li><li>Vite</li><li>segment-based pseudo-3D</li><li>seeded procedural generation</li>
+        </ul>
+
+        <div class="golinks">
+          <a class="go solid" href="https://github.com/sidyellur/black-diamond-brawl"><span class="arw" aria-hidden="true">&rarr;</span> Black Diamond Brawl on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EARLIER ===== -->
+  <section class="stop" id="earlier" data-gate="EARLIER" data-sym="&#9632;">
+    <div class="inner"><div class="push right">
+      <div class="panel">
+        <p class="marker"><span class="sym blue" aria-hidden="true">&#9632;</span> Gate <span class="num">05</span> &middot; Blue square</p>
+        <h2>Earlier runs</h2>
+        <p class="kicker">smaller, older, still around</p>
+        <ul class="olds">
+          <li><a href="https://github.com/sidyellur/Vue-Weather-App"><span class="nm">Vue Weather App</span> <span class="ds">Vue.js &middot; OpenWeather API</span></a></li>
+          <li><a href="https://github.com/sidyellur/RBT-Min-Heap-"><span class="nm">Red-Black Tree / Min-Heap city builder</span> <span class="ds">Java &middot; academic</span></a></li>
+          <li><a href="https://github.com/sidyellur/TicTacToe"><span class="nm">TicTacToe</span> <span class="ds">React</span></a></li>
+        </ul>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ===== FINISH ===== -->
+  <section class="stop" id="finish" data-gate="FINISH" data-sym="&#9646;&#9647;">
+    <div class="inner">
+      <div class="panel">
+        <div class="finish-band" aria-hidden="true"></div>
+        <p class="marker">Gate <span class="num">06</span> &middot; Finish line</p>
+        <h2>Get in touch</h2>
+        <p class="lede">Two places, both real. Happy to talk about agent tooling, terminals, or why a snowboarding game needs a contrast build gate.</p>
+        <div class="golinks">
+          <a class="go solid" href="https://github.com/sidyellur"><span class="arw" aria-hidden="true">&rarr;</span> github.com/sidyellur</a>
+          <a class="go" href="https://www.linkedin.com/in/siddharth-yellur-682351142/"><span class="arw" aria-hidden="true">&rarr;</span> LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="inner">
+    <p class="colophon">
+      <b>Colophon.</b> One HTML file. No images, no fonts fetched, no frameworks, no network requests of any kind &mdash; this page renders identically with the network switched off. The mountain is a segment-based pseudo-3D projection drawn on a canvas; the piste, the pines, the rocks, the gates and the peaks are placed by a seeded PRNG, so the run is identical on every visit. <b>Calm mode</b> switches all of it off for a plain document, and is the default when your system asks for reduced motion.
+    </p>
+  </div>
+</footer>
+
+</div><!-- /.shell -->
+
+<div class="hud" id="hud" aria-hidden="true">
+  <span class="lbl">Speed</span><span class="val" id="hud-speed">0<span class="u">km/h</span></span>
+  <span class="lbl">Drop</span><span class="val" id="hud-drop">0<span class="u">m</span></span>
+  <span class="lbl">Run</span><span class="val" id="hud-pct">0<span class="u">%</span></span>
+</div>
+
+<div class="rail" id="rail" aria-hidden="true">
+  <div class="spine"></div>
+  <div class="rider" id="rider" style="top:0"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var FONT_SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
+  function now() {
+    return (window.performance && performance.now) ? performance.now() : Date.now();
+  }
+
+  /* =========================================================
+     0. Mode (run / calm). Works even if the canvas never starts.
+     ========================================================= */
+  var reduceQ = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  var motionOK = !(reduceQ && reduceQ.matches);
+
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  var stored = read("run-mode");
+  var mode = (stored === "calm" || stored === "run") ? stored : (motionOK ? "run" : "calm");
+
+  var btn = document.getElementById("calm");
+  var btnLabel = document.getElementById("calm-label");
+
+  /* =========================================================
+     1. Seeded PRNG — mulberry32. The run is the same every visit.
+     ========================================================= */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* =========================================================
+     2. Track
+     ========================================================= */
+  var SEG_LEN   = 200;    // world units per segment
+  var RUMBLE    = 4;      // segments per shading band
+  var ROAD_W    = 2200;   // half width of the piste
+  var CAM_H     = 1250;   // camera height above the piste
+  var FOV       = 100;
+  var HORIZON   = 0.44;   // vanishing point as a fraction of canvas height
+  var FOG_D     = 5;
+  var CAM_DEPTH = 1 / Math.tan((FOV / 2) * Math.PI / 180);
+
+  var COLORS = {
+    light: { ground: "#dbe7f5", rumble: "#9dbadb", road: "#ffffff" },
+    dark:  { ground: "#cfdff2", rumble: "#5e86b7", road: "#f1f6fd" },
+    start: { ground: "#d6e4f4", rumble: "#ff7038", road: "#ffffff" }
+  };
+  var FOG_COLOR = "#e9f2fb";
+
+  var segments = [];
+
+  function lastY() {
+    return segments.length === 0 ? 0 : segments[segments.length - 1].p2.world.y;
+  }
+  function pushSegment(curve, y) {
+    var n = segments.length;
+    segments.push({
+      index: n,
+      p1: { world: { y: lastY(), z: n * SEG_LEN }, camera: {}, screen: {} },
+      p2: { world: { y: y, z: (n + 1) * SEG_LEN }, camera: {}, screen: {} },
+      curve: curve,
+      sprites: [],
+      gate: null,
+      finish: false,
+      color: (Math.floor(n / RUMBLE) % 2) ? COLORS.dark : COLORS.light,
+      clip: 0,
+      fog: 1,
+      looped: false
+    });
+  }
+  function lerp(a, b, p) { return a + (b - a) * p; }
+  function easeIn(a, b, p) { return a + (b - a) * p * p; }
+  function easeInOut(a, b, p) { return a + (b - a) * (-Math.cos(p * Math.PI) / 2 + 0.5); }
+
+  function addRoad(enter, hold, leave, curve, y) {
+    var startY = lastY();
+    var endY = startY + y * SEG_LEN;
+    var total = enter + hold + leave, n;
+    for (n = 0; n < enter; n++) pushSegment(easeIn(0, curve, n / enter), easeInOut(startY, endY, n / total));
+    for (n = 0; n < hold;  n++) pushSegment(curve, easeInOut(startY, endY, (enter + n) / total));
+    for (n = 0; n < leave; n++) pushSegment(easeInOut(curve, 0, n / leave), easeInOut(startY, endY, (enter + hold + n) / total));
+  }
+  function addStraight(n, y) { addRoad(n, n, n, 0, y || 0); }
+  function addCurve(n, c, y) { addRoad(n, n, n, c, y || 0); }
+
+  function buildTrack() {
+    var rng = mulberry32(0x5EED17);
+    segments.length = 0;
+
+    addStraight(28, -6);                       // flat-ish start gate area
+
+    while (segments.length < 2200) {
+      var r = rng();
+      var len = 20 + Math.floor(rng() * 24);   // 20..43 -> 60..129 segments
+      var sign = rng() < 0.5 ? -1 : 1;
+      var drop = -(5 + rng() * 18);
+
+      if (r < 0.20) {                          // S-curves
+        addRoad(20, 20, 20, 2.2 * sign, drop * 0.5);
+        addRoad(20, 20, 20, -3.2 * sign, drop * 0.5);
+      } else if (r < 0.42) {
+        addCurve(len, (1.6 + rng() * 4.0) * sign, drop);
+      } else if (r < 0.58) {
+        addRoad(len, len, len, 0, drop * 1.4); // steep pitch
+      } else if (r < 0.70) {
+        addRoad(len, 10, len, 0.8 * sign, 8 + rng() * 8); // a crest to launch off
+      } else if (r < 0.86) {
+        addRoad(len, len, len, (2 + rng() * 3) * sign, drop * 0.8);
+      } else {
+        addStraight(len, drop * 0.4);
+      }
+    }
+
+    addStraight(150, -4);                      // run-out past the finish
+
+    var i;
+    for (i = 0; i < 8; i++) segments[i].color = COLORS.start;
+
+    // Seeded scenery: pines, rocks, piste poles.
+    var srng = mulberry32(0xB1ADE5);
+    for (i = 12; i < segments.length; i++) {
+      var seg = segments[i];
+      var p = srng();
+      if (p < 0.34) {
+        var side = srng() < 0.5 ? -1 : 1;
+        seg.sprites.push({
+          kind: srng() < 0.42 ? "pineBig" : "pine",
+          offset: side * (1.45 + srng() * 3.4)
+        });
+      } else if (p < 0.40) {
+        seg.sprites.push({
+          kind: "rock",
+          offset: (srng() < 0.5 ? -1 : 1) * (1.25 + srng() * 1.6)
+        });
+      }
+      if (i % 14 === 0) {
+        seg.sprites.push({ kind: "pole", offset: -1.10 });
+        seg.sprites.push({ kind: "pole", offset: 1.10 });
+      }
+    }
+  }
+  buildTrack();
+
+  var trackLength = segments.length * SEG_LEN;
+  var DRAW_FAR = 170, DRAW_NEAR = 92;
+  var drawDist = DRAW_FAR;
+  var mapEnd = Math.max(SEG_LEN * 10, (segments.length - DRAW_FAR - 60) * SEG_LEN);
+
+  function worldYAt(z) {
+    var idx = Math.floor(z / SEG_LEN) % segments.length;
+    if (idx < 0) idx = 0;
+    var s = segments[idx];
+    return lerp(s.p1.world.y, s.p2.world.y, (z % SEG_LEN) / SEG_LEN);
+  }
+  var yStart = worldYAt(0);
+  var totalDescent = Math.max(1, yStart - worldYAt(mapEnd));
+  var DROP_SCALE = 640 / totalDescent;   // the whole run reads as ~640 m of vertical
+
+  /* =========================================================
+     3. Horizon peaks — tiling midpoint displacement
+     ========================================================= */
+  function ridge(seed, steps, rough) {
+    var pts = new Array(steps + 1), i, step, half, r = mulberry32(seed), amp = 1;
+    for (i = 0; i <= steps; i++) pts[i] = 0;
+    for (step = steps; step >= 2; step = step / 2) {
+      half = step / 2;
+      for (i = half; i < steps; i += step) {
+        pts[i] = (pts[i - half] + pts[i + half]) / 2 + (r() - 0.5) * amp;
+      }
+      amp *= rough;
+    }
+    var min = Infinity, max = -Infinity;
+    for (i = 0; i <= steps; i++) { if (pts[i] < min) min = pts[i]; if (pts[i] > max) max = pts[i]; }
+    var span = Math.max(0.0001, max - min);
+    for (i = 0; i <= steps; i++) pts[i] = (pts[i] - min) / span;
+    return pts;
+  }
+  var RIDGE_FAR = ridge(0x1CE1, 64, 0.56);
+  var RIDGE_NEAR = ridge(0x7A17, 64, 0.62);
+
+  /* =========================================================
+     4. Canvas
+     ========================================================= */
+  var canvas = document.getElementById("slope");
+  var ctx = null;
+  var VW = 0, VH = 0, dpr = 1;
+
+  try { if (canvas && canvas.getContext) ctx = canvas.getContext("2d"); } catch (e) { ctx = null; }
+
+  var skyGrad = null, farGrad = null, nearGrad = null;
+
+  function buildGradients() {
+    var hy = VH * HORIZON;
+    skyGrad = ctx.createLinearGradient(0, 0, 0, hy);
+    skyGrad.addColorStop(0.00, "#1c4d86");
+    skyGrad.addColorStop(0.38, "#4d8bc6");
+    skyGrad.addColorStop(0.74, "#9ac6e8");
+    skyGrad.addColorStop(1.00, "#e2eff9");
+
+    farGrad = ctx.createLinearGradient(0, hy - VH * 0.24, 0, hy);
+    farGrad.addColorStop(0, "#ffffff");
+    farGrad.addColorStop(0.55, "#c3d6ea");
+    farGrad.addColorStop(1, "#b0c8e0");
+
+    nearGrad = ctx.createLinearGradient(0, hy - VH * 0.15, 0, hy);
+    nearGrad.addColorStop(0, "#ffffff");
+    nearGrad.addColorStop(0.45, "#a9c1db");
+    nearGrad.addColorStop(1, "#8fabc9");
+  }
+
+  function resize() {
+    if (!ctx) return;
+    VW = Math.max(1, window.innerWidth);
+    VH = Math.max(1, window.innerHeight);
+    dpr = Math.min(window.devicePixelRatio || 1, VW < 760 ? 1.5 : 2);
+    canvas.width = Math.round(VW * dpr);
+    canvas.height = Math.round(VH * dpr);
+    canvas.style.width = VW + "px";
+    canvas.style.height = VH + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawDist = VW < 760 ? DRAW_NEAR : DRAW_FAR;
+    buildGradients();
+    syncGates();
+  }
+
+  /* =========================================================
+     5. Projection
+     ========================================================= */
+  function project(p, camX, camY, camZ) {
+    p.camera.x = (p.world.x || 0) - camX;
+    p.camera.y = (p.world.y || 0) - camY;
+    p.camera.z = (p.world.z || 0) - camZ;
+    var sc = CAM_DEPTH / p.camera.z;
+    p.screen.scale = sc;
+    p.screen.x = (VW / 2) + (sc * p.camera.x * VW / 2);
+    p.screen.y = (VH * HORIZON) - (sc * p.camera.y * VH / 2);
+    p.screen.w = (sc * ROAD_W * VW / 2);
+  }
+  function findSegment(z) { return segments[Math.floor(z / SEG_LEN) % segments.length]; }
+  function fogAt(d) { return 1 / Math.pow(Math.E, d * d * FOG_D); }
+
+  /* =========================================================
+     6. Sprites, all drawn in code
+     ========================================================= */
+  function quad(x1, y1, x2, y2, x3, y3, x4, y4, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.lineTo(x4, y4);
+    ctx.closePath(); ctx.fill();
+  }
+
+  function drawPine(x, y, w, h, big) {
+    ctx.fillStyle = "#3b2c24";
+    ctx.fillRect(x + w * 0.44, y + h * 0.74, Math.max(1, w * 0.12), h * 0.26);
+    var body = big ? "#163830" : "#1d4038";
+    if (h < 34) {
+      ctx.fillStyle = body;
+      ctx.beginPath();
+      ctx.moveTo(x + w / 2, y);
+      ctx.lineTo(x + w, y + h * 0.82);
+      ctx.lineTo(x, y + h * 0.82);
+      ctx.closePath(); ctx.fill();
+      return;
+    }
+    var tops = [0, 0.26, 0.48], widths = [0.56, 0.80, 1.0], heights = [0.40, 0.40, 0.38];
+    for (var i = 0; i < 3; i++) {
+      var tw = w * widths[i], tx = x + (w - tw) / 2, ty = y + h * tops[i], th = h * heights[i];
+      ctx.fillStyle = body;
+      ctx.beginPath();
+      ctx.moveTo(tx + tw / 2, ty);
+      ctx.lineTo(tx + tw, ty + th);
+      ctx.lineTo(tx, ty + th);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#dfeeec";           // snow on the windward face
+      ctx.beginPath();
+      ctx.moveTo(tx + tw / 2, ty);
+      ctx.lineTo(tx + tw * 0.50, ty + th);
+      ctx.lineTo(tx + tw * 0.12, ty + th);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  function drawRock(x, y, w, h) {
+    ctx.fillStyle = "#5a6878";
+    ctx.beginPath();
+    ctx.moveTo(x, y + h);
+    ctx.lineTo(x + w * 0.14, y + h * 0.35);
+    ctx.lineTo(x + w * 0.46, y);
+    ctx.lineTo(x + w * 0.80, y + h * 0.30);
+    ctx.lineTo(x + w, y + h);
+    ctx.closePath(); ctx.fill();
+    if (h > 8) {
+      ctx.fillStyle = "#eef5fb";
+      ctx.beginPath();
+      ctx.moveTo(x + w * 0.14, y + h * 0.35);
+      ctx.lineTo(x + w * 0.46, y);
+      ctx.lineTo(x + w * 0.80, y + h * 0.30);
+      ctx.lineTo(x + w * 0.50, y + h * 0.32);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  function drawPole(x, y, w, h) {
+    var pw = Math.max(1, w);
+    ctx.fillStyle = "#ff6a2b";
+    ctx.fillRect(x, y, pw, h);
+    if (h > 14) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y + h * 0.18, pw, h * 0.10);
+      ctx.fillRect(x, y + h * 0.44, pw, h * 0.10);
+    }
+  }
+
+  var SPRITES = {
+    pine:    { w: 1150, h: 3000, draw: function (x, y, w, h) { drawPine(x, y, w, h, false); } },
+    pineBig: { w: 1500, h: 4100, draw: function (x, y, w, h) { drawPine(x, y, w, h, true); } },
+    rock:    { w: 820,  h: 500,  draw: drawRock },
+    pole:    { w: 90,   h: 950,  draw: drawPole }
+  };
+
+  function renderSprite(seg, sp) {
+    var p = seg.p1;
+    if (p.camera.z <= CAM_DEPTH) return;
+    var spec = SPRITES[sp.kind];
+    if (!spec) return;
+    var sc = p.screen.scale;
+    var dw = spec.w * sc * VW / 2;
+    var dh = spec.h * sc * VW / 2;
+    if (dh < 1.6 || dw < 0.6 || dh > VH * 10) return;
+    var dx = p.screen.x + (sp.offset * p.screen.w) - dw / 2;
+    var dy = p.screen.y - dh;
+    if (dx > VW || dx + dw < 0) return;
+    var over = (dy + dh) - seg.clip;
+    if (over >= dh) return;
+    var clipped = over > 0;
+    ctx.globalAlpha = seg.fog < 1 ? Math.max(0, seg.fog) : 1;
+    if (clipped) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, VW, Math.max(0, seg.clip));
+      ctx.clip();
+    }
+    spec.draw(dx, dy, dw, dh);
+    if (clipped) ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  function renderGate(seg) {
+    var g = seg.gate, p = seg.p1;
+    if (p.camera.z <= CAM_DEPTH) return;
+    var sc = p.screen.scale;
+    var w = p.screen.w;
+    if (w < 3) return;
+    var poleH = 3400 * sc * VW / 2;
+    if (poleH < 7 || poleH > VH * 8) return;
+
+    var lx = p.screen.x - w * 1.16;
+    var rx = p.screen.x + w * 1.16;
+    var baseY = p.screen.y;
+    var pw = Math.max(1.2, w * 0.05);
+    var topY = baseY - poleH;
+    var barH = Math.max(2, poleH * 0.18);
+    var clipH = Math.max(0, seg.clip);
+    if (clipH <= 0) return;
+
+    ctx.globalAlpha = seg.fog < 1 ? Math.max(0, seg.fog) : 1;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, VW, clipH);
+    ctx.clip();
+
+    ctx.fillStyle = g.finish ? "#152535" : "#e8511f";
+    ctx.fillRect(lx - pw / 2, topY, pw, poleH);
+    ctx.fillRect(rx - pw / 2, topY, pw, poleH);
+
+    ctx.fillStyle = "#0c1622";
+    ctx.fillRect(lx, topY, rx - lx, barH);
+    ctx.fillStyle = g.finish ? "#ffffff" : "#ff7038";
+    ctx.fillRect(lx, topY + barH - Math.max(1, barH * 0.11), rx - lx, Math.max(1, barH * 0.11));
+
+    if (barH > 11 && (rx - lx) > 80) {
+      var fs = Math.min(barH * 0.5, 24);
+      ctx.font = "700 " + fs.toFixed(1) + "px " + FONT_SANS;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(g.sym + "  " + g.label, (lx + rx) / 2, topY + barH * 0.46, (rx - lx) * 0.9);
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /* =========================================================
+     7. Segment + background rendering
+     ========================================================= */
+  function renderSegment(seg) {
+    var p1 = seg.p1.screen, p2 = seg.p2.screen, c = seg.color;
+    var h = p1.y - p2.y;
+    if (h <= 0) return;
+
+    ctx.fillStyle = c.ground;                                   // off-piste snowfield
+    ctx.fillRect(0, p2.y, VW, h + 1);
+
+    var r1 = p1.w / 5.5, r2 = p2.w / 5.5;
+    quad(p1.x - p1.w - r1, p1.y, p1.x - p1.w, p1.y, p2.x - p2.w, p2.y, p2.x - p2.w - r2, p2.y, c.rumble);
+    quad(p1.x + p1.w + r1, p1.y, p1.x + p1.w, p1.y, p2.x + p2.w, p2.y, p2.x + p2.w + r2, p2.y, c.rumble);
+    quad(p1.x - p1.w, p1.y, p1.x + p1.w, p1.y, p2.x + p2.w, p2.y, p2.x - p2.w, p2.y, c.road);
+
+    if (seg.finish) {
+      var N = 10, i, t1, t2;
+      var parity = Math.floor(seg.index / 2) % 2;
+      for (i = 0; i < N; i++) {
+        if ((i + parity) % 2 === 0) continue;
+        t1 = i / N; t2 = (i + 1) / N;
+        quad(
+          p1.x - p1.w + 2 * p1.w * t1, p1.y,
+          p1.x - p1.w + 2 * p1.w * t2, p1.y,
+          p2.x - p2.w + 2 * p2.w * t2, p2.y,
+          p2.x - p2.w + 2 * p2.w * t1, p2.y,
+          "#11202e"
+        );
+      }
+    }
+
+    if (seg.fog < 0.97) {
+      ctx.globalAlpha = 1 - seg.fog;
+      ctx.fillStyle = FOG_COLOR;
+      ctx.fillRect(0, p2.y, VW, h + 1);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawPeaks(pts, grad, offsetX, hy, amp, period) {
+    var n = pts.length - 1;
+    var startTile = Math.floor(-offsetX / period) - 1;
+    var tiles = Math.ceil(VW / period) + 2;
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(startTile * period + offsetX, hy + 2);
+    for (var t = 0; t < tiles; t++) {
+      var base = (startTile + t) * period + offsetX;
+      for (var i = 0; i <= n; i++) ctx.lineTo(base + (i / n) * period, hy - pts[i] * amp);
+    }
+    ctx.lineTo((startTile + tiles) * period + offsetX, hy + 2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  var bgFar = 0, bgNear = 0;
+
+  function drawBackground(hy) {
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, VW, hy + 1);
+
+    var sx = VW * 0.74, sy = hy * 0.34;
+    var g = ctx.createRadialGradient(sx, sy, 0, sx, sy, Math.max(60, VH * 0.30));
+    g.addColorStop(0, "rgba(255,255,255,0.92)");
+    g.addColorStop(0.35, "rgba(255,247,228,0.26)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, VW, hy + 1);
+
+    ctx.fillStyle = FOG_COLOR;                       // whiteout below the horizon
+    ctx.fillRect(0, hy, VW, VH - hy);
+
+    var periodFar = Math.max(420, VW * 1.15);
+    var periodNear = Math.max(300, VW * 0.78);
+    drawPeaks(RIDGE_FAR, farGrad, bgFar % periodFar, hy + 1, VH * 0.21, periodFar);
+    drawPeaks(RIDGE_NEAR, nearGrad, bgNear % periodNear, hy + 1, VH * 0.13, periodNear);
+
+    var hz = ctx.createLinearGradient(0, hy - VH * 0.07, 0, hy + 2);
+    hz.addColorStop(0, "rgba(233,242,251,0)");
+    hz.addColorStop(1, "rgba(233,242,251,0.95)");
+    ctx.fillStyle = hz;
+    ctx.fillRect(0, hy - VH * 0.07, VW, VH * 0.07 + 2);
+  }
+
+  /* =========================================================
+     8. Camera + gates
+     ========================================================= */
+  var camZ = 0, camZPrev = 0, camX = 0;
+  var speedSmoothed = 0;
+  var scrollFrac = 0;
+
+  function scrollFraction() {
+    var doc = document.documentElement;
+    var scrollable = Math.max(1, (doc.scrollHeight || 0) - window.innerHeight);
+    var y = window.pageYOffset || doc.scrollTop || 0;
+    return Math.max(0, Math.min(1, y / scrollable));
+  }
+
+  var gateEls = [], gateSegs = [], railTicks = [];
+
+  function collectGates() {
+    var nodes = document.querySelectorAll("[data-gate]");
+    var rail = document.getElementById("rail");
+    for (var i = 0; i < nodes.length; i++) {
+      gateEls.push(nodes[i]);
+      if (!rail) continue;
+      var tick = document.createElement("div");
+      tick.className = "tick";
+      tick.appendChild(document.createTextNode(nodes[i].getAttribute("data-gate")));
+      var dot = document.createElement("span");
+      dot.className = "dot";
+      tick.appendChild(dot);
+      rail.appendChild(tick);
+      railTicks.push({ el: tick, frac: 0, on: null });
+    }
+  }
+
+  function syncGates() {
+    var k;
+    for (k = 0; k < gateSegs.length; k++) {
+      if (gateSegs[k]) { gateSegs[k].gate = null; gateSegs[k].finish = false; }
+    }
+    gateSegs.length = 0;
+
+    var doc = document.documentElement;
+    var scrollable = Math.max(1, (doc.scrollHeight || 0) - window.innerHeight);
+    var pageY = window.pageYOffset || doc.scrollTop || 0;
+    var lead = 14 * SEG_LEN;
+
+    for (k = 0; k < gateEls.length; k++) {
+      var el = gateEls[k];
+      var top = el.getBoundingClientRect().top + pageY;
+      var frac = Math.max(0, Math.min(1, (top - window.innerHeight * 0.42) / scrollable));
+      if (railTicks[k]) railTicks[k].frac = frac;
+
+      // The finish line is pinned to the very bottom of the page: you ride
+      // toward it through the whole contact section and stop just short of it.
+      var isFinish = el.id === "finish";
+      var z = isFinish ? (mapEnd + 38 * SEG_LEN) : (frac * mapEnd + lead);
+      var idx = Math.floor(z / SEG_LEN) % segments.length;
+      var seg = segments[idx];
+      if (!seg) continue;
+      seg.gate = {
+        label: el.getAttribute("data-gate"),
+        sym: el.getAttribute("data-sym") || "",
+        finish: isFinish
+      };
+      gateSegs.push(seg);
+      if (isFinish) {
+        for (var f = 1; f < 4; f++) {
+          var fs = segments[idx + f];
+          if (fs) { fs.finish = true; gateSegs.push(fs); }
+        }
+        seg.finish = true;
+      }
+    }
+    layoutRail();
+  }
+
+  function layoutRail() {
+    var rail = document.getElementById("rail");
+    if (!rail) return;
+    var h = rail.clientHeight || 1;
+    for (var i = 0; i < railTicks.length; i++) {
+      railTicks[i].el.style.top = (railTicks[i].frac * h) + "px";
+    }
+  }
+
+  /* =========================================================
+     9. Render one frame
+     ========================================================= */
+  function render() {
+    if (!ctx || VW === 0) return;
+    var hy = VH * HORIZON;
+    var base = findSegment(camZ);
+    var pct = (camZ % SEG_LEN) / SEG_LEN;
+    var playerY = lerp(base.p1.world.y, base.p2.world.y, pct);
+    var maxy = VH;
+    var x = 0, dx = -(base.curve * pct);
+    var n, seg;
+
+    drawBackground(hy);
+
+    for (n = 0; n < drawDist; n++) {
+      seg = segments[(base.index + n) % segments.length];
+      seg.looped = seg.index < base.index;
+      seg.fog = fogAt(n / drawDist);
+      seg.clip = maxy;
+
+      var zAdj = camZ - (seg.looped ? trackLength : 0);
+      project(seg.p1, camX * ROAD_W - x, playerY + CAM_H, zAdj);
+      project(seg.p2, camX * ROAD_W - x - dx, playerY + CAM_H, zAdj);
+
+      x += dx;
+      dx += seg.curve;
+
+      if (seg.p1.camera.z <= CAM_DEPTH) continue;
+      if (seg.p2.screen.y >= seg.p1.screen.y) continue;
+      if (seg.p2.screen.y >= maxy) continue;
+
+      renderSegment(seg);
+      maxy = seg.p2.screen.y;
+    }
+
+    for (n = drawDist - 1; n >= 0; n--) {
+      seg = segments[(base.index + n) % segments.length];
+      if (seg.fog < 0.04) continue;
+      for (var s = 0; s < seg.sprites.length; s++) renderSprite(seg, seg.sprites[s]);
+      if (seg.gate) renderGate(seg);
+    }
+  }
+
+  /* =========================================================
+     10. HUD + rail
+     ========================================================= */
+  var hudSpeed = document.getElementById("hud-speed");
+  var hudDrop = document.getElementById("hud-drop");
+  var hudPct = document.getElementById("hud-pct");
+  var rider = document.getElementById("rider");
+  var hudLast = 0;
+
+  function updateHud(t, force) {
+    if (!force && t - hudLast < 90) return;
+    hudLast = t;
+    if (hudSpeed) hudSpeed.innerHTML = Math.round(speedSmoothed) + '<span class="u">km/h</span>';
+    if (hudDrop) {
+      var d = Math.max(0, (yStart - worldYAt(Math.min(camZ, mapEnd))) * DROP_SCALE);
+      hudDrop.innerHTML = Math.round(d) + '<span class="u">m</span>';
+    }
+    if (hudPct) hudPct.innerHTML = Math.round(scrollFrac * 100) + '<span class="u">%</span>';
+
+    var rail = document.getElementById("rail");
+    var h = rail ? (rail.clientHeight || 1) : 1;
+    if (rider) rider.style.top = (scrollFrac * h) + "px";
+    for (var i = 0; i < railTicks.length; i++) {
+      var passed = scrollFrac >= railTicks[i].frac - 0.012;
+      var next = railTicks[i + 1];
+      var active = passed && (!next || scrollFrac < next.frac - 0.012);
+      if (active !== railTicks[i].on) {
+        railTicks[i].on = active;
+        railTicks[i].el.className = "tick" + (active ? " on" : "");
+      }
+    }
+  }
+
+  /* =========================================================
+     11. Loop
+     ========================================================= */
+  var rafId = 0, running = false, lastT = 0;
+
+  function step(t) {
+    rafId = 0;
+    if (!running) return;
+    rafId = requestAnimationFrame(step);
+
+    var elapsed = t - lastT;
+    var minFrame = VW < 760 ? 30 : 0;      // cheaper loop on phones
+    if (elapsed < minFrame) return;
+    var dt = Math.min(0.1, elapsed / 1000);
+    if (!(dt > 0)) dt = 0.016;
+    lastT = t;
+
+    scrollFrac = scrollFraction();
+    var targetZ = scrollFrac * mapEnd;
+
+    var s = t / 1000;
+    targetZ += Math.sin(s * 0.34) * SEG_LEN * 7 + Math.sin(s * 0.11) * SEG_LEN * 4;   // idle drift
+    camX = Math.sin(s * 0.23) * 0.16 + Math.sin(s * 0.61) * 0.04;
+    camZ += (targetZ - camZ) * Math.min(1, dt * 6.5);
+    if (camZ < 0) camZ = 0;
+
+    var moved = camZ - camZPrev;
+    camZPrev = camZ;
+
+    // Distant peaks shift with heading (curve), barely with forward motion.
+    var dseg = moved / SEG_LEN;
+    var curveHere = findSegment(camZ).curve;
+    bgFar -= dseg * (curveHere * 1.1 + 0.05);
+    bgNear -= dseg * (curveHere * 2.0 + 0.10);
+
+    var inst = Math.min(199, Math.abs(moved) / dt * 0.0013);
+    speedSmoothed += (inst - speedSmoothed) * Math.min(1, dt * 4.5);
+    if (speedSmoothed < 0.5) speedSmoothed = 0;
+
+    render();
+    updateHud(t, false);
+  }
+
+  function renderStatic() {
+    if (!ctx || !VW) return;
+    scrollFrac = scrollFraction();
+    camZ = scrollFrac * mapEnd;
+    camZPrev = camZ;
+    camX = 0;
+    speedSmoothed = 0;
+    render();
+    updateHud(now(), true);
+  }
+
+  function start() {
+    if (!ctx || mode !== "run") return;
+    if (!VW) { try { resize(); } catch (e) { return; } }
+    if (motionOK) {
+      running = true;
+      lastT = now();
+      if (!rafId) rafId = requestAnimationFrame(step);
+    } else {
+      running = false;
+      renderStatic();
+    }
+  }
+
+  function stop() {
+    running = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    if (ctx && VW) ctx.clearRect(0, 0, VW, VH);
+  }
+
+  function setMode(m, persist) {
+    mode = m;
+    root.setAttribute("data-mode", m);
+    if (btn) {
+      btn.setAttribute("aria-pressed", m === "calm" ? "true" : "false");
+      if (btnLabel) btnLabel.textContent = (m === "calm") ? "Calm mode: on" : "Calm mode";
+    }
+    if (persist) save("run-mode", m);
+    if (m === "run") start(); else stop();
+  }
+
+  if (btn) {
+    btn.addEventListener("click", function () {
+      setMode(mode === "calm" ? "run" : "calm", true);
+    });
+  }
+
+  /* =========================================================
+     12. Events
+     ========================================================= */
+  var pending = false;
+  function onScroll() {
+    if (mode !== "run" || !ctx) return;
+    if (motionOK) {
+      if (!running) { running = true; lastT = now(); }
+      if (!rafId) rafId = requestAnimationFrame(step);
+      return;
+    }
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () { pending = false; renderStatic(); });
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  window.addEventListener("resize", function () {
+    if (!ctx) return;
+    try { resize(); } catch (e) { return; }
+    if (mode === "run") { if (motionOK) onScroll(); else renderStatic(); }
+  }, { passive: true });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      running = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    } else if (mode === "run" && motionOK) {
+      running = true;
+      lastT = now();
+      if (!rafId) rafId = requestAnimationFrame(step);
+    }
+  });
+
+  if (reduceQ && reduceQ.addEventListener) {
+    reduceQ.addEventListener("change", function (e) {
+      motionOK = !e.matches;
+      if (mode === "run") { stop(); start(); }
+    });
+  }
+
+  window.addEventListener("load", function () {
+    if (!ctx || mode !== "run") return;
+    try { syncGates(); } catch (e) {}
+    if (!motionOK) renderStatic();
+  });
+
+  function boot() {
+    collectGates();
+    if (!ctx) {
+      // No canvas: fall back to the plain document and hide the toggle.
+      root.setAttribute("data-mode", "calm");
+      if (btn) btn.style.display = "none";
+      return;
+    }
+    try {
+      resize();
+    } catch (e) {
+      root.setAttribute("data-mode", "calm");
+      if (btn) btn.style.display = "none";
+      return;
+    }
+    setMode(mode, false);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>

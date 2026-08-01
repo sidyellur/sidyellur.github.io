@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Siddharth Yellur</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Siddharth Yellur — engineer. Developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer. And Black Diamond Brawl, a downhill snowboarding combat racer whose art is generated entirely in code.">
+<meta name="color-scheme" content="light">
+<style>
+  /* ---------------------------------------------------------------
+     Siddharth Yellur — a single file. No external requests, no images,
+     no build step. Set in Georgia, on paper.
+     --------------------------------------------------------------- */
+
+  :root {
+    --paper:      #FBFAF7;
+    --paper-deep: #F3F0E8;
+    --ink:        #16150F;
+    --ink-soft:   #4A4638;
+    --ink-faint:  #7C7767;
+    --accent:     #6E1420;
+    --accent-lt:  #96313D;
+    --rule:       #DAD4C4;
+    --rule-hair:  #E7E2D5;
+
+    --serif: Georgia, "Times New Roman", Times, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 35rem;
+    --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (max-width: 30rem) { body { font-size: 17px; } }
+
+  /* ---- shared shells ---- */
+
+  .shell {
+    width: 100%;
+    max-width: 62rem;
+    margin: 0 auto;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+
+  /* ---- links ---- */
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    transition: background-size .22s ease, color .22s ease;
+  }
+  a:hover { color: var(--ink); background-size: 100% 2px; }
+
+  a:focus-visible,
+  a.plain:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    background-color: rgba(110, 20, 32, .07);
+  }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  a.plain { background-image: none; }
+  a.plain:hover { background-image: linear-gradient(currentColor, currentColor); background-size: 100% 1px; }
+
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--ink);
+    color: var(--paper);
+    padding: .6rem 1rem;
+    font-family: var(--sans);
+    font-size: .8rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    z-index: 50;
+  }
+  .skip:focus { left: 0; }
+
+  /* ---- typographic furniture ---- */
+
+  .label {
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0;
+  }
+
+  .rule       { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+  .rule-hair  { border: 0; border-top: 1px solid var(--rule-hair); margin: 0; }
+  .rule-double {
+    border: 0;
+    border-top: 3px double var(--rule);
+    margin: 0;
+  }
+
+  /* ---- folio bar (sticky) ---- */
+
+  .folio {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .folio-in {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
+  }
+  .folio-name {
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .folio nav ul {
+    display: flex;
+    gap: clamp(.85rem, 3vw, 1.75rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .folio nav a {
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background-image: none;
+  }
+  .folio nav a:hover { color: var(--accent); }
+  .folio nav a[aria-current="true"] {
+    color: var(--accent);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 1px;
+  }
+  @media (max-width: 26rem) {
+    .folio-name { display: none; }
+    .folio-in { justify-content: flex-start; }
+  }
+
+  /* ---- masthead ---- */
+
+  .masthead { padding-top: clamp(3rem, 9vw, 6.5rem); }
+
+  .masthead .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.1rem;
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .masthead .eyebrow span::before {
+    content: "";
+    display: inline-block;
+    width: .34rem; height: .34rem;
+    background: var(--accent);
+    transform: rotate(45deg);
+    margin-right: .55rem;
+    vertical-align: .12em;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(3.1rem, 13.5vw, 8.2rem);
+    line-height: .88;
+    letter-spacing: -.028em;
+    margin: 0;
+    max-width: 14ch;
+  }
+  h1 .h1-line { display: block; }
+  h1 .h1-line + .h1-line { text-indent: .06em; }
+
+  .deck {
+    font-size: clamp(1.22rem, 2.6vw, 1.72rem);
+    line-height: 1.42;
+    color: var(--ink-soft);
+    max-width: 30ch;
+    margin: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(1.8rem, 4vw, 2.6rem);
+    text-wrap: pretty;
+  }
+  .deck em { font-style: italic; color: var(--ink); }
+
+  .colophon-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.6rem 2.5rem;
+    padding: 1.4rem 0 clamp(2.5rem, 7vw, 4.5rem);
+  }
+  .colophon-strip dt { margin-bottom: .5rem; }
+  .colophon-strip dd {
+    margin: 0;
+    font-size: .95rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .colophon-strip dd a { color: var(--accent); }
+  .colophon-strip .sep { color: var(--rule); padding: 0 .35em; }
+
+  /* ---- section headers ---- */
+
+  .section { padding-top: clamp(2.75rem, 7vw, 4.5rem); }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: .7rem;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-head h2 {
+    font-family: var(--sans);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--ink);
+  }
+  .section-head h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .section-head .aside-note {
+    font-family: var(--sans);
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+  @media (max-width: 34rem) { .section-head .aside-note { display: none; } }
+
+  /* ---- feature articles ---- */
+
+  .feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.9rem;
+    padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(2.5rem, 6vw, 4rem);
+    border-bottom: 1px solid var(--rule);
+  }
+  .feature:last-of-type { border-bottom: 0; }
+
+  @media (min-width: 60rem) {
+    .feature {
+      grid-template-columns: 13.5rem minmax(0, 1fr);
+      column-gap: 3.25rem;
+      row-gap: 2.4rem;
+    }
+    .f-head  { grid-column: 1 / -1; }
+    .f-side  { grid-column: 1; grid-row: 2; }
+    .f-body  { grid-column: 2; grid-row: 2; }
+  }
+
+  .kicker {
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .kicker .dim { color: var(--ink-faint); }
+
+  .f-head h3 {
+    font-weight: 400;
+    font-size: clamp(2.35rem, 7.2vw, 4.35rem);
+    line-height: .96;
+    letter-spacing: -.02em;
+    margin: 0;
+  }
+  .f-head h3 .sub {
+    display: block;
+    font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+    letter-spacing: 0;
+    line-height: 1.28;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-top: .55rem;
+    max-width: 28ch;
+  }
+
+  .standfirst {
+    font-size: clamp(1.1rem, 2vw, 1.28rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 42ch;
+    margin: 1.4rem 0 0;
+    text-wrap: pretty;
+  }
+
+  /* margin column */
+
+  .f-side { font-family: var(--sans); }
+  .f-side dl { margin: 0; }
+  .f-side dt {
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: .7rem;
+    border-top: 1px solid var(--rule-hair);
+    margin-bottom: .35rem;
+  }
+  .f-side dd {
+    margin: 0 0 1.15rem;
+    font-size: .82rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    overflow-wrap: anywhere;
+  }
+  .f-side dd:last-of-type { margin-bottom: 0; }
+  .f-side dd a { color: var(--accent); }
+  .f-side .stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .f-side .stack li {
+    display: inline-block;
+    font-size: .74rem;
+    letter-spacing: .02em;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: .12rem .45rem;
+    margin: 0 .25rem .35rem 0;
+    background: var(--paper-deep);
+  }
+  .cmd {
+    font-family: var(--mono);
+    font-size: .72rem;
+    line-height: 1.5;
+    background: var(--paper-deep);
+    border-left: 2px solid var(--accent);
+    padding: .5rem .6rem;
+    margin: 0;
+    overflow-x: auto;
+    color: var(--ink);
+    white-space: pre;
+  }
+  .f-side .version {
+    font-variant-numeric: tabular-nums;
+    font-size: .82rem;
+    color: var(--ink);
+  }
+
+  /* body prose */
+
+  .f-body { max-width: var(--measure); }
+  .f-body p {
+    margin: 0 0 1.15em;
+    text-wrap: pretty;
+  }
+  .f-body p + p { text-indent: 1.35em; }
+  .f-body p.lede { font-size: 1.06em; }
+  .f-body p.lede::first-letter {
+    float: left;
+    font-size: 3.9em;
+    line-height: .78;
+    padding: .06em .1em 0 0;
+    margin-top: .04em;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .f-body strong { font-weight: 700; }
+  .f-body em { font-style: italic; }
+
+  code, .kbd {
+    font-family: var(--mono);
+    font-size: .84em;
+    background: var(--paper-deep);
+    padding: .08em .3em;
+    border-radius: 2px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .f-side code { background: transparent; padding: 0; }
+
+  /* pull quote */
+
+  .pull {
+    margin: 2rem 0 2rem;
+    padding: 0 0 0 1.15rem;
+    border-left: 2px solid var(--accent);
+    font-size: clamp(1.25rem, 3vw, 1.62rem);
+    line-height: 1.28;
+    letter-spacing: -.012em;
+    color: var(--ink);
+    text-indent: 0;
+  }
+  .pull p { margin: 0; text-indent: 0 !important; }
+  .pull .attrib {
+    display: block;
+    font-family: var(--sans);
+    font-size: .66rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: .8rem;
+  }
+  @media (min-width: 60rem) {
+    .pull { margin-left: -1.9rem; }
+  }
+
+  .result {
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 1.6;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule-hair);
+    border-left: 2px solid var(--ink);
+    padding: .8rem .9rem;
+    margin: 0 0 1.4em;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .result .k { color: var(--accent); }
+
+  /* dinkus */
+
+  .dinkus {
+    display: block;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 3rem) 0 0;
+    color: var(--rule);
+  }
+  .dinkus svg { display: block; margin: 0 auto; }
+
+  /* ---- about ---- */
+
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.9rem;
+    padding: clamp(2.5rem, 6vw, 3.5rem) 0 clamp(2rem, 5vw, 3rem);
+  }
+  @media (min-width: 60rem) {
+    .about {
+      grid-template-columns: 13.5rem minmax(0, 1fr);
+      column-gap: 3.25rem;
+    }
+  }
+  .about .a-body { max-width: var(--measure); }
+  .about .a-body p { margin: 0 0 1.15em; text-wrap: pretty; }
+  .about .a-body p:first-child { font-size: 1.25rem; line-height: 1.5; }
+  .about .a-body p:last-child { margin-bottom: 0; }
+
+  /* ---- earlier work ---- */
+
+  .earlier {
+    padding: clamp(2rem, 5vw, 3rem) 0 clamp(1rem, 3vw, 2rem);
+  }
+  .earlier ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 46rem;
+  }
+  .earlier li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .15rem .5rem;
+    padding: .95rem 0;
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  .earlier li:first-child { border-top: 1px solid var(--rule-hair); }
+  @media (min-width: 40rem) {
+    .earlier li {
+      grid-template-columns: minmax(0, 1fr) 12rem;
+      align-items: baseline;
+    }
+  }
+  .earlier .t { font-size: 1.06rem; }
+  .earlier .m {
+    font-family: var(--sans);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  @media (min-width: 40rem) { .earlier .m { text-align: right; } }
+
+  /* ---- footer ---- */
+
+  footer {
+    margin-top: clamp(3rem, 8vw, 5rem);
+    border-top: 3px double var(--rule);
+    padding: clamp(2rem, 5vw, 3rem) 0 clamp(2.5rem, 6vw, 4rem);
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.8rem 2.5rem;
+    align-items: start;
+  }
+  .foot-grid h2 { margin: 0 0 .6rem; }
+  .foot-links { list-style: none; margin: 0; padding: 0; }
+  .foot-links li { margin-bottom: .35rem; font-size: 1.02rem; }
+  .foot-note {
+    font-family: var(--sans);
+    font-size: .74rem;
+    line-height: 1.6;
+    color: var(--ink-faint);
+    max-width: 34ch;
+  }
+  .foot-sign {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin: 0 0 .5rem;
+  }
+
+  /* ---- reduced motion ---- */
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+
+  @media print {
+    .folio { position: static; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="folio">
+  <div class="shell folio-in">
+    <span class="folio-name">Siddharth&nbsp;Yellur</span>
+    <nav aria-label="Sections">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#earlier">Earlier</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<header class="shell masthead">
+  <p class="label eyebrow">
+    <span>Developer tooling for AI agents</span>
+    <span>Terminals, memory, and one snowboarding game</span>
+  </p>
+
+  <h1><span class="h1-line">Siddharth</span><span class="h1-line">Yellur</span></h1>
+
+  <p class="deck">
+    An engineer who builds the unglamorous layer underneath agents &mdash;
+    <em>memory that outlives the session</em>, <em>a terminal that reports
+    what actually happened</em> &mdash; and, lately, a downhill snowboarding
+    game whose every pixel is drawn in code.
+  </p>
+
+  <hr class="rule-double">
+
+  <dl class="colophon-strip">
+    <div>
+      <dt class="label">In this issue</dt>
+      <dd>Three projects, at length: <a href="#tether">tether</a><span class="sep">/</span><a href="#cleat">cleat</a><span class="sep">/</span><a href="#brawl">Black&nbsp;Diamond&nbsp;Brawl</a></dd>
+    </div>
+    <div>
+      <dt class="label">Working languages</dt>
+      <dd>Python, TypeScript. MCP servers, PTYs, SQLite, and a pseudo-3D renderer.</dd>
+    </div>
+    <div>
+      <dt class="label">Correspondence</dt>
+      <dd><a href="https://github.com/sidyellur">GitHub</a><span class="sep">/</span><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></dd>
+    </div>
+  </dl>
+</header>
+
+<main id="main">
+
+  <!-- ============================ 01 / WORK ============================ -->
+  <section id="work" class="shell section" aria-labelledby="work-h">
+    <div class="section-head">
+      <h2 id="work-h"><span class="num">01</span> &nbsp;/&nbsp; Work</h2>
+      <p class="aside-note">Three features, in depth</p>
+    </div>
+
+    <!-- ---------------------------- tether ---------------------------- -->
+    <article class="feature" id="tether" aria-labelledby="tether-h">
+      <div class="f-head">
+        <p class="kicker">Memory <span class="dim">&mdash; Python &middot; MCP &middot; SQLite</span></p>
+        <h3 id="tether-h">tether<span class="sub">A shared memory layer for personal agents.</span></h3>
+        <p class="standfirst">
+          One MCP server, one local SQLite file, and four verbs &mdash;
+          <code>remember</code>, <code>recall</code>, <code>link</code>,
+          <code>forget</code> &mdash; so that what an agent learns about you
+          survives the session it learned it in.
+        </p>
+      </div>
+
+      <aside class="f-side" aria-label="tether — details">
+        <dl>
+          <dt>Status</dt>
+          <dd class="version">v0.5.1</dd>
+
+          <dt>Stack</dt>
+          <dd>
+            <ul class="stack">
+              <li>Python</li><li>MCP</li><li>SQLite&nbsp;/&nbsp;FTS5</li><li>libSQL&nbsp;/&nbsp;Turso</li><li>Static embeddings</li>
+            </ul>
+          </dd>
+
+          <dt>Install</dt>
+          <dd><pre class="cmd">claude mcp add tether \
+  -- uvx tether-memory</pre></dd>
+
+          <dt>Package</dt>
+          <dd><code>tether-memory</code> on PyPI</dd>
+
+          <dt>Repository</dt>
+          <dd><a href="https://github.com/sidyellur/tether">github.com/sidyellur/tether</a></dd>
+        </dl>
+      </aside>
+
+      <div class="f-body">
+        <p class="lede">
+          Agents are amnesiacs by construction. Every session opens on a blank
+          desk; whatever was established last time &mdash; how your repositories
+          are laid out, which database you actually use, that you prefer the
+          terse answer &mdash; has to be established again. tether is the
+          durable notebook that sits beside the agent instead of inside it: an
+          MCP server backed by a single SQLite file on your own disk, which any
+          MCP-compatible client can write to and read from.
+        </p>
+
+        <p>
+          It runs local-only with zero configuration, which is the point &mdash;
+          nothing to sign up for, nothing to keep alive. Point it at a hosted
+          libSQL/Turso primary and that same file quietly becomes an embedded
+          replica, syncing memory across every device you work from in
+          near-real-time. The storage model does not change; only its reach does.
+        </p>
+
+        <p>
+          Retrieval is hybrid. A <code>recall</code> fuses keyword results from
+          SQLite&rsquo;s FTS5 index with semantic vector results, so a query for
+          &ldquo;automobile&rdquo; still finds the note you wrote about your
+          car. The embedding model is deliberately small and static and runs on
+          your machine: no network call, no API key, no third party learning
+          what you asked.
+        </p>
+
+        <p>
+          Above that sits an associative usage graph. Edges come from three
+          local, deterministic sources &mdash; semantic nearest-neighbours,
+          explicit <code>link()</code> calls, and <em>hebbian</em> edges, where
+          memories recalled together get wired together over time. Nothing is
+          inferred by a model in the cloud. And because association is the kind
+          of thing that goes wrong invisibly, every hit carries a
+          <code>via</code> receipt explaining exactly why it surfaced.
+        </p>
+
+        <blockquote class="pull">
+          <p>Memories recalled together get wired together. Every hit carries a receipt explaining why it surfaced.</p>
+        </blockquote>
+
+        <p>
+          Recall is seed-dominant. Top direct matches are locked in place and
+          associations are only ever allowed to fill the slots below them, so
+          switching association on can never demote a good hit &mdash; a small
+          rule that makes the clever feature safe to leave enabled.
+        </p>
+
+        <p>
+          The store also tidies itself. A hub-curated boot index surfaces the
+          load-bearing memories &mdash; those with the highest behavioral degree
+          &mdash; alongside the most recent ones, so a fresh session opens on
+          what matters rather than on what happened last. An opt-in sweep
+          soft-archives memories that are both old <em>and</em> behaviorally
+          isolated. Nothing is ever hard-deleted.
+        </p>
+
+        <p>
+          There is an optional final move: crystallization. tether watches for
+          dense clusters of related memories and offers them up to be
+          <em>named</em> as principles. It finds the structure; the agent
+          supplies the words.
+        </p>
+
+        <blockquote class="pull">
+          <p>Returning query-centred excerpts instead of full bodies cut a recall response from 66.9&nbsp;KB to 2.0&nbsp;KB.</p>
+          <span class="attrib">Response payload, before &amp; after</span>
+        </blockquote>
+
+        <p>
+          Every one of those features degrades cleanly to plain keyword recall.
+          That is the governing constraint: tether is a convenience layer, more
+          useful when it is present, and never the reason an agent breaks when
+          it is not.
+        </p>
+      </div>
+    </article>
+
+    <!-- ---------------------------- cleat ---------------------------- -->
+    <article class="feature" id="cleat" aria-labelledby="cleat-h">
+      <div class="f-head">
+        <p class="kicker">Terminals <span class="dim">&mdash; Python &middot; MCP &middot; PTY</span></p>
+        <h3 id="cleat-h">cleat<span class="sub">A headless terminal layer for AI agents.</span></h3>
+        <p class="standfirst">
+          A persistent shell running behind a PTY, its byte stream parsed for
+          OSC&nbsp;133 shell-integration marks and handed to an agent as
+          structured results &mdash; not as escape-code soup.
+        </p>
+      </div>
+
+      <aside class="f-side" aria-label="cleat — details">
+        <dl>
+          <dt>Stack</dt>
+          <dd>
+            <ul class="stack">
+              <li>Python</li><li>MCP</li><li>PTY&nbsp;/&nbsp;termios</li><li>OSC&nbsp;133</li><li>pyte</li>
+            </ul>
+          </dd>
+
+          <dt>Install</dt>
+          <dd><pre class="cmd">claude mcp add cleat \
+  -- uvx cleat</pre></dd>
+
+          <dt>Package</dt>
+          <dd><code>cleat</code> on PyPI</dd>
+
+          <dt>Session states</dt>
+          <dd><code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code>, <code>tui</code></dd>
+
+          <dt>Repository</dt>
+          <dd><a href="https://github.com/sidyellur/cleat">github.com/sidyellur/cleat</a></dd>
+        </dl>
+      </aside>
+
+      <div class="f-body">
+        <p class="lede">
+          Give an agent a terminal and you immediately hit a problem that looks
+          trivial and is not. You can scrape a pseudo-terminal for everything
+          the shell prints &mdash; but the one fact you most need is not printed
+          anywhere. The shell knows <code>$?</code>; it simply never says it out
+          loud.
+        </p>
+
+        <blockquote class="pull">
+          <p>When you scrape a PTY, the exit code isn&rsquo;t in the stream at all.</p>
+          <span class="attrib">The premise</span>
+        </blockquote>
+
+        <p>
+          cleat&rsquo;s answer is to stop guessing. It injects OSC&nbsp;133
+          shell-integration marks into the shells it spawns and parses them back
+          out of the stream, turning a wall of escape codes into an honest
+          record: what was printed, what the command actually returned, which
+          files it touched.
+        </p>
+
+        <pre class="result" aria-label="Example structured result">{ <span class="k">"stdout"</span>: "...", <span class="k">"exit_code"</span>: 0,
+  <span class="k">"completed"</span>: true, <span class="k">"state"</span>: "idle" }</pre>
+
+        <p>
+          The session persists between calls, which is the other half of the
+          idea. A <code>cd</code> holds. An <code>export</code> holds. An
+          activated virtualenv, an <code>ssh</code> session &mdash; all of it
+          carries forward, because it is one long-lived shell rather than a
+          fresh subprocess per command. No amount of cleverness gets a
+          subprocess to remember where it was.
+        </p>
+
+        <p>
+          Every response also carries a <code>state</code>, and that state is
+          read rather than inferred. It is derived from termios flags and the
+          foreground process group &mdash; facts available only to the process
+          holding the PTY, never guessed from output timing. The shell is either
+          <code>idle</code>, <code>running</code>,
+          <code>awaiting-input</code>, at a <code>password</code> prompt, or
+          inside a <code>tui</code>. When it is a password prompt, cleat refuses
+          to type into it without explicit human consent.
+        </p>
+
+        <p>
+          Then there is the case of a program that lies. A command can print a
+          counterfeit OSC&nbsp;133 sequence to its own stdout and hand the agent
+          a clean exit code it never earned. So every session gets a fresh
+          <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat
+          injects; a mark arriving with a missing or wrong <code>k=</code> is
+          ignored outright and surfaced as <code>spoofed_marks</code>. The agent
+          gets told when something misrepresented how it finished.
+        </p>
+
+        <p>
+          None of this asks anything of your own setup. cleat is terminal-agnostic
+          &mdash; not a terminal emulator, not a patch to the one you already use.
+        </p>
+      </div>
+    </article>
+
+    <!-- ---------------------- black diamond brawl ---------------------- -->
+    <article class="feature" id="brawl" aria-labelledby="brawl-h">
+      <div class="f-head">
+        <p class="kicker">Games <span class="dim">&mdash; Phaser&nbsp;3 &middot; TypeScript &middot; Vite</span></p>
+        <h3 id="brawl-h">Black Diamond Brawl<span class="sub">A downhill snowboarding combat racer.</span></h3>
+        <p class="standfirst">
+          Road Rash on a snowboard: one seeded, procedurally generated slope,
+          a finish line, and a handful of rivals who would rather you did not
+          reach it. Built solo, as a learning project.
+        </p>
+      </div>
+
+      <aside class="f-side" aria-label="Black Diamond Brawl — details">
+        <dl>
+          <dt>Status</dt>
+          <dd class="version">v1 complete &mdash; nine phases<br>v2 visual overhaul complete</dd>
+
+          <dt>Stack</dt>
+          <dd>
+            <ul class="stack">
+              <li>Phaser&nbsp;3</li><li>TypeScript</li><li>Vite</li><li>Pseudo-3D renderer</li>
+            </ul>
+          </dd>
+
+          <dt>Art assets</dt>
+          <dd>None on disk. Every sprite, gradient and weather effect is generated in code at boot.</dd>
+
+          <dt>Contrast gate</dt>
+          <dd>Build fails below &Delta;L*&nbsp;12 on gameplay edges, &Delta;L*&nbsp;25 on sprite outlines.</dd>
+
+          <dt>Repository</dt>
+          <dd><a href="https://github.com/sidyellur/black-diamond-brawl">github.com/sidyellur/black-diamond-brawl</a></dd>
+        </dl>
+      </aside>
+
+      <div class="f-body">
+        <p class="lede">
+          A run is a single race: a fixed-length, seeded, procedurally generated
+          slope with a finish line at the bottom of it. You dodge trees, rocks
+          and moguls on the way down, catch trick air off the moguls and the
+          hill crests &mdash; at speed, a crest launches you whether you asked
+          for it or not &mdash; and shove or ski-pole your way past AI rivals
+          racing the same course you are.
+        </p>
+
+        <p>
+          Score is assembled from finishing fast, landing hits on rivals,
+          threading near-misses, and landing tricks, which means the fastest
+          line and the highest-scoring line are rarely the same line. Wipe out
+          badly enough before the finish and the run simply ends early.
+        </p>
+
+        <p>
+          The look is a classic segment-based pseudo-3D renderer &mdash; the
+          behind-the-rider, road-rushing-at-you perspective of OutRun and Road
+          Rash &mdash; with pixel art sprites laid over it. It is a technique
+          older than the hardware most people will play it on, and it still
+          reads instantly.
+        </p>
+
+        <blockquote class="pull">
+          <p>All art and atmosphere is generated in code at boot. There are no image files in the repository at all.</p>
+        </blockquote>
+
+        <p>
+          Doing it that way makes colour a program rather than an asset, so
+          colour gets governed like one. A palette module owns every value, and
+          a build gate enforces it: the build fails if any gameplay-relevant
+          edge drops below &Delta;L*&nbsp;12, or if any sprite outline falls
+          below &Delta;L*&nbsp;25 against the snow behind it. A rock you cannot
+          see against a white slope is not a difficulty setting; it is a bug,
+          and it is caught before it ships.
+        </p>
+
+        <p>
+          Balance is held to the same standard. The game ships with a headless
+          seeded combat simulation and a solvability model, so a course can be
+          proven survivable and a fight proven fair without anyone opening a
+          browser to check.
+        </p>
+      </div>
+    </article>
+
+    <span class="dinkus" aria-hidden="true">
+      <svg width="72" height="12" viewBox="0 0 72 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 6 L12 0 L18 6 L12 12 Z" fill="currentColor"/>
+        <path d="M30 6 L36 0 L42 6 L36 12 Z" fill="currentColor"/>
+        <path d="M54 6 L60 0 L66 6 L60 12 Z" fill="currentColor"/>
+      </svg>
+    </span>
+  </section>
+
+  <!-- ============================ 02 / ABOUT ============================ -->
+  <section id="about" class="shell section" aria-labelledby="about-h">
+    <div class="section-head">
+      <h2 id="about-h"><span class="num">02</span> &nbsp;/&nbsp; About</h2>
+      <p class="aside-note">The short version</p>
+    </div>
+
+    <div class="about">
+      <aside class="f-side" aria-label="About — details">
+        <dl>
+          <dt>Education</dt>
+          <dd>M.S. Computer Science<br>University of Florida</dd>
+          <dd>B.E. Computer Science<br>Anna University</dd>
+
+          <dt>Elsewhere</dt>
+          <dd><a href="https://github.com/sidyellur">github.com/sidyellur</a></dd>
+          <dd><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></dd>
+        </dl>
+      </aside>
+
+      <div class="a-body">
+        <p>
+          Siddharth Yellur is an engineer who builds developer tooling for AI
+          agents &mdash; and, lately, a video game.
+        </p>
+        <p>
+          The through-line in the work is a preference for the layer nobody
+          demos: memory that persists after the window closes, a terminal that
+          can prove what a command returned, a renderer whose colours are
+          checked by the build rather than by eye. Small tools, made to be
+          honest about what they know, and to fail quietly rather than loudly
+          when they do not know it.
+        </p>
+        <p>
+          Most of it is Python and TypeScript, most of it is open source, and
+          most of it started because the thing did not exist and the absence got
+          annoying enough.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== 03 / EARLIER =========================== -->
+  <section id="earlier" class="shell section" aria-labelledby="earlier-h">
+    <div class="section-head">
+      <h2 id="earlier-h"><span class="num">03</span> &nbsp;/&nbsp; Earlier work</h2>
+      <p class="aside-note">From the back catalogue</p>
+    </div>
+
+    <div class="earlier">
+      <ol>
+        <li>
+          <span class="t"><a href="https://github.com/sidyellur/Vue-Weather-App">Vue Weather App</a></span>
+          <span class="m">Vue.js &middot; OpenWeather API</span>
+        </li>
+        <li>
+          <span class="t"><a href="https://github.com/sidyellur/RBT-Min-Heap-">Red-Black Tree / Min-Heap city builder</a></span>
+          <span class="m">Java &middot; Academic</span>
+        </li>
+        <li>
+          <span class="t"><a href="https://github.com/sidyellur/TicTacToe">TicTacToe</a></span>
+          <span class="m">React</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contact" class="shell" aria-labelledby="contact-h">
+  <div class="foot-grid">
+    <div>
+      <p class="foot-sign">Siddharth Yellur</p>
+      <p class="label">04 &nbsp;/&nbsp; Contact</p>
+    </div>
+    <div>
+      <h2 id="contact-h" class="label">Where to find the work</h2>
+      <ul class="foot-links">
+        <li><a href="https://github.com/sidyellur">GitHub &mdash; sidyellur</a></li>
+        <li><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="label">Colophon</p>
+      <p class="foot-note">
+        Set in Georgia, with Helvetica for the small caps. One hand-written HTML
+        file, no build step, no images, no external requests &mdash; it renders
+        the same with the network switched off.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Marks the current section in the folio bar. Purely decorative:
+  // every link works, and every word is readable, without it.
+  (function () {
+    var links = Array.prototype.slice.call(
+      document.querySelectorAll('.folio nav a[href^="#"]')
+    );
+    if (!links.length || !('IntersectionObserver' in window)) return;
+
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
+      var current = null;
+      targets.forEach(function (t) { if (visible[t.id] && !current) current = t.id; });
+      links.forEach(function (a) {
+        if (current && a.getAttribute('href') === '#' + current) {
+          a.setAttribute('aria-current', 'true');
+        } else {
+          a.removeAttribute('aria-current');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+    targets.forEach(function (t) { io.observe(t); });
+  })();
+</script>
+
+</body>
+</html>

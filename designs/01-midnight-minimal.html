@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siddharth Yellur</title>
+<meta name="description" content="Siddharth Yellur — engineer building developer tooling for AI agents: tether, a shared memory layer, and cleat, a headless terminal layer. Plus Black Diamond Brawl, a downhill snowboarding combat racer.">
+<meta name="color-scheme" content="dark">
+<style>
+  :root {
+    --bg:      #0B0C0E;
+    --fg:      #E8E8E6;
+    --muted:   #8C8F94;
+    --dim:     #6A6D72;
+    --accent:  #E9A05C;
+    --rule:    rgba(232, 232, 230, 0.09);
+    --rule-2:  rgba(232, 232, 230, 0.14);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --measure: 65ch;
+    --pad: clamp(1.25rem, 5vw, 3rem);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: rgba(233, 160, 92, 0.24); color: #fff; }
+
+  a { color: inherit; }
+
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 1px;
+  }
+
+  /* ---------- layout ---------- */
+
+  .wrap {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: var(--pad);
+    padding-right: var(--pad);
+  }
+
+  .measure { max-width: var(--measure); }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+
+  /* ---------- type ---------- */
+
+  h1, h2, h3 {
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p { margin: 0 0 1.15em; }
+  p:last-child { margin-bottom: 0; }
+
+  .mono {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--dim);
+    font-weight: 400;
+  }
+
+  .lede { color: var(--muted); }
+
+  /* ---------- skip link ---------- */
+
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    color: var(--fg);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--accent);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+  .skip:focus {
+    left: 1rem;
+    top: 1rem;
+  }
+
+  /* ---------- header ---------- */
+
+  .site-header {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .site-header .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .site-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .site-nav a:hover { color: var(--fg); }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-top: clamp(4rem, 13vh, 7.5rem);
+    padding-bottom: clamp(4.5rem, 13vh, 8rem);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -30% -10% auto -20%;
+    height: 130%;
+    background: radial-gradient(46% 55% at 22% 32%, rgba(233, 160, 92, 0.075), rgba(233, 160, 92, 0) 68%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  h1 {
+    font-size: clamp(2.9rem, 9.5vw, 5.25rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-intro {
+    font-size: clamp(1.0625rem, 2.2vw, 1.3125rem);
+    line-height: 1.55;
+    letter-spacing: -0.014em;
+    color: var(--fg);
+    max-width: 44ch;
+  }
+
+  .hero-intro + .hero-intro {
+    color: var(--muted);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+    max-width: var(--measure);
+    margin-top: 1.5rem;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 2.25rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+  }
+
+  /* ---------- section scaffolding ---------- */
+
+  .section {
+    padding-top: clamp(3.5rem, 8vh, 5.5rem);
+    padding-bottom: clamp(3.5rem, 8vh, 5.5rem);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .section-head h2 {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-head .count {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    margin-left: auto;
+  }
+
+  /* ---------- project ---------- */
+
+  .project {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding-bottom: clamp(3.5rem, 9vh, 6rem);
+  }
+
+  .project + .project {
+    padding-top: clamp(3.5rem, 9vh, 6rem);
+    border-top: 1px solid var(--rule);
+  }
+
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .project-meta .idx { color: var(--accent); }
+
+  .project-body { max-width: var(--measure); }
+
+  .project h3 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    letter-spacing: -0.04em;
+    margin-bottom: 0.75rem;
+  }
+
+  .project h3 .paren {
+    color: var(--dim);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 0.42em;
+    font-family: var(--mono);
+    text-transform: none;
+    vertical-align: 0.5em;
+    margin-left: 0.7em;
+  }
+
+  .positioning {
+    font-size: 1.125rem;
+    line-height: 1.5;
+    letter-spacing: -0.014em;
+    color: var(--fg);
+    margin-bottom: 1.75rem;
+    max-width: 46ch;
+  }
+
+  .project-body p:not(.positioning) { color: var(--muted); }
+
+  .project-body strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .metric {
+    margin: 1.75rem 0;
+    padding-left: 1.125rem;
+    border-left: 1px solid var(--rule-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .metric .figure {
+    font-family: var(--mono);
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  .project-body p code {
+    color: var(--fg);
+    background: rgba(232, 232, 230, 0.055);
+    border-radius: 2px;
+    padding: 0.1em 0.34em;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+  }
+
+  .tags li {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.055em;
+    color: var(--muted);
+    border: 1px solid var(--rule-2);
+    border-radius: 2px;
+    padding: 0.3rem 0.55rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .install {
+    margin-top: 1.5rem;
+    border: 1px solid var(--rule-2);
+    border-radius: 3px;
+    padding: 0.85rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--fg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  .install .prompt {
+    color: var(--accent);
+    user-select: none;
+    margin-right: 0.65rem;
+  }
+
+  .install code { font-size: 1em; }
+
+  .result {
+    margin-top: 1.5rem;
+    border-left: 1px solid var(--rule-2);
+    padding: 0.15rem 0 0.15rem 1.125rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--muted);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .result code { font-size: 1em; color: var(--muted); }
+  .result .k { color: var(--fg); }
+
+  .out {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(233, 160, 92, 0.35);
+    padding-bottom: 0.2rem;
+    transition: border-color 200ms ease;
+  }
+  .out:hover { border-bottom-color: var(--accent); }
+  .out .arrow { font-size: 0.9em; }
+
+  @media (min-width: 900px) {
+    .project {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      gap: 0 3.5rem;
+    }
+    .project-meta {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-top: 0.6rem;
+    }
+  }
+
+  /* ---------- earlier work ---------- */
+
+  .earlier {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: var(--measure);
+  }
+
+  .earlier li {
+    border-top: 1px solid var(--rule);
+  }
+  .earlier li:last-child { border-bottom: 1px solid var(--rule); }
+
+  .earlier a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 1rem;
+    padding: 1.05rem 0;
+    text-decoration: none;
+    color: var(--fg);
+    transition: color 200ms ease;
+  }
+  .earlier a:hover { color: var(--accent); }
+
+  .earlier .name {
+    font-size: 1rem;
+    letter-spacing: -0.015em;
+  }
+  .earlier .kind {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    margin-left: auto;
+  }
+
+  /* ---------- about ---------- */
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .about-grid p { color: var(--muted); }
+  .about-grid .measure > p:first-child { color: var(--fg); }
+
+  .facts {
+    margin: 0;
+    max-width: 36ch;
+  }
+  .facts dt {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.45rem;
+  }
+  .facts dt + dt { margin-top: 1.5rem; }
+  .facts dd {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .facts dd + dt { margin-top: 1.5rem; }
+
+  @media (min-width: 900px) {
+    .about-grid {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      gap: 0 3.5rem;
+    }
+    .about-grid .measure { grid-column: 2; }
+    .about-grid .facts {
+      grid-column: 2;
+      margin-top: 2.75rem;
+    }
+  }
+
+  /* ---------- contact / footer ---------- */
+
+  .contact {
+    padding-top: clamp(4rem, 10vh, 7rem);
+    padding-bottom: clamp(3rem, 7vh, 4.5rem);
+    border-top: 1px solid var(--rule);
+  }
+
+  .contact h2 {
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    letter-spacing: -0.04em;
+    margin-bottom: 2rem;
+    max-width: 20ch;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem 2.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .contact-links a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--fg);
+    border-bottom: 1px solid var(--rule-2);
+    padding-bottom: 0.25rem;
+    transition: color 200ms ease, border-color 200ms ease;
+  }
+  .contact-links a:hover {
+    color: var(--accent);
+    border-bottom-color: rgba(233, 160, 92, 0.5);
+  }
+  .contact-links .arrow { color: var(--dim); }
+  .contact-links a:hover .arrow { color: var(--accent); }
+
+  footer.site-footer {
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+    border-top: 1px solid var(--rule);
+  }
+  .site-footer .bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* ---------- motion ---------- */
+
+  .js .rise {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .js .rise.in {
+    opacity: 1;
+    transform: none;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .rise,
+    .js .rise.in {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    * {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="wordmark" href="#main">Siddharth&nbsp;Yellur</a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#earlier">Earlier</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero wrap" aria-labelledby="name">
+    <p class="status"><span class="dot" aria-hidden="true"></span>Building in the open</p>
+    <h1 id="name">Siddharth Yellur</h1>
+    <p class="hero-intro">I build developer tooling for AI&nbsp;agents &mdash; memory that outlives a session, and a terminal an agent can actually reason about.</p>
+    <p class="hero-intro lede">Both ship as MCP servers you install in one line, and both run entirely on your own machine. Lately I&rsquo;ve also been writing a downhill snowboarding combat racer that generates every pixel of its own art at boot.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section wrap" id="work" aria-labelledby="work-h">
+    <div class="section-head">
+      <h2 id="work-h">Selected work</h2>
+      <span class="count" aria-hidden="true">03</span>
+    </div>
+
+    <!-- tether -->
+    <article class="project rise">
+      <div class="project-meta mono">
+        <span class="idx">01</span>
+        <span>v0.5.1</span>
+        <span>PyPI</span>
+      </div>
+      <div class="project-body">
+        <h3>tether<span class="paren">tether-memory</span></h3>
+        <p class="positioning">A shared memory layer for personal agents &mdash; context that follows you instead of dying with the session.</p>
+
+        <p>tether is an MCP server backed by a single local SQLite file. Any MCP-compatible agent can <code>remember</code>, <code>recall</code>, <code>link</code> and <code>forget</code> durable notes &mdash; facts about you, your projects, your preferences. It runs local-only with zero configuration. Point it at a hosted libSQL/Turso primary and that same file becomes an embedded replica, syncing memory across every device in near-real-time.</p>
+
+        <p>Recall is hybrid: keyword results from FTS5 are fused with semantic vector results, so &ldquo;automobile&rdquo; finds the note about your car. The embedding model is small, static, and runs locally &mdash; no network, no API key. From the seed hits, tether walks an <strong>associative usage graph</strong> built from three deterministic local sources: semantic nearest-neighbours, explicit <code>link()</code> calls, and <em>hebbian</em> edges, where memories recalled together get wired together over time. Every hit carries a <code>via</code> receipt explaining why it surfaced.</p>
+
+        <p>Recall is <strong>seed-dominant</strong> by design &mdash; top direct matches are locked in place and associations only fill the slots below them, so turning association on can never demote a good hit. The store also self-organizes: a hub-curated boot index surfaces load-bearing memories, the ones with the highest behavioral degree, alongside recent ones, and an opt-in sweep soft-archives memories that are both old and behaviorally isolated. Nothing is ever hard-deleted. Optional crystallization detects dense clusters of related memories and offers them up to be named as principles &mdash; tether finds the structure, the agent supplies the words.</p>
+
+        <p>Every feature degrades cleanly back to plain keyword recall. It is deliberately a convenience layer: more useful when present, never a thing that breaks the agent when it is not.</p>
+
+        <p class="metric">Returning query-centered excerpts instead of full bodies cut a single recall response from <span class="figure">66.9&thinsp;KB</span> to <span class="figure">2.0&thinsp;KB</span>.</p>
+
+        <ul class="tags">
+          <li>Python</li><li>MCP</li><li>SQLite / FTS5</li><li>libSQL / Turso</li><li>Local static embeddings</li>
+        </ul>
+
+        <div class="install"><span class="prompt" aria-hidden="true">$</span><code>claude mcp add tether -- uvx tether-memory</code></div>
+
+        <a class="out" href="https://github.com/sidyellur/tether">tether on GitHub <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </div>
+    </article>
+
+    <!-- cleat -->
+    <article class="project rise">
+      <div class="project-meta mono">
+        <span class="idx">02</span>
+        <span>PyPI</span>
+      </div>
+      <div class="project-body">
+        <h3>cleat</h3>
+        <p class="positioning">A headless terminal layer for AI agents &mdash; structured results instead of escape-code soup.</p>
+
+        <p>cleat runs a <strong>persistent</strong> shell session behind a PTY, parses its byte stream for OSC&nbsp;133 shell-integration marks, and exposes it to an agent over MCP as structured results: <code>stdout</code>, a real <code>exit_code</code>, the files touched.</p>
+
+        <p>The core insight is that when you scrape a PTY, <strong>the exit code is not in the stream at all</strong>. The shell knows <code>$?</code> and never prints it. So cleat injects OSC&nbsp;133 marks into the shells it spawns and parses them back out. Because the session persists, <code>cd</code>, <code>export</code>, activated venvs and <code>ssh</code> sessions all carry across calls &mdash; something a fresh subprocess per command simply cannot do.</p>
+
+        <p>Every response carries a <code>state</code> derived from termios flags and the foreground process group: facts only the process holding the PTY can read, not guessed from output timing. The states are <code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code> and <code>tui</code> &mdash; and cleat refuses to type into a <code>password</code> prompt without explicit human consent.</p>
+
+        <p>Marks are <strong>nonce-authenticated</strong>. A command could otherwise print a fake OSC&nbsp;133 sequence to its own stdout to forge a clean exit code, so each session gets a fresh <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat injects. A mark with a missing or wrong <code>k=</code> is ignored outright and surfaced as <code>spoofed_marks</code>, so the agent can tell when a program lied about how it finished. None of this is a terminal emulator, and none of it modifies yours &mdash; cleat is terminal-agnostic.</p>
+
+        <div class="result"><code>{ <span class="k">"stdout"</span>: "...", <span class="k">"exit_code"</span>: 0, <span class="k">"completed"</span>: true, <span class="k">"state"</span>: "idle" }</code></div>
+
+        <ul class="tags">
+          <li>Python</li><li>MCP</li><li>PTY / termios</li><li>OSC 133</li><li>pyte</li>
+        </ul>
+
+        <div class="install"><span class="prompt" aria-hidden="true">$</span><code>claude mcp add cleat -- uvx cleat</code></div>
+
+        <a class="out" href="https://github.com/sidyellur/cleat">cleat on GitHub <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </div>
+    </article>
+
+    <!-- black diamond brawl -->
+    <article class="project rise">
+      <div class="project-meta mono">
+        <span class="idx">03</span>
+        <span>v1 &middot; v2</span>
+        <span>Solo</span>
+      </div>
+      <div class="project-body">
+        <h3>Black Diamond Brawl</h3>
+        <p class="positioning">A Road&nbsp;Rash-style downhill snowboarding combat racer, built solo as a learning project.</p>
+
+        <p>Each run is a single race down a fixed-length, seeded, procedurally generated slope ending at a finish line. You dodge trees, rocks and moguls, catch trick air off moguls and hill crests &mdash; crests launch you automatically at speed &mdash; and shove or ski-pole your way past AI rivals racing the same course. Score comes from finishing fast, landing hits on rivals, near-misses and tricks. Wipe out hard before the line and the run ends early.</p>
+
+        <p>The renderer is a classic <strong>segment-based pseudo-3D</strong>: the behind-the-rider, road-rushing-at-you look of OutRun and Road Rash, drawn with pixel art sprites. <strong>All art and atmosphere is generated in code at boot &mdash; there are no image files in the repository at all.</strong> Colour is governed by a palette module and enforced by a build gate that fails if any gameplay-relevant edge drops below &Delta;L*&nbsp;12, or any sprite outline below &Delta;L*&nbsp;25 against the snow behind it.</p>
+
+        <p>It also ships with a headless seeded combat simulation and a solvability model, so balance is verified without ever opening a browser. v1 shipped across nine phases; the v2 visual overhaul is complete.</p>
+
+        <ul class="tags">
+          <li>Phaser 3</li><li>TypeScript</li><li>Vite</li><li>Segment-based pseudo-3D</li>
+        </ul>
+
+        <a class="out" href="https://github.com/sidyellur/black-diamond-brawl">Black Diamond Brawl on GitHub <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </div>
+    </article>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section wrap" id="earlier" aria-labelledby="earlier-h">
+    <div class="section-head">
+      <h2 id="earlier-h">Earlier</h2>
+    </div>
+    <ul class="earlier">
+      <li>
+        <a href="https://github.com/sidyellur/Vue-Weather-App">
+          <span class="name">Vue Weather App</span>
+          <span class="kind">Vue.js &middot; OpenWeather API</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/sidyellur/RBT-Min-Heap-">
+          <span class="name">Red-Black Tree / Min-Heap city builder</span>
+          <span class="kind">Java &middot; Academic</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/sidyellur/TicTacToe">
+          <span class="name">TicTacToe</span>
+          <span class="kind">React</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section wrap" id="about" aria-labelledby="about-h">
+    <div class="section-head">
+      <h2 id="about-h">About</h2>
+    </div>
+    <div class="about-grid">
+      <div class="measure">
+        <p>I am an engineer who builds developer tooling for AI agents. The through-line in my work is giving agents honest primitives: memory that persists and can explain why it surfaced something, and a terminal that reports what actually happened rather than what the output happened to look like.</p>
+        <p>I care about software that degrades gracefully &mdash; features that make a tool better when they are available and never break it when they are not. Most of what I build runs entirely on your machine, with no keys and no network. Lately that instinct has spilled over into a video game that refuses to ship a single image file.</p>
+      </div>
+      <dl class="facts">
+        <dt>Education</dt>
+        <dd>M.S. Computer Science &mdash; University of Florida</dd>
+        <dd>B.E. Computer Science &mdash; Anna University</dd>
+        <dt>Mostly working in</dt>
+        <dd>Python, TypeScript, MCP, SQLite</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="contact wrap" id="contact" aria-labelledby="contact-h">
+    <h2 id="contact-h">The code is the best introduction.</h2>
+    <ul class="contact-links">
+      <li><a href="https://github.com/sidyellur">GitHub &mdash; @sidyellur <span class="arrow" aria-hidden="true">&#8599;</span></a></li>
+      <li><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn &mdash; Siddharth Yellur <span class="arrow" aria-hidden="true">&#8599;</span></a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap bar">
+    <span>Siddharth Yellur</span>
+    <span>Hand-written HTML &middot; no frameworks</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    if (!('IntersectionObserver' in window)) return;
+
+    var root = document.documentElement;
+    root.classList.add('js');
+
+    var targets = document.querySelectorAll('.rise');
+    var i;
+
+    var reduce = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduce) {
+      for (i = 0; i < targets.length; i++) targets[i].classList.add('in');
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      for (var n = 0; n < entries.length; n++) {
+        if (entries[n].isIntersecting) {
+          entries[n].target.classList.add('in');
+          io.unobserve(entries[n].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.03 });
+
+    for (i = 0; i < targets.length; i++) io.observe(targets[i]);
+  })();
+</script>
+
+</body>
+</html>
