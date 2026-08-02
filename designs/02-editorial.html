@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <title>Siddharth Yellur</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Siddharth Yellur — engineer. Developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer. And Black Diamond Brawl, a downhill snowboarding combat racer whose art is generated entirely in code.">
+<meta name="description" content="Siddharth Yellur — engineer. Developer tooling for AI agents: tether, durable memory; cleat, a real terminal. And Black Diamond Brawl, a snowboarding combat racer with no image files.">
 <meta name="color-scheme" content="light">
 <style>
   /* ---------------------------------------------------------------
-     Siddharth Yellur — a single file. No external requests, no images,
-     no build step. Set in Georgia, on paper.
+     Siddharth Yellur — one file. No external requests, no images,
+     no build step. Set in Georgia, on paper. A catalogue, not an essay.
      --------------------------------------------------------------- */
 
   :root {
@@ -17,9 +17,8 @@
     --paper-deep: #F3F0E8;
     --ink:        #16150F;
     --ink-soft:   #4A4638;
-    --ink-faint:  #7C7767;
+    --ink-faint:  #726D5D;   /* nudged from #7C7767 to clear 4.5:1 at label sizes */
     --accent:     #6E1420;
-    --accent-lt:  #96313D;
     --rule:       #DAD4C4;
     --rule-hair:  #E7E2D5;
 
@@ -27,8 +26,7 @@
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-    --measure: 35rem;
-    --gutter: clamp(1.25rem, 5vw, 3.5rem);
+    --gutter: clamp(1.15rem, 5vw, 3.5rem);
   }
 
   * { box-sizing: border-box; }
@@ -45,19 +43,16 @@
     color: var(--ink);
     font-family: var(--serif);
     font-size: 18px;
-    line-height: 1.65;
+    line-height: 1.6;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
-
   @media (max-width: 30rem) { body { font-size: 17px; } }
-
-  /* ---- shared shells ---- */
 
   .shell {
     width: 100%;
-    max-width: 62rem;
+    max-width: 68rem;
     margin: 0 auto;
     padding-left: var(--gutter);
     padding-right: var(--gutter);
@@ -76,335 +71,36 @@
     transition: background-size .22s ease, color .22s ease;
   }
   a:hover { color: var(--ink); background-size: 100% 2px; }
-
-  a:focus-visible,
-  a.plain:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-    background-color: rgba(110, 20, 32, .07);
-  }
+  a.plain { background-image: none; padding-bottom: 0; }
+  a.plain:hover { color: var(--accent); }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-  a.plain { background-image: none; }
-  a.plain:hover { background-image: linear-gradient(currentColor, currentColor); background-size: 100% 1px; }
+  a:focus-visible { background-color: rgba(110, 20, 32, .07); }
 
   .skip {
-    position: absolute;
-    left: -9999px;
-    top: 0;
-    background: var(--ink);
-    color: var(--paper);
+    position: absolute; left: -9999px; top: 0;
+    background: var(--ink); color: var(--paper);
     padding: .6rem 1rem;
-    font-family: var(--sans);
-    font-size: .8rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
+    font-family: var(--sans); font-size: .8rem;
+    letter-spacing: .08em; text-transform: uppercase;
     z-index: 50;
   }
   .skip:focus { left: 0; }
 
-  /* ---- typographic furniture ---- */
+  /* ---- small-caps furniture ---- */
 
   .label {
     font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 600;
+    font-size: .66rem;
+    font-weight: 700;
     letter-spacing: .18em;
     text-transform: uppercase;
     color: var(--ink-faint);
     margin: 0;
   }
+  .label-ink { color: var(--ink); }
+  .label-accent { color: var(--accent); }
 
-  .rule       { border: 0; border-top: 1px solid var(--rule); margin: 0; }
-  .rule-hair  { border: 0; border-top: 1px solid var(--rule-hair); margin: 0; }
-  .rule-double {
-    border: 0;
-    border-top: 3px double var(--rule);
-    margin: 0;
-  }
-
-  /* ---- folio bar (sticky) ---- */
-
-  .folio {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    background: var(--paper);
-    border-bottom: 1px solid var(--rule);
-  }
-  .folio-in {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-top: .7rem;
-    padding-bottom: .7rem;
-  }
-  .folio-name {
-    font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 700;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .folio nav ul {
-    display: flex;
-    gap: clamp(.85rem, 3vw, 1.75rem);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .folio nav a {
-    font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 500;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    background-image: none;
-  }
-  .folio nav a:hover { color: var(--accent); }
-  .folio nav a[aria-current="true"] {
-    color: var(--accent);
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 100% 1px;
-  }
-  @media (max-width: 26rem) {
-    .folio-name { display: none; }
-    .folio-in { justify-content: flex-start; }
-  }
-
-  /* ---- masthead ---- */
-
-  .masthead { padding-top: clamp(3rem, 9vw, 6.5rem); }
-
-  .masthead .eyebrow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem 1.1rem;
-    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
-  }
-  .masthead .eyebrow span::before {
-    content: "";
-    display: inline-block;
-    width: .34rem; height: .34rem;
-    background: var(--accent);
-    transform: rotate(45deg);
-    margin-right: .55rem;
-    vertical-align: .12em;
-  }
-
-  h1 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: clamp(3.1rem, 13.5vw, 8.2rem);
-    line-height: .88;
-    letter-spacing: -.028em;
-    margin: 0;
-    max-width: 14ch;
-  }
-  h1 .h1-line { display: block; }
-  h1 .h1-line + .h1-line { text-indent: .06em; }
-
-  .deck {
-    font-size: clamp(1.22rem, 2.6vw, 1.72rem);
-    line-height: 1.42;
-    color: var(--ink-soft);
-    max-width: 30ch;
-    margin: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(1.8rem, 4vw, 2.6rem);
-    text-wrap: pretty;
-  }
-  .deck em { font-style: italic; color: var(--ink); }
-
-  .colophon-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-    gap: 1.6rem 2.5rem;
-    padding: 1.4rem 0 clamp(2.5rem, 7vw, 4.5rem);
-  }
-  .colophon-strip dt { margin-bottom: .5rem; }
-  .colophon-strip dd {
-    margin: 0;
-    font-size: .95rem;
-    line-height: 1.5;
-    color: var(--ink-soft);
-  }
-  .colophon-strip dd a { color: var(--accent); }
-  .colophon-strip .sep { color: var(--rule); padding: 0 .35em; }
-
-  /* ---- section headers ---- */
-
-  .section { padding-top: clamp(2.75rem, 7vw, 4.5rem); }
-
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-bottom: .7rem;
-    border-bottom: 1px solid var(--ink);
-  }
-  .section-head h2 {
-    font-family: var(--sans);
-    font-size: .78rem;
-    font-weight: 700;
-    letter-spacing: .22em;
-    text-transform: uppercase;
-    margin: 0;
-    color: var(--ink);
-  }
-  .section-head h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
-  .section-head .aside-note {
-    font-family: var(--sans);
-    font-size: .68rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    text-align: right;
-  }
-  @media (max-width: 34rem) { .section-head .aside-note { display: none; } }
-
-  /* ---- feature articles ---- */
-
-  .feature {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.9rem;
-    padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(2.5rem, 6vw, 4rem);
-    border-bottom: 1px solid var(--rule);
-  }
-  .feature:last-of-type { border-bottom: 0; }
-
-  @media (min-width: 60rem) {
-    .feature {
-      grid-template-columns: 13.5rem minmax(0, 1fr);
-      column-gap: 3.25rem;
-      row-gap: 2.4rem;
-    }
-    .f-head  { grid-column: 1 / -1; }
-    .f-side  { grid-column: 1; grid-row: 2; }
-    .f-body  { grid-column: 2; grid-row: 2; }
-  }
-
-  .kicker {
-    font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 600;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0 0 1rem;
-  }
-  .kicker .dim { color: var(--ink-faint); }
-
-  .f-head h3 {
-    font-weight: 400;
-    font-size: clamp(2.35rem, 7.2vw, 4.35rem);
-    line-height: .96;
-    letter-spacing: -.02em;
-    margin: 0;
-  }
-  .f-head h3 .sub {
-    display: block;
-    font-size: clamp(1.05rem, 2.4vw, 1.45rem);
-    letter-spacing: 0;
-    line-height: 1.28;
-    color: var(--ink-soft);
-    font-style: italic;
-    margin-top: .55rem;
-    max-width: 28ch;
-  }
-
-  .standfirst {
-    font-size: clamp(1.1rem, 2vw, 1.28rem);
-    line-height: 1.5;
-    color: var(--ink-soft);
-    max-width: 42ch;
-    margin: 1.4rem 0 0;
-    text-wrap: pretty;
-  }
-
-  /* margin column */
-
-  .f-side { font-family: var(--sans); }
-  .f-side dl { margin: 0; }
-  .f-side dt {
-    font-size: .64rem;
-    font-weight: 700;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    padding-top: .7rem;
-    border-top: 1px solid var(--rule-hair);
-    margin-bottom: .35rem;
-  }
-  .f-side dd {
-    margin: 0 0 1.15rem;
-    font-size: .82rem;
-    line-height: 1.5;
-    color: var(--ink-soft);
-    overflow-wrap: anywhere;
-  }
-  .f-side dd:last-of-type { margin-bottom: 0; }
-  .f-side dd a { color: var(--accent); }
-  .f-side .stack {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .f-side .stack li {
-    display: inline-block;
-    font-size: .74rem;
-    letter-spacing: .02em;
-    color: var(--ink-soft);
-    border: 1px solid var(--rule);
-    border-radius: 2px;
-    padding: .12rem .45rem;
-    margin: 0 .25rem .35rem 0;
-    background: var(--paper-deep);
-  }
-  .cmd {
-    font-family: var(--mono);
-    font-size: .72rem;
-    line-height: 1.5;
-    background: var(--paper-deep);
-    border-left: 2px solid var(--accent);
-    padding: .5rem .6rem;
-    margin: 0;
-    overflow-x: auto;
-    color: var(--ink);
-    white-space: pre;
-  }
-  .f-side .version {
-    font-variant-numeric: tabular-nums;
-    font-size: .82rem;
-    color: var(--ink);
-  }
-
-  /* body prose */
-
-  .f-body { max-width: var(--measure); }
-  .f-body p {
-    margin: 0 0 1.15em;
-    text-wrap: pretty;
-  }
-  .f-body p + p { text-indent: 1.35em; }
-  .f-body p.lede { font-size: 1.06em; }
-  .f-body p.lede::first-letter {
-    float: left;
-    font-size: 3.9em;
-    line-height: .78;
-    padding: .06em .1em 0 0;
-    margin-top: .04em;
-    color: var(--accent);
-    font-weight: 400;
-  }
-  .f-body strong { font-weight: 700; }
-  .f-body em { font-style: italic; }
-
-  code, .kbd {
+  code {
     font-family: var(--mono);
     font-size: .84em;
     background: var(--paper-deep);
@@ -413,140 +109,573 @@
     color: var(--ink);
     overflow-wrap: anywhere;
   }
-  .f-side code { background: transparent; padding: 0; }
 
-  /* pull quote */
+  /* ---- folio bar ---- */
 
-  .pull {
-    margin: 2rem 0 2rem;
-    padding: 0 0 0 1.15rem;
-    border-left: 2px solid var(--accent);
-    font-size: clamp(1.25rem, 3vw, 1.62rem);
-    line-height: 1.28;
-    letter-spacing: -.012em;
-    color: var(--ink);
-    text-indent: 0;
+  .folio {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
   }
-  .pull p { margin: 0; text-indent: 0 !important; }
-  .pull .attrib {
-    display: block;
+  .folio-in {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; padding: .65rem 0;
+  }
+  .folio-name {
     font-family: var(--sans);
-    font-size: .66rem;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-top: .8rem;
+    font-size: .66rem; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink); white-space: nowrap;
   }
-  @media (min-width: 60rem) {
-    .pull { margin-left: -1.9rem; }
+  .folio nav ul {
+    display: flex; gap: clamp(.8rem, 3vw, 1.75rem);
+    list-style: none; margin: 0; padding: 0;
+  }
+  .folio nav a {
+    font-family: var(--sans);
+    font-size: .66rem; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-soft); background-image: none; padding-bottom: 2px;
+  }
+  .folio nav a:hover { color: var(--accent); }
+  .folio nav a[aria-current="true"] {
+    color: var(--accent);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  @media (max-width: 27rem) {
+    .folio-name { display: none; }
+    .folio-in { justify-content: center; }
   }
 
-  .result {
+  /* ---- masthead ---- */
+
+  .masthead { padding-top: clamp(1.5rem, 3.5vw, 2.3rem); }
+
+  .mast-top {
+    display: flex; flex-wrap: wrap; justify-content: space-between;
+    gap: .35rem 1.5rem; padding-bottom: .55rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.7rem, 10.5vw, 5.6rem);
+    line-height: .92;
+    letter-spacing: -.03em;
+    margin: .35rem 0 0;
+  }
+
+  .positioning {
+    font-size: clamp(1.22rem, 2.8vw, 1.85rem);
+    line-height: 1.3;
+    margin: .65rem 0 .4rem;
+    letter-spacing: -.012em;
+  }
+  .secondary {
+    font-size: clamp(.98rem, 1.6vw, 1.06rem);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin: 0 0 .95rem;
+    text-wrap: pretty;
+  }
+  .secondary em { font-style: italic; color: var(--ink); }
+
+  .rule-double { border: 0; border-top: 3px double var(--rule); margin: 0; }
+
+  /* contents + brief, side by side */
+
+  .mast-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem;
+    padding: .9rem 0 clamp(1.2rem, 3vw, 1.7rem);
+  }
+  @media (min-width: 56rem) {
+    .mast-grid {
+      grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+      column-gap: 2.75rem;
+    }
+    .mast-brief {
+      border-left: 1px solid var(--rule);
+      padding-left: 2.75rem;
+    }
+  }
+
+  .toc { margin: .55rem 0 0; }
+  .toc-row {
+    display: grid;
+    grid-template-columns: 2.1rem auto minmax(1.5rem, 1fr) auto;
+    align-items: baseline;
+    gap: 0 .55rem;
+    padding: .42rem 0;
+    border-top: 1px solid var(--rule-hair);
+    background-image: none;
+    color: var(--ink);
+  }
+  .toc-row:last-child { border-bottom: 1px solid var(--rule-hair); }
+  .toc-num {
+    font-family: var(--sans); font-size: .64rem; font-weight: 700;
+    letter-spacing: .12em; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .toc-name { font-size: 1.32rem; letter-spacing: -.015em; }
+  .toc-dots { border-bottom: 1px dotted var(--rule); transform: translateY(-.3em); }
+  .toc-tag {
+    font-family: var(--sans); font-size: .66rem; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .toc-row:hover .toc-name { color: var(--accent); }
+  .toc-row:hover .toc-tag { color: var(--ink-soft); }
+  @media (max-width: 40rem) {
+    .toc-row { grid-template-columns: 2.1rem minmax(0, 1fr); }
+    .toc-dots { display: none; }
+    .toc-tag { grid-column: 2; }
+  }
+
+  .brief-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .7rem 1.25rem;
+    margin: .5rem 0 .9rem;
+  }
+  .brief-stats div { border-top: 1px solid var(--rule-hair); padding-top: .35rem; }
+  .brief-stats .fig {
+    display: block;
+    font-size: 1.6rem; line-height: 1.05;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+  }
+  .brief-stats .cap {
+    display: block;
+    font-family: var(--sans); font-size: .6rem; font-weight: 600;
+    letter-spacing: .13em; text-transform: uppercase;
+    color: var(--ink-faint); margin-top: .2rem;
+  }
+  .brief-links { list-style: none; margin: .4rem 0 0; padding: 0; }
+  .brief-links li { font-size: .98rem; margin-bottom: .2rem; }
+
+  /* ---- section heads ---- */
+
+  .section { padding-top: clamp(1.7rem, 4vw, 2.5rem); }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; padding-bottom: .45rem;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-head h2 {
+    font-family: var(--sans);
+    font-size: .74rem; font-weight: 700;
+    letter-spacing: .22em; text-transform: uppercase;
+    margin: 0; color: var(--ink);
+  }
+  .section-head h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .section-head .aside-note {
+    font-family: var(--sans); font-size: .64rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); text-align: right; margin: 0;
+  }
+  @media (max-width: 34rem) { .section-head .aside-note { display: none; } }
+
+  /* ---- catalogue entry ---- */
+
+  .entry {
+    padding: clamp(1.1rem, 3vw, 1.4rem) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .entry:last-of-type { border-bottom: 0; }
+
+  .entry-head {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    justify-content: space-between; gap: .25rem 1.5rem;
+  }
+  .entry-head .kicker {
+    font-family: var(--sans); font-size: .64rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); margin: 0;
+  }
+  .entry-head .kicker .dim { color: var(--ink-faint); }
+
+  .entry h3 {
+    font-weight: 400;
+    font-size: clamp(2.2rem, 6.5vw, 3.2rem);
+    line-height: 1;
+    letter-spacing: -.025em;
+    margin: .3rem 0 0;
+  }
+  .tagline {
+    font-style: italic;
+    font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+    color: var(--accent);
+    margin: .3rem 0 0;
+    line-height: 1.3;
+  }
+  .oneline {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: .45rem 0 0;
+    text-wrap: pretty;
+  }
+
+  /* spec band: table + proof, side by side */
+
+  .band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.2rem;
+    margin-top: .95rem;
+  }
+  @media (min-width: 56rem) {
+    .band { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); column-gap: 2.75rem; }
+    .band.flip .proof { order: -1; }
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table.spec {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    text-align: left;
+  }
+  table.spec caption {
+    font-family: var(--sans); font-size: .62rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-faint); text-align: left;
+    padding-bottom: .3rem;
+    border-bottom: 1px solid var(--ink);
+  }
+  table.spec th, table.spec td {
+    padding: .3rem .75rem .3rem 0;
+    border-bottom: 1px solid var(--rule-hair);
+    vertical-align: baseline;
+  }
+  table.spec th {
+    width: 6.5rem;
+    font-size: .6rem; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  table.spec td {
+    font-size: .82rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    padding-right: 0;
+    overflow-wrap: anywhere;
+  }
+  table.spec td .ver { font-variant-numeric: tabular-nums; color: var(--ink); }
+  table.spec td a { color: var(--accent); }
+
+  ul.chips { list-style: none; margin: 0; padding: 0; }
+  ul.chips li {
+    display: inline-block;
+    font-size: .7rem; letter-spacing: .02em;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: .1rem .4rem;
+    margin: .1rem .25rem .1rem 0;
+    background: var(--paper-deep);
+  }
+  code.cmd {
+    display: block;
     font-family: var(--mono);
-    font-size: .78rem;
-    line-height: 1.6;
+    font-size: .72rem;
+    line-height: 1.5;
+    background: var(--paper-deep);
+    border-left: 2px solid var(--accent);
+    border-radius: 0;
+    padding: .35rem .5rem;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  @media (max-width: 40rem) {
+    code.cmd { white-space: pre-wrap; overflow-wrap: anywhere; }
+  }
+
+  /* proof panel */
+
+  .proof { align-self: start; }
+  .proof .plabel {
+    font-family: var(--sans); font-size: .62rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-bottom: .3rem; margin: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .proof .figure {
+    font-size: clamp(1.95rem, 5vw, 2.9rem);
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    margin: .7rem 0 0;
+  }
+  .proof .figure small { font-size: .42em; letter-spacing: .02em; }
+  .proof .figure .arr { color: var(--ink-faint); padding: 0 .12em; }
+  .proof .fine {
+    font-family: var(--sans);
+    font-size: .74rem; line-height: 1.5;
+    color: var(--ink-faint);
+    margin: .45rem 0 0;
+    max-width: 34ch;
+  }
+  .proof .premise {
+    font-size: 1.14rem; line-height: 1.35;
+    color: var(--ink);
+    margin: .7rem 0 0;
+    letter-spacing: -.012em;
+  }
+  pre.result {
+    font-family: var(--mono);
+    font-size: .72rem; line-height: 1.6;
     background: var(--paper-deep);
     border: 1px solid var(--rule-hair);
     border-left: 2px solid var(--ink);
-    padding: .8rem .9rem;
-    margin: 0 0 1.4em;
+    padding: .6rem .7rem;
+    margin: .7rem 0 0;
     overflow-x: auto;
     white-space: pre;
   }
-  .result .k { color: var(--accent); }
+  pre.result .k { color: var(--accent); }
 
-  /* dinkus */
+  /* feature index: two columns of label + one sentence */
 
-  .dinkus {
-    display: block;
-    margin: 0 auto;
-    padding: clamp(2rem, 5vw, 3rem) 0 0;
-    color: var(--rule);
+  .features { margin-top: 1.1rem; }
+  .flabel {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: .3rem;
+    border-bottom: 1px solid var(--ink);
+    margin: 0 0 .2rem;
   }
-  .dinkus svg { display: block; margin: 0 auto; }
-
-  /* ---- about ---- */
-
-  .about {
+  dl.fgrid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 1.9rem;
-    padding: clamp(2.5rem, 6vw, 3.5rem) 0 clamp(2rem, 5vw, 3rem);
-  }
-  @media (min-width: 60rem) {
-    .about {
-      grid-template-columns: 13.5rem minmax(0, 1fr);
-      column-gap: 3.25rem;
-    }
-  }
-  .about .a-body { max-width: var(--measure); }
-  .about .a-body p { margin: 0 0 1.15em; text-wrap: pretty; }
-  .about .a-body p:first-child { font-size: 1.25rem; line-height: 1.5; }
-  .about .a-body p:last-child { margin-bottom: 0; }
-
-  /* ---- earlier work ---- */
-
-  .earlier {
-    padding: clamp(2rem, 5vw, 3rem) 0 clamp(1rem, 3vw, 2rem);
-  }
-  .earlier ol {
-    list-style: none;
+    column-gap: 2.75rem;
     margin: 0;
-    padding: 0;
-    max-width: 46rem;
   }
-  .earlier li {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: .15rem .5rem;
-    padding: .95rem 0;
+  @media (min-width: 46rem) {
+    dl.fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  dl.fgrid > div {
+    padding: .38rem 0;
+    border-bottom: 1px solid var(--rule-hair);
+    font-size: .93rem;
+    line-height: 1.45;
+  }
+  dl.fgrid dt {
+    display: inline;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  dl.fgrid dt::after {
+    content: " \2014 ";
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+  dl.fgrid dd {
+    display: inline;
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  dl.fgrid code { font-size: .78em; }
+
+  /* progressive disclosure */
+
+  details.more { margin-top: 0; }
+  details.more > summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: .64rem; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent);
+    padding: .55rem 0;
     border-bottom: 1px solid var(--rule-hair);
   }
-  .earlier li:first-child { border-top: 1px solid var(--rule-hair); }
-  @media (min-width: 40rem) {
-    .earlier li {
-      grid-template-columns: minmax(0, 1fr) 12rem;
-      align-items: baseline;
-    }
+  details.more > summary::-webkit-details-marker { display: none; }
+  details.more > summary::before {
+    content: "+";
+    display: inline-block;
+    width: 1.15em;
+    color: var(--ink-faint);
   }
-  .earlier .t { font-size: 1.06rem; }
-  .earlier .m {
+  details.more[open] > summary::before { content: "\2212"; }
+  details.more > summary:hover { color: var(--ink); }
+  details.more[open] > summary { border-bottom-color: transparent; }
+
+  /* state table */
+
+  .statetable { margin-top: 1.2rem; }
+  table.states {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    text-align: left;
+    min-width: 28rem;
+  }
+  table.states caption {
+    font-family: var(--sans); font-size: .62rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-faint); text-align: left;
+    padding-bottom: .3rem;
+  }
+  table.states thead th {
+    font-size: .6rem; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: .3rem .9rem .3rem 0;
+    border-bottom: 1px solid var(--ink);
+    border-top: 1px solid var(--ink);
+  }
+  table.states tbody th {
+    font-family: var(--mono);
+    font-size: .74rem; font-weight: 400;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 10rem;
+  }
+  table.states tbody th, table.states td {
+    padding: .3rem .9rem .3rem 0;
+    border-bottom: 1px solid var(--rule-hair);
+    vertical-align: baseline;
+  }
+  table.states td {
+    font-size: .78rem; line-height: 1.45; color: var(--ink-soft);
+  }
+  table.states td:last-child { color: var(--ink-faint); padding-right: 0; }
+  @media (max-width: 40rem) {
+    table.states { min-width: 0; }
+    table.states thead { position: absolute; left: -9999px; }
+    table.states tr {
+      display: block;
+      border-bottom: 1px solid var(--rule-hair);
+      padding: .4rem 0;
+    }
+    table.states tbody th, table.states td {
+      display: block; width: auto;
+      border: 0; padding: .04rem 0;
+      white-space: normal;
+    }
+    table.states td:last-child::before { content: "\2192\00a0"; }
+  }
+
+  /* dinkus */
+  .dinkus { display: block; padding: clamp(1rem, 3vw, 1.5rem) 0 0; color: var(--rule); }
+  .dinkus svg { display: block; margin: 0 auto; }
+
+  /* ---- earlier ---- */
+
+  table.earlier {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 1rem;
+  }
+  table.earlier thead th {
+    font-family: var(--sans);
+    font-size: .6rem; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: .3rem .9rem .3rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  table.earlier tbody th {
+    font-family: var(--serif);
+    font-weight: 400; font-size: 1.04rem;
+    color: var(--ink);
+  }
+  table.earlier tbody th, table.earlier td {
+    padding: .45rem .9rem .45rem 0;
+    border-bottom: 1px solid var(--rule-hair);
+    vertical-align: baseline;
+  }
+  table.earlier td {
     font-family: var(--sans);
     font-size: .72rem;
-    letter-spacing: .08em;
+    letter-spacing: .06em;
     text-transform: uppercase;
     color: var(--ink-faint);
   }
-  @media (min-width: 40rem) { .earlier .m { text-align: right; } }
+  table.earlier td.repo { text-transform: none; letter-spacing: 0; font-size: .8rem; }
+  table.earlier td:last-child { padding-right: 0; text-align: right; white-space: nowrap; }
+  @media (max-width: 40rem) {
+    table.earlier thead { position: absolute; left: -9999px; }
+    table.earlier tbody th, table.earlier td { display: block; padding: .1rem 0; border: 0; }
+    table.earlier tbody th { padding-top: .65rem; }
+    table.earlier tr { display: block; border-bottom: 1px solid var(--rule-hair); padding-bottom: .55rem; }
+    table.earlier td:last-child { text-align: left; }
+  }
+
+  /* ---- about ---- */
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.2rem 2.75rem;
+    margin-top: 1.2rem;
+  }
+  @media (min-width: 52rem) {
+    .about-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .about-grid > div { border-top: 1px solid var(--rule); padding-top: .55rem; }
+  .about-grid p.stmt {
+    font-size: 1.02rem;
+    line-height: 1.45;
+    margin: .45rem 0 0;
+    color: var(--ink);
+    text-wrap: pretty;
+  }
+  .about-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: .9rem 2.75rem;
+    margin-top: 1.2rem;
+    padding-top: .8rem;
+    border-top: 1px solid var(--rule-hair);
+  }
+  .about-strip dl { margin: 0; }
+  .about-strip dd {
+    margin: .25rem 0 0;
+    font-family: var(--sans);
+    font-size: .78rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+  .about-strip dd a { color: var(--accent); }
 
   /* ---- footer ---- */
 
   footer {
-    margin-top: clamp(3rem, 8vw, 5rem);
+    margin-top: clamp(1.9rem, 5vw, 2.8rem);
     border-top: 3px double var(--rule);
-    padding: clamp(2rem, 5vw, 3rem) 0 clamp(2.5rem, 6vw, 4rem);
+    padding: clamp(1.3rem, 3vw, 1.9rem) 0 clamp(1.7rem, 4vw, 2.4rem);
   }
   .foot-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: 1.8rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1.5rem 2.75rem;
     align-items: start;
   }
-  .foot-grid h2 { margin: 0 0 .6rem; }
-  .foot-links { list-style: none; margin: 0; padding: 0; }
-  .foot-links li { margin-bottom: .35rem; font-size: 1.02rem; }
+  .foot-sign {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    line-height: 1; letter-spacing: -.025em;
+    margin: 0 0 .4rem;
+  }
+  .foot-links { list-style: none; margin: .45rem 0 0; padding: 0; }
+  .foot-links li { margin-bottom: .3rem; font-size: 1rem; }
   .foot-note {
     font-family: var(--sans);
-    font-size: .74rem;
-    line-height: 1.6;
+    font-size: .72rem; line-height: 1.55;
     color: var(--ink-faint);
+    margin: .45rem 0 0;
     max-width: 34ch;
-  }
-  .foot-sign {
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    line-height: 1;
-    letter-spacing: -.02em;
-    margin: 0 0 .5rem;
   }
 
   /* ---- reduced motion ---- */
@@ -557,6 +686,7 @@
       animation-duration: .001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: .001ms !important;
+      scroll-behavior: auto !important;
     }
   }
 
@@ -576,8 +706,8 @@
     <nav aria-label="Sections">
       <ul>
         <li><a href="#work">Work</a></li>
-        <li><a href="#about">About</a></li>
         <li><a href="#earlier">Earlier</a></li>
+        <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -585,36 +715,62 @@
 </div>
 
 <header class="shell masthead">
-  <p class="label eyebrow">
-    <span>Developer tooling for AI agents</span>
-    <span>Terminals, memory, and one snowboarding game</span>
-  </p>
+  <div class="mast-top">
+    <p class="label label-accent">Engineer</p>
+    <p class="label">Python &middot; TypeScript &middot; MCP &middot; Open source</p>
+  </div>
+  <hr class="rule-double">
 
-  <h1><span class="h1-line">Siddharth</span><span class="h1-line">Yellur</span></h1>
+  <h1>Siddharth Yellur</h1>
 
-  <p class="deck">
-    An engineer who builds the unglamorous layer underneath agents &mdash;
-    <em>memory that outlives the session</em>, <em>a terminal that reports
-    what actually happened</em> &mdash; and, lately, a downhill snowboarding
-    game whose every pixel is drawn in code.
+  <p class="positioning">I build developer tooling for AI&nbsp;agents.</p>
+  <p class="secondary">
+    <em>Memory that outlives the session</em>, <em>a terminal that reports what
+    actually happened</em> &mdash; and a snowboarding game with no image files.
   </p>
 
   <hr class="rule-double">
 
-  <dl class="colophon-strip">
+  <div class="mast-grid">
     <div>
-      <dt class="label">In this issue</dt>
-      <dd>Three projects, at length: <a href="#tether">tether</a><span class="sep">/</span><a href="#cleat">cleat</a><span class="sep">/</span><a href="#brawl">Black&nbsp;Diamond&nbsp;Brawl</a></dd>
+      <p class="label label-ink">Contents</p>
+      <div class="toc">
+        <a class="toc-row plain" href="#tether">
+          <span class="toc-num">01</span>
+          <span class="toc-name">tether</span>
+          <span class="toc-dots" aria-hidden="true"></span>
+          <span class="toc-tag">Durable memory for AI agents</span>
+        </a>
+        <a class="toc-row plain" href="#cleat">
+          <span class="toc-num">02</span>
+          <span class="toc-name">cleat</span>
+          <span class="toc-dots" aria-hidden="true"></span>
+          <span class="toc-tag">A real terminal for AI agents</span>
+        </a>
+        <a class="toc-row plain" href="#brawl">
+          <span class="toc-num">03</span>
+          <span class="toc-name">Black Diamond Brawl</span>
+          <span class="toc-dots" aria-hidden="true"></span>
+          <span class="toc-tag">A downhill combat racer</span>
+        </a>
+      </div>
     </div>
-    <div>
-      <dt class="label">Working languages</dt>
-      <dd>Python, TypeScript. MCP servers, PTYs, SQLite, and a pseudo-3D renderer.</dd>
+
+    <div class="mast-brief">
+      <p class="label label-ink">In brief</p>
+      <div class="brief-stats">
+        <div><span class="fig">3</span><span class="cap">Projects shipped</span></div>
+        <div><span class="fig">2</span><span class="cap">On PyPI</span></div>
+        <div><span class="fig">0</span><span class="cap">Image files</span></div>
+        <div><span class="fig">100%</span><span class="cap">Local-first</span></div>
+      </div>
+      <p class="label label-ink">Correspondence</p>
+      <ul class="brief-links">
+        <li><a href="https://github.com/sidyellur">GitHub &mdash; sidyellur</a></li>
+        <li><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></li>
+      </ul>
     </div>
-    <div>
-      <dt class="label">Correspondence</dt>
-      <dd><a href="https://github.com/sidyellur">GitHub</a><span class="sep">/</span><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></dd>
-    </div>
-  </dl>
+  </div>
 </header>
 
 <main id="main">
@@ -623,308 +779,217 @@
   <section id="work" class="shell section" aria-labelledby="work-h">
     <div class="section-head">
       <h2 id="work-h"><span class="num">01</span> &nbsp;/&nbsp; Work</h2>
-      <p class="aside-note">Three features, in depth</p>
+      <p class="aside-note">Three entries &middot; specification &amp; features</p>
     </div>
 
-    <!-- ---------------------------- tether ---------------------------- -->
-    <article class="feature" id="tether" aria-labelledby="tether-h">
-      <div class="f-head">
-        <p class="kicker">Memory <span class="dim">&mdash; Python &middot; MCP &middot; SQLite</span></p>
-        <h3 id="tether-h">tether<span class="sub">A shared memory layer for personal agents.</span></h3>
-        <p class="standfirst">
-          One MCP server, one local SQLite file, and four verbs &mdash;
-          <code>remember</code>, <code>recall</code>, <code>link</code>,
-          <code>forget</code> &mdash; so that what an agent learns about you
-          survives the session it learned it in.
-        </p>
+    <!-- ---------------------------- 01 tether ---------------------------- -->
+    <article class="entry" id="tether" aria-labelledby="tether-h">
+      <div class="entry-head">
+        <p class="kicker">No.&nbsp;01 <span class="dim">&mdash; Memory</span></p>
+        <p class="kicker"><span class="dim">Python &middot; MCP &middot; SQLite</span></p>
+      </div>
+      <h3 id="tether-h">tether</h3>
+      <p class="tagline">Durable memory for AI agents.</p>
+      <p class="oneline">
+        An MCP server backed by one local SQLite file, so what an agent learns
+        about you survives the session it learned it in.
+      </p>
+
+      <div class="band">
+        <div class="table-wrap">
+          <table class="spec">
+            <caption>Specification</caption>
+            <tbody>
+              <tr><th scope="row">Status</th><td><span class="ver">v0.5.1</span> &middot; released</td></tr>
+              <tr><th scope="row">Stack</th><td>
+                <ul class="chips">
+                  <li>Python</li><li>MCP</li><li>SQLite&nbsp;/&nbsp;FTS5</li><li>libSQL&nbsp;/&nbsp;Turso</li><li>Static embeddings</li>
+                </ul>
+              </td></tr>
+              <tr><th scope="row">Package</th><td><code>tether-memory</code> on PyPI</td></tr>
+              <tr><th scope="row">Install</th><td><code class="cmd">claude mcp add tether -- uvx tether-memory</code></td></tr>
+              <tr><th scope="row">Repo</th><td><a href="https://github.com/sidyellur/tether">github.com/sidyellur/tether</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="proof">
+          <p class="plabel">Recall payload</p>
+          <p class="figure">66.9<small>KB</small><span class="arr">&rarr;</span>2.0<small>KB</small></p>
+          <p class="fine">After returning query-centered excerpts instead of full bodies.</p>
+        </div>
       </div>
 
-      <aside class="f-side" aria-label="tether — details">
-        <dl>
-          <dt>Status</dt>
-          <dd class="version">v0.5.1</dd>
-
-          <dt>Stack</dt>
-          <dd>
-            <ul class="stack">
-              <li>Python</li><li>MCP</li><li>SQLite&nbsp;/&nbsp;FTS5</li><li>libSQL&nbsp;/&nbsp;Turso</li><li>Static embeddings</li>
-            </ul>
-          </dd>
-
-          <dt>Install</dt>
-          <dd><pre class="cmd">claude mcp add tether \
-  -- uvx tether-memory</pre></dd>
-
-          <dt>Package</dt>
-          <dd><code>tether-memory</code> on PyPI</dd>
-
-          <dt>Repository</dt>
-          <dd><a href="https://github.com/sidyellur/tether">github.com/sidyellur/tether</a></dd>
+      <div class="features">
+        <div class="flabel">
+          <p class="label label-ink">Features</p>
+          <p class="label">Eleven</p>
+        </div>
+        <dl class="fgrid">
+          <div><dt>Four verbs</dt><dd><code>remember</code>, <code>recall</code>, <code>link</code>, <code>forget</code>.</dd></div>
+          <div><dt>Local-first</dt><dd>One SQLite file, zero configuration, nothing leaves the machine.</dd></div>
+          <div><dt>Hybrid recall</dt><dd>FTS5 keyword hits fused with local semantic vectors, so &ldquo;automobile&rdquo; finds your note about a car.</dd></div>
+          <div><dt>Optional sync</dt><dd>Point it at libSQL/Turso and the same file becomes an embedded replica across every device.</dd></div>
+          <div><dt>Associative graph</dt><dd>Related memories surface along three edge types: semantic, explicit <code>link()</code>, and hebbian.</dd></div>
+          <div><dt><code>via</code> receipts</dt><dd>Every hit reports which edge it came down.</dd></div>
         </dl>
-      </aside>
-
-      <div class="f-body">
-        <p class="lede">
-          Agents are amnesiacs by construction. Every session opens on a blank
-          desk; whatever was established last time &mdash; how your repositories
-          are laid out, which database you actually use, that you prefer the
-          terse answer &mdash; has to be established again. tether is the
-          durable notebook that sits beside the agent instead of inside it: an
-          MCP server backed by a single SQLite file on your own disk, which any
-          MCP-compatible client can write to and read from.
-        </p>
-
-        <p>
-          It runs local-only with zero configuration, which is the point &mdash;
-          nothing to sign up for, nothing to keep alive. Point it at a hosted
-          libSQL/Turso primary and that same file quietly becomes an embedded
-          replica, syncing memory across every device you work from in
-          near-real-time. The storage model does not change; only its reach does.
-        </p>
-
-        <p>
-          Retrieval is hybrid. A <code>recall</code> fuses keyword results from
-          SQLite&rsquo;s FTS5 index with semantic vector results, so a query for
-          &ldquo;automobile&rdquo; still finds the note you wrote about your
-          car. The embedding model is deliberately small and static and runs on
-          your machine: no network call, no API key, no third party learning
-          what you asked.
-        </p>
-
-        <p>
-          Above that sits an associative usage graph. Edges come from three
-          local, deterministic sources &mdash; semantic nearest-neighbours,
-          explicit <code>link()</code> calls, and <em>hebbian</em> edges, where
-          memories recalled together get wired together over time. Nothing is
-          inferred by a model in the cloud. And because association is the kind
-          of thing that goes wrong invisibly, every hit carries a
-          <code>via</code> receipt explaining exactly why it surfaced.
-        </p>
-
-        <blockquote class="pull">
-          <p>Memories recalled together get wired together. Every hit carries a receipt explaining why it surfaced.</p>
-        </blockquote>
-
-        <p>
-          Recall is seed-dominant. Top direct matches are locked in place and
-          associations are only ever allowed to fill the slots below them, so
-          switching association on can never demote a good hit &mdash; a small
-          rule that makes the clever feature safe to leave enabled.
-        </p>
-
-        <p>
-          The store also tidies itself. A hub-curated boot index surfaces the
-          load-bearing memories &mdash; those with the highest behavioral degree
-          &mdash; alongside the most recent ones, so a fresh session opens on
-          what matters rather than on what happened last. An opt-in sweep
-          soft-archives memories that are both old <em>and</em> behaviorally
-          isolated. Nothing is ever hard-deleted.
-        </p>
-
-        <p>
-          There is an optional final move: crystallization. tether watches for
-          dense clusters of related memories and offers them up to be
-          <em>named</em> as principles. It finds the structure; the agent
-          supplies the words.
-        </p>
-
-        <blockquote class="pull">
-          <p>Returning query-centred excerpts instead of full bodies cut a recall response from 66.9&nbsp;KB to 2.0&nbsp;KB.</p>
-          <span class="attrib">Response payload, before &amp; after</span>
-        </blockquote>
-
-        <p>
-          Every one of those features degrades cleanly to plain keyword recall.
-          That is the governing constraint: tether is a convenience layer, more
-          useful when it is present, and never the reason an agent breaks when
-          it is not.
-        </p>
+        <details class="more">
+          <summary>Five more</summary>
+          <dl class="fgrid">
+            <div><dt>Hebbian edges</dt><dd>Memories recalled together get wired together over time.</dd></div>
+            <div><dt>Seed-dominant</dt><dd>Associations fill the slots below direct hits, never demoting a good one.</dd></div>
+            <div><dt>Self-organizing</dt><dd>A hub-curated boot index surfaces load-bearing memories; nothing is ever hard-deleted.</dd></div>
+            <div><dt>Crystallization</dt><dd>Detects dense memory clusters and offers them up to be named as principles.</dd></div>
+            <div><dt>Degrades cleanly</dt><dd>Every feature falls back to plain keyword recall.</dd></div>
+          </dl>
+        </details>
       </div>
     </article>
 
-    <!-- ---------------------------- cleat ---------------------------- -->
-    <article class="feature" id="cleat" aria-labelledby="cleat-h">
-      <div class="f-head">
-        <p class="kicker">Terminals <span class="dim">&mdash; Python &middot; MCP &middot; PTY</span></p>
-        <h3 id="cleat-h">cleat<span class="sub">A headless terminal layer for AI agents.</span></h3>
-        <p class="standfirst">
-          A persistent shell running behind a PTY, its byte stream parsed for
-          OSC&nbsp;133 shell-integration marks and handed to an agent as
-          structured results &mdash; not as escape-code soup.
-        </p>
+    <!-- ---------------------------- 02 cleat ---------------------------- -->
+    <article class="entry" id="cleat" aria-labelledby="cleat-h">
+      <div class="entry-head">
+        <p class="kicker">No.&nbsp;02 <span class="dim">&mdash; Terminals</span></p>
+        <p class="kicker"><span class="dim">Python &middot; MCP &middot; PTY</span></p>
       </div>
+      <h3 id="cleat-h">cleat</h3>
+      <p class="tagline">A real terminal for AI agents.</p>
+      <p class="oneline">
+        A persistent shell behind a PTY that returns structured results &mdash;
+        <code>stdout</code>, a real exit code, files touched &mdash; instead of
+        escape-code soup.
+      </p>
 
-      <aside class="f-side" aria-label="cleat — details">
-        <dl>
-          <dt>Stack</dt>
-          <dd>
-            <ul class="stack">
-              <li>Python</li><li>MCP</li><li>PTY&nbsp;/&nbsp;termios</li><li>OSC&nbsp;133</li><li>pyte</li>
-            </ul>
-          </dd>
+      <div class="band flip">
+        <div class="table-wrap">
+          <table class="spec">
+            <caption>Specification</caption>
+            <tbody>
+              <tr><th scope="row">Status</th><td><span class="ver">Released</span> &middot; on PyPI</td></tr>
+              <tr><th scope="row">Stack</th><td>
+                <ul class="chips">
+                  <li>Python</li><li>MCP</li><li>PTY&nbsp;/&nbsp;termios</li><li>OSC&nbsp;133</li><li>pyte</li>
+                </ul>
+              </td></tr>
+              <tr><th scope="row">Package</th><td><code>cleat</code> on PyPI</td></tr>
+              <tr><th scope="row">Install</th><td><code class="cmd">claude mcp add cleat -- uvx cleat</code></td></tr>
+              <tr><th scope="row">Repo</th><td><a href="https://github.com/sidyellur/cleat">github.com/sidyellur/cleat</a></td></tr>
+            </tbody>
+          </table>
+        </div>
 
-          <dt>Install</dt>
-          <dd><pre class="cmd">claude mcp add cleat \
-  -- uvx cleat</pre></dd>
-
-          <dt>Package</dt>
-          <dd><code>cleat</code> on PyPI</dd>
-
-          <dt>Session states</dt>
-          <dd><code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code>, <code>tui</code></dd>
-
-          <dt>Repository</dt>
-          <dd><a href="https://github.com/sidyellur/cleat">github.com/sidyellur/cleat</a></dd>
-        </dl>
-      </aside>
-
-      <div class="f-body">
-        <p class="lede">
-          Give an agent a terminal and you immediately hit a problem that looks
-          trivial and is not. You can scrape a pseudo-terminal for everything
-          the shell prints &mdash; but the one fact you most need is not printed
-          anywhere. The shell knows <code>$?</code>; it simply never says it out
-          loud.
-        </p>
-
-        <blockquote class="pull">
-          <p>When you scrape a PTY, the exit code isn&rsquo;t in the stream at all.</p>
-          <span class="attrib">The premise</span>
-        </blockquote>
-
-        <p>
-          cleat&rsquo;s answer is to stop guessing. It injects OSC&nbsp;133
-          shell-integration marks into the shells it spawns and parses them back
-          out of the stream, turning a wall of escape codes into an honest
-          record: what was printed, what the command actually returned, which
-          files it touched.
-        </p>
-
-        <pre class="result" aria-label="Example structured result">{ <span class="k">"stdout"</span>: "...", <span class="k">"exit_code"</span>: 0,
+        <div class="proof">
+          <p class="plabel">The premise</p>
+          <p class="premise">The exit code isn&rsquo;t in the stream at all.</p>
+          <pre class="result" aria-label="Example structured result returned by cleat">{ <span class="k">"stdout"</span>: "...", <span class="k">"exit_code"</span>: 0,
   <span class="k">"completed"</span>: true, <span class="k">"state"</span>: "idle" }</pre>
+        </div>
+      </div>
 
-        <p>
-          The session persists between calls, which is the other half of the
-          idea. A <code>cd</code> holds. An <code>export</code> holds. An
-          activated virtualenv, an <code>ssh</code> session &mdash; all of it
-          carries forward, because it is one long-lived shell rather than a
-          fresh subprocess per command. No amount of cleverness gets a
-          subprocess to remember where it was.
-        </p>
+      <div class="features">
+        <div class="flabel">
+          <p class="label label-ink">Features</p>
+          <p class="label">Nine</p>
+        </div>
+        <dl class="fgrid">
+          <div><dt>The problem</dt><dd>A shell knows <code>$?</code> but never prints it, so scraping a PTY can&rsquo;t recover it.</dd></div>
+          <div><dt>The fix</dt><dd>cleat injects OSC&nbsp;133 marks into the shells it spawns and parses them back out.</dd></div>
+          <div><dt>Persistent session</dt><dd><code>cd</code>, <code>export</code>, venvs and <code>ssh</code> all carry across calls.</dd></div>
+          <div><dt>State is read, not guessed</dt><dd>Derived from termios flags and the foreground process group.</dd></div>
+          <div><dt>Nonce-signed marks</dt><dd>A program can&rsquo;t forge itself a clean exit code.</dd></div>
+          <div><dt>Password consent</dt><dd>It refuses to type into a password prompt without a human go-ahead.</dd></div>
+        </dl>
+        <details class="more">
+          <summary>Three more</summary>
+          <dl class="fgrid">
+            <div><dt>Five states</dt><dd><code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code>, <code>tui</code>.</dd></div>
+            <div><dt>Spoof reporting</dt><dd>A bad mark is ignored and surfaced as <code>spoofed_marks</code>.</dd></div>
+            <div><dt>Terminal-agnostic</dt><dd>Not an emulator, and not a patch to yours.</dd></div>
+          </dl>
+        </details>
+      </div>
 
-        <p>
-          Every response also carries a <code>state</code>, and that state is
-          read rather than inferred. It is derived from termios flags and the
-          foreground process group &mdash; facts available only to the process
-          holding the PTY, never guessed from output timing. The shell is either
-          <code>idle</code>, <code>running</code>,
-          <code>awaiting-input</code>, at a <code>password</code> prompt, or
-          inside a <code>tui</code>. When it is a password prompt, cleat refuses
-          to type into it without explicit human consent.
-        </p>
-
-        <p>
-          Then there is the case of a program that lies. A command can print a
-          counterfeit OSC&nbsp;133 sequence to its own stdout and hand the agent
-          a clean exit code it never earned. So every session gets a fresh
-          <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat
-          injects; a mark arriving with a missing or wrong <code>k=</code> is
-          ignored outright and surfaced as <code>spoofed_marks</code>. The agent
-          gets told when something misrepresented how it finished.
-        </p>
-
-        <p>
-          None of this asks anything of your own setup. cleat is terminal-agnostic
-          &mdash; not a terminal emulator, not a patch to the one you already use.
-        </p>
+      <div class="statetable table-wrap">
+        <table class="states">
+          <caption>Session states</caption>
+          <thead>
+            <tr><th scope="col">State</th><th scope="col">What it means</th><th scope="col">What to do</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">idle</th><td>Shell is sitting at a prompt</td><td>Send the next command</td></tr>
+            <tr><th scope="row">running</th><td>A command is in flight</td><td>Wait, or send input</td></tr>
+            <tr><th scope="row">awaiting-input</th><td>A process is asking for a line</td><td>Answer the prompt</td></tr>
+            <tr><th scope="row">password</th><td>A secret is being asked for</td><td>Get human consent first</td></tr>
+            <tr><th scope="row">tui</th><td>A full-screen program owns the screen</td><td>Send keys, read the frame</td></tr>
+          </tbody>
+        </table>
       </div>
     </article>
 
-    <!-- ---------------------- black diamond brawl ---------------------- -->
-    <article class="feature" id="brawl" aria-labelledby="brawl-h">
-      <div class="f-head">
-        <p class="kicker">Games <span class="dim">&mdash; Phaser&nbsp;3 &middot; TypeScript &middot; Vite</span></p>
-        <h3 id="brawl-h">Black Diamond Brawl<span class="sub">A downhill snowboarding combat racer.</span></h3>
-        <p class="standfirst">
-          Road Rash on a snowboard: one seeded, procedurally generated slope,
-          a finish line, and a handful of rivals who would rather you did not
-          reach it. Built solo, as a learning project.
-        </p>
+    <!-- ---------------------- 03 black diamond brawl ---------------------- -->
+    <article class="entry" id="brawl" aria-labelledby="brawl-h">
+      <div class="entry-head">
+        <p class="kicker">No.&nbsp;03 <span class="dim">&mdash; Games</span></p>
+        <p class="kicker"><span class="dim">Phaser&nbsp;3 &middot; TypeScript &middot; Vite</span></p>
+      </div>
+      <h3 id="brawl-h">Black Diamond Brawl</h3>
+      <p class="tagline">A downhill snowboarding combat racer.</p>
+      <p class="oneline">
+        Road Rash on a snowboard &mdash; one seeded procedural slope, a finish
+        line, and rivals who&rsquo;d rather you didn&rsquo;t reach it.
+      </p>
+
+      <div class="band">
+        <div class="table-wrap">
+          <table class="spec">
+            <caption>Specification</caption>
+            <tbody>
+              <tr><th scope="row">Status</th><td><span class="ver">v1 complete</span> &middot; nine phases &middot; v2 visual overhaul complete</td></tr>
+              <tr><th scope="row">Stack</th><td>
+                <ul class="chips">
+                  <li>Phaser&nbsp;3</li><li>TypeScript</li><li>Vite</li><li>Segment-based pseudo-3D</li>
+                </ul>
+              </td></tr>
+              <tr><th scope="row">Art</th><td>No files on disk &mdash; generated in code at boot</td></tr>
+              <tr><th scope="row">Build gate</th><td>Fails below &Delta;L*&nbsp;12 on gameplay edges, &Delta;L*&nbsp;25 on outlines</td></tr>
+              <tr><th scope="row">Repo</th><td><a href="https://github.com/sidyellur/black-diamond-brawl">github.com/sidyellur/black-diamond-brawl</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="proof">
+          <p class="plabel">Image files in the repo</p>
+          <p class="figure">0</p>
+          <p class="fine">Every sprite, gradient and weather effect is drawn by code.</p>
+        </div>
       </div>
 
-      <aside class="f-side" aria-label="Black Diamond Brawl — details">
-        <dl>
-          <dt>Status</dt>
-          <dd class="version">v1 complete &mdash; nine phases<br>v2 visual overhaul complete</dd>
-
-          <dt>Stack</dt>
-          <dd>
-            <ul class="stack">
-              <li>Phaser&nbsp;3</li><li>TypeScript</li><li>Vite</li><li>Pseudo-3D renderer</li>
-            </ul>
-          </dd>
-
-          <dt>Art assets</dt>
-          <dd>None on disk. Every sprite, gradient and weather effect is generated in code at boot.</dd>
-
-          <dt>Contrast gate</dt>
-          <dd>Build fails below &Delta;L*&nbsp;12 on gameplay edges, &Delta;L*&nbsp;25 on sprite outlines.</dd>
-
-          <dt>Repository</dt>
-          <dd><a href="https://github.com/sidyellur/black-diamond-brawl">github.com/sidyellur/black-diamond-brawl</a></dd>
+      <div class="features">
+        <div class="flabel">
+          <p class="label label-ink">Features</p>
+          <p class="label">Nine</p>
+        </div>
+        <dl class="fgrid">
+          <div><dt>Seeded slopes</dt><dd>Every run is a fixed-length procedurally generated course ending at a finish line.</dd></div>
+          <div><dt>Trick air</dt><dd>Moguls and hill crests launch you automatically at speed.</dd></div>
+          <div><dt>Combat mid-race</dt><dd>Shove or ski-pole your way past AI rivals on the same course.</dd></div>
+          <div><dt>Scoring</dt><dd>Finish fast, land hits, thread near-misses, stomp tricks.</dd></div>
+          <div><dt>Art in code</dt><dd>Every sprite and gradient is generated at boot; no image files at all.</dd></div>
+          <div><dt>Pseudo-3D renderer</dt><dd>Segment-based projection, the OutRun and Road Rash lineage.</dd></div>
         </dl>
-      </aside>
-
-      <div class="f-body">
-        <p class="lede">
-          A run is a single race: a fixed-length, seeded, procedurally generated
-          slope with a finish line at the bottom of it. You dodge trees, rocks
-          and moguls on the way down, catch trick air off the moguls and the
-          hill crests &mdash; at speed, a crest launches you whether you asked
-          for it or not &mdash; and shove or ski-pole your way past AI rivals
-          racing the same course you are.
-        </p>
-
-        <p>
-          Score is assembled from finishing fast, landing hits on rivals,
-          threading near-misses, and landing tricks, which means the fastest
-          line and the highest-scoring line are rarely the same line. Wipe out
-          badly enough before the finish and the run simply ends early.
-        </p>
-
-        <p>
-          The look is a classic segment-based pseudo-3D renderer &mdash; the
-          behind-the-rider, road-rushing-at-you perspective of OutRun and Road
-          Rash &mdash; with pixel art sprites laid over it. It is a technique
-          older than the hardware most people will play it on, and it still
-          reads instantly.
-        </p>
-
-        <blockquote class="pull">
-          <p>All art and atmosphere is generated in code at boot. There are no image files in the repository at all.</p>
-        </blockquote>
-
-        <p>
-          Doing it that way makes colour a program rather than an asset, so
-          colour gets governed like one. A palette module owns every value, and
-          a build gate enforces it: the build fails if any gameplay-relevant
-          edge drops below &Delta;L*&nbsp;12, or if any sprite outline falls
-          below &Delta;L*&nbsp;25 against the snow behind it. A rock you cannot
-          see against a white slope is not a difficulty setting; it is a bug,
-          and it is caught before it ships.
-        </p>
-
-        <p>
-          Balance is held to the same standard. The game ships with a headless
-          seeded combat simulation and a solvability model, so a course can be
-          proven survivable and a fight proven fair without anyone opening a
-          browser to check.
-        </p>
+        <details class="more">
+          <summary>Three more</summary>
+          <dl class="fgrid">
+            <div><dt>Wipe out</dt><dd>Crash hard before the line and the run ends early.</dd></div>
+            <div><dt>Contrast build gate</dt><dd>The build fails below &Delta;L*&nbsp;12 on gameplay edges or &Delta;L*&nbsp;25 on sprite outlines.</dd></div>
+            <div><dt>Headless sim</dt><dd>Balance is verified by a seeded combat simulation, without a browser.</dd></div>
+          </dl>
+        </details>
       </div>
     </article>
 
     <span class="dinkus" aria-hidden="true">
-      <svg width="72" height="12" viewBox="0 0 72 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="72" height="12" viewBox="0 0 72 12" xmlns="http://www.w3.org/2000/svg">
         <path d="M6 6 L12 0 L18 6 L12 12 Z" fill="currentColor"/>
         <path d="M30 6 L36 0 L42 6 L36 12 Z" fill="currentColor"/>
         <path d="M54 6 L60 0 L66 6 L60 12 Z" fill="currentColor"/>
@@ -932,70 +997,75 @@
     </span>
   </section>
 
-  <!-- ============================ 02 / ABOUT ============================ -->
-  <section id="about" class="shell section" aria-labelledby="about-h">
+  <!-- =========================== 02 / EARLIER =========================== -->
+  <section id="earlier" class="shell section" aria-labelledby="earlier-h">
     <div class="section-head">
-      <h2 id="about-h"><span class="num">02</span> &nbsp;/&nbsp; About</h2>
-      <p class="aside-note">The short version</p>
+      <h2 id="earlier-h"><span class="num">02</span> &nbsp;/&nbsp; Earlier work</h2>
+      <p class="aside-note">Back catalogue</p>
     </div>
 
-    <div class="about">
-      <aside class="f-side" aria-label="About — details">
-        <dl>
-          <dt>Education</dt>
-          <dd>M.S. Computer Science<br>University of Florida</dd>
-          <dd>B.E. Computer Science<br>Anna University</dd>
-
-          <dt>Elsewhere</dt>
-          <dd><a href="https://github.com/sidyellur">github.com/sidyellur</a></dd>
-          <dd><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></dd>
-        </dl>
-      </aside>
-
-      <div class="a-body">
-        <p>
-          Siddharth Yellur is an engineer who builds developer tooling for AI
-          agents &mdash; and, lately, a video game.
-        </p>
-        <p>
-          The through-line in the work is a preference for the layer nobody
-          demos: memory that persists after the window closes, a terminal that
-          can prove what a command returned, a renderer whose colours are
-          checked by the build rather than by eye. Small tools, made to be
-          honest about what they know, and to fail quietly rather than loudly
-          when they do not know it.
-        </p>
-        <p>
-          Most of it is Python and TypeScript, most of it is open source, and
-          most of it started because the thing did not exist and the absence got
-          annoying enough.
-        </p>
-      </div>
+    <div class="table-wrap">
+      <table class="earlier">
+        <thead>
+          <tr><th scope="col">Project</th><th scope="col">Stack</th><th scope="col">Source</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Vue Weather App</th>
+            <td>Vue.js &middot; OpenWeather API</td>
+            <td class="repo"><a href="https://github.com/sidyellur/Vue-Weather-App">Vue-Weather-App</a></td>
+          </tr>
+          <tr>
+            <th scope="row">Red-Black Tree / Min-Heap city builder</th>
+            <td>Java &middot; Academic</td>
+            <td class="repo"><a href="https://github.com/sidyellur/RBT-Min-Heap-">RBT-Min-Heap-</a></td>
+          </tr>
+          <tr>
+            <th scope="row">TicTacToe</th>
+            <td>React</td>
+            <td class="repo"><a href="https://github.com/sidyellur/TicTacToe">TicTacToe</a></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
-  <!-- =========================== 03 / EARLIER =========================== -->
-  <section id="earlier" class="shell section" aria-labelledby="earlier-h">
+  <!-- ============================ 03 / ABOUT ============================ -->
+  <section id="about" class="shell section" aria-labelledby="about-h">
     <div class="section-head">
-      <h2 id="earlier-h"><span class="num">03</span> &nbsp;/&nbsp; Earlier work</h2>
-      <p class="aside-note">From the back catalogue</p>
+      <h2 id="about-h"><span class="num">03</span> &nbsp;/&nbsp; About</h2>
+      <p class="aside-note">The short version</p>
     </div>
 
-    <div class="earlier">
-      <ol>
-        <li>
-          <span class="t"><a href="https://github.com/sidyellur/Vue-Weather-App">Vue Weather App</a></span>
-          <span class="m">Vue.js &middot; OpenWeather API</span>
-        </li>
-        <li>
-          <span class="t"><a href="https://github.com/sidyellur/RBT-Min-Heap-">Red-Black Tree / Min-Heap city builder</a></span>
-          <span class="m">Java &middot; Academic</span>
-        </li>
-        <li>
-          <span class="t"><a href="https://github.com/sidyellur/TicTacToe">TicTacToe</a></span>
-          <span class="m">React</span>
-        </li>
-      </ol>
+    <div class="about-grid">
+      <div>
+        <p class="label label-accent">The layer</p>
+        <p class="stmt">I build the layer underneath AI agents &mdash; the part nobody demos.</p>
+      </div>
+      <div>
+        <p class="label label-accent">The work</p>
+        <p class="stmt">Memory that persists, a terminal that can prove what a command returned, a renderer whose colours are checked by the build instead of by eye.</p>
+      </div>
+      <div>
+        <p class="label label-accent">The shape of it</p>
+        <p class="stmt">Most of it is Python and TypeScript, runs locally, and is open source.</p>
+      </div>
+    </div>
+
+    <div class="about-strip">
+      <dl>
+        <dt class="label">Education</dt>
+        <dd>M.S. Computer Science &mdash; University of Florida</dd>
+        <dd>B.E. Computer Science &mdash; Anna University</dd>
+      </dl>
+      <dl>
+        <dt class="label">Working in</dt>
+        <dd>Python, TypeScript. MCP servers, PTYs, SQLite, a pseudo-3D renderer.</dd>
+      </dl>
+      <dl>
+        <dt class="label">Elsewhere</dt>
+        <dd><a href="https://github.com/sidyellur">github.com/sidyellur</a> &middot; <a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></dd>
+      </dl>
     </div>
   </section>
 
@@ -1008,44 +1078,47 @@
       <p class="label">04 &nbsp;/&nbsp; Contact</p>
     </div>
     <div>
-      <h2 id="contact-h" class="label">Where to find the work</h2>
+      <h2 id="contact-h" class="label label-ink">Where to find the work</h2>
       <ul class="foot-links">
         <li><a href="https://github.com/sidyellur">GitHub &mdash; sidyellur</a></li>
         <li><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></li>
       </ul>
     </div>
     <div>
-      <p class="label">Colophon</p>
-      <p class="foot-note">
-        Set in Georgia, with Helvetica for the small caps. One hand-written HTML
-        file, no build step, no images, no external requests &mdash; it renders
-        the same with the network switched off.
-      </p>
+      <p class="label label-ink">Index</p>
+      <ul class="foot-links">
+        <li><a href="#tether">tether</a></li>
+        <li><a href="#cleat">cleat</a></li>
+        <li><a href="#brawl">Black Diamond Brawl</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="label label-ink">Colophon</p>
+      <p class="foot-note">Set in Georgia, with a system sans for the small caps. One hand-written HTML file &mdash; no build step, no images, no external requests.</p>
     </div>
   </div>
 </footer>
 
 <script>
-  // Marks the current section in the folio bar. Purely decorative:
-  // every link works, and every word is readable, without it.
+  // Marks the current section in the folio bar. Decorative only:
+  // every link works and every word is readable without it.
   (function () {
     var links = Array.prototype.slice.call(
       document.querySelectorAll('.folio nav a[href^="#"]')
     );
     if (!links.length || !('IntersectionObserver' in window)) return;
 
-    var map = {};
     var targets = [];
     links.forEach(function (a) {
       var el = document.getElementById(a.getAttribute('href').slice(1));
-      if (el) { map[el.id] = a; targets.push(el); }
+      if (el) { targets.push(el); }
     });
 
     var visible = {};
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting; });
       var current = null;
-      targets.forEach(function (t) { if (visible[t.id] && !current) current = t.id; });
+      targets.forEach(function (t) { if (visible[t.id] && !current) { current = t.id; } });
       links.forEach(function (a) {
         if (current && a.getAttribute('href') === '#' + current) {
           a.setAttribute('aria-current', 'true');
@@ -1053,7 +1126,7 @@
           a.removeAttribute('aria-current');
         }
       });
-    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
 
     targets.forEach(function (t) { io.observe(t); });
   })();

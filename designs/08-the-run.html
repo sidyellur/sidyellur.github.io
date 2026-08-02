@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Siddharth Yellur</title>
-<meta name="description" content="Siddharth Yellur — engineer building developer tooling for AI agents: tether, a shared memory layer; cleat, a headless terminal layer; and Black Diamond Brawl, a downhill snowboarding combat racer.">
+<meta name="description" content="Siddharth Yellur — engineer building developer tooling for AI agents: tether (durable memory), cleat (a real terminal), and Black Diamond Brawl (a downhill snowboarding combat racer).">
 <meta name="color-scheme" content="dark light">
 <style>
 /* ============================================================
@@ -24,8 +24,8 @@
   --panel-edge:  rgba(139, 178, 224, 0.24);
   --text:        #e9f0f8;
   --head:        #ffffff;
-  --muted:       #a7bad0;
-  --faint:       #8397ad;
+  --muted:       #b3c5d8;
+  --faint:       #93a8be;
   --accent:      #ff7038;
   --ice:         #7cc0ff;
   --rule:        rgba(139, 178, 224, 0.18);
@@ -42,9 +42,9 @@ html[data-mode="calm"] {
   --panel-edge:  #dde5ee;
   --text:        #1b2733;
   --head:        #0c1620;
-  --muted:       #4c5b6b;
-  --faint:       #66757f;
-  --accent:      #bd3f11;
+  --muted:       #45535f;
+  --faint:       #5c6a76;
+  --accent:      #b23a0e;
   --ice:         #0f5aa6;
   --rule:        #e2e9f0;
   --chip:        #eef3f8;
@@ -63,7 +63,7 @@ body {
   color: var(--text);
   font-family: var(--sans);
   font-size: 17px;
-  line-height: 1.62;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -82,7 +82,7 @@ html[data-mode="calm"] #slope { display: none; }
 .shell { position: relative; z-index: 2; }
 
 a { color: inherit; }
-a:focus-visible, button:focus-visible {
+a:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
   border-radius: 3px;
@@ -143,176 +143,307 @@ a:focus-visible, button:focus-visible {
   width: 8px; height: 8px; border-radius: 50%; flex: none;
   background: var(--accent); box-shadow: 0 0 8px var(--accent);
 }
-html[data-mode="calm"] .calm-btn .led { background: #3f9a5e; box-shadow: none; }
+html[data-mode="calm"] .calm-btn .led { background: #2f7f4c; box-shadow: none; }
 
 /* --- layout --------------------------------------------------- */
 .stop {
   position: relative;
-  min-height: 94vh;
+  min-height: 96vh;
   display: flex; align-items: center;
-  padding: 13vh 20px;
+  padding: 11vh 20px;
 }
 .stop.hero { min-height: 100vh; padding-top: 84px; }
-.inner { width: 100%; max-width: 1160px; margin: 0 auto; }
+.inner { width: 100%; max-width: 1200px; margin: 0 auto; }
 .push { display: flex; }
 .push.right { justify-content: flex-end; }
 
-/* --- panels --------------------------------------------------- */
+/* --- panels — short and wide, so the slope keeps showing ------- */
 .panel {
   background: var(--panel);
   border: 1px solid var(--panel-edge);
   border-radius: 16px;
-  padding: clamp(22px, 3.4vw, 40px);
+  padding: clamp(20px, 2.6vw, 32px) clamp(18px, 3vw, 36px);
   box-shadow: var(--shadow);
-  max-width: 68ch;
+  max-width: 1000px;
   width: 100%;
 }
-.panel.wide { max-width: 78ch; }
+.panel.narrow { max-width: 760px; }
+.panel.mid { max-width: 880px; }
 
 /* --- trail markers -------------------------------------------- */
 .marker {
-  display: flex; align-items: baseline; gap: 10px;
-  font: 600 11px/1.5 var(--mono);
+  display: flex; align-items: baseline; gap: 9px;
+  font: 600 10.5px/1.5 var(--mono);
   letter-spacing: .15em; text-transform: uppercase;
   color: var(--faint);
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   flex-wrap: wrap;
 }
 .marker .sym { font-size: 13px; letter-spacing: .1em; }
-.sym.green { color: #45b167; }
-.sym.blue  { color: #58a0e8; }
+.sym.green { color: #4dbb70; }
+.sym.blue  { color: #6fb0f2; }
 .sym.black { color: var(--head); }
 html[data-mode="calm"] .sym.black { color: #10161d; }
-html[data-mode="calm"] .sym.blue { color: #1f66b8; }
-html[data-mode="calm"] .sym.green { color: #1f8446; }
+html[data-mode="calm"] .sym.blue { color: #1a5ea8; }
+html[data-mode="calm"] .sym.green { color: #1a7a40; }
 .marker .num { color: var(--accent); }
 
 h1 {
-  margin: 0 0 18px;
-  font-size: clamp(40px, 8.2vw, 82px);
-  line-height: 0.96;
+  margin: 0 0 10px;
+  font-size: clamp(38px, 7vw, 70px);
+  line-height: 0.98;
   letter-spacing: -0.035em;
   font-weight: 800;
   color: var(--head);
 }
 h2 {
-  margin: 0 0 4px;
-  font-size: clamp(28px, 4.4vw, 44px);
-  line-height: 1.06;
+  margin: 0;
+  font-size: clamp(26px, 3.6vw, 38px);
+  line-height: 1.04;
   letter-spacing: -0.028em;
   font-weight: 800;
   color: var(--head);
 }
 h3 {
-  margin: 30px 0 10px;
-  font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+  margin: 0 0 9px;
+  font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
   font-family: var(--mono); font-weight: 700;
   color: var(--ice);
 }
-.kicker {
-  margin: 0 0 20px;
-  font-size: 14.5px; color: var(--muted);
-  font-family: var(--mono);
-}
-.lede {
-  font-size: clamp(18px, 2.2vw, 20.5px);
-  line-height: 1.55;
-  color: var(--text);
-  margin: 0 0 20px;
-}
-p { margin: 0 0 16px; max-width: 66ch; }
+p { margin: 0 0 12px; }
 p:last-child { margin-bottom: 0; }
 .muted { color: var(--muted); }
-em { font-style: italic; }
 
-/* --- lists ---------------------------------------------------- */
-ul.beats { list-style: none; margin: 0; padding: 0; }
-ul.beats > li {
-  position: relative;
-  padding: 14px 0 14px 26px;
-  border-top: 1px solid var(--rule);
-  max-width: 68ch;
+.tagline {
+  margin: 6px 0 4px;
+  font-size: clamp(16px, 1.9vw, 19px);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.01em;
 }
-ul.beats > li::before {
-  content: "";
-  position: absolute; left: 2px; top: 25px;
-  width: 8px; height: 8px;
-  background: var(--accent);
-  transform: rotate(45deg);
+html[data-mode="calm"] .tagline { color: #9c3309; }
+.oneline {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 62ch;
 }
-ul.beats b { color: var(--head); font-weight: 700; }
 
 /* --- code / chips --------------------------------------------- */
 code, .mono { font-family: var(--mono); font-size: 0.9em; }
-p code, li code {
+p code, li code, td code {
   background: var(--chip); color: var(--ice);
   padding: 1px 5px; border-radius: 4px;
 }
 pre {
-  margin: 0 0 18px;
+  margin: 0;
   background: var(--code-bg);
   border: 1px solid var(--panel-edge);
-  border-radius: 10px;
-  padding: 13px 15px;
+  border-radius: 9px;
+  padding: 11px 13px;
   overflow-x: auto;
   font-family: var(--mono);
-  font-size: 12.5px;
-  line-height: 1.75;
+  font-size: 12px;
+  line-height: 1.7;
   color: var(--text);
 }
 pre .cm { color: var(--faint); }
 pre .ky { color: var(--accent); }
-pre .st { color: #6dc795; }
-html[data-mode="calm"] pre .st { color: #17734a; }
+pre .st { color: #7ad3a3; }
+pre .pr { color: var(--ice); }
+html[data-mode="calm"] pre .st { color: #14663f; }
+html[data-mode="calm"] pre .ky { color: #9c3309; }
 
-.chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 22px 0 0; padding: 0; list-style: none; }
-.chips li {
-  font: 600 10.5px/1 var(--mono);
+ul.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+ul.chips li {
+  font: 600 10px/1 var(--mono);
   letter-spacing: .07em; text-transform: uppercase;
   color: var(--muted); background: var(--chip);
   border: 1px solid var(--panel-edge);
-  border-radius: 999px; padding: 7px 11px;
+  border-radius: 999px; padding: 6px 9px;
 }
+ul.chips li.hot { color: var(--head); border-color: var(--accent); }
 
-.stat {
-  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
-  margin: 22px 0 0; padding: 16px 18px;
+/* --- HUD-style readouts inside panels -------------------------- */
+.readout {
   border: 1px solid var(--panel-edge);
   border-left: 3px solid var(--accent);
   border-radius: 3px 10px 10px 3px;
-  background: var(--chip);
+  background: var(--code-bg);
+  padding: 11px 13px;
 }
-.stat .big {
-  font: 800 clamp(18px, 3vw, 25px)/1.15 var(--mono);
-  letter-spacing: -0.02em; color: var(--head);
+.readout .rl {
+  display: block;
+  font: 700 9px/1.4 var(--mono);
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--faint);
 }
-.stat .why { font-size: 14px; color: var(--muted); max-width: 44ch; }
+.readout .rv {
+  display: block;
+  font: 800 clamp(19px, 2.5vw, 26px)/1.15 var(--mono);
+  letter-spacing: -0.02em;
+  color: var(--head);
+  margin: 3px 0 2px;
+}
+.readout .rv .arw { color: var(--accent); }
+.readout .rn { display: block; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.readout.quote .rv { font-size: clamp(15px, 1.7vw, 17.5px); line-height: 1.35; letter-spacing: -0.005em; }
+.readout.small .rv { font-size: 15px; line-height: 1.35; }
 
-.golinks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+/* --- project layout: spec rail beside a feature grid ----------- */
+.phead {
+  display: flex; flex-wrap: wrap; align-items: flex-end;
+  justify-content: space-between; gap: 14px 26px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.phead > div:first-child { min-width: 0; flex: 1 1 380px; }
+.phead > .readout { flex: 0 1 300px; }
+
+.pgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 292px) minmax(0, 1fr);
+  gap: 22px 34px;
+  align-items: start;
+  margin-top: 20px;
+}
+.spec { display: grid; gap: 14px; align-content: start; }
+
+/* feature grid — bold label + exactly one sentence */
+ul.fgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 30px; }
+ul.fgrid > li {
+  padding: 9px 0;
+  border-top: 1px solid var(--rule);
+  font-size: 14.5px;
+  line-height: 1.48;
+  color: var(--text);
+}
+ul.fgrid > li b { color: var(--head); font-weight: 700; }
+ul.fgrid > li b::after { content: " \2014"; color: var(--accent); font-weight: 800; }
+html[data-mode="calm"] ul.fgrid > li b::after { color: #9c3309; }
+
+details.more { margin-top: 12px; }
+details.more > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 700 10.5px/1 var(--mono);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ice);
+  padding: 9px 0;
+}
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before {
+  content: "+"; color: var(--accent); font-size: 14px; font-weight: 800;
+}
+details.more[open] > summary::before { content: "\2212"; }
+details.more > summary:hover { color: var(--head); }
+html[data-mode="calm"] details.more > summary:hover { color: #0c1620; }
+
+/* --- tables ---------------------------------------------------- */
+.tscroll { overflow-x: auto; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; }
+table.states { min-width: 470px; font-size: 14px; }
+table.states caption {
+  caption-side: top; text-align: left;
+  font: 700 10.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ice); padding-bottom: 9px;
+}
+table.states th, table.olds th {
+  text-align: left;
+  font: 700 9.5px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint);
+  padding: 0 16px 7px 0; border-bottom: 1px solid var(--panel-edge);
+}
+table.states th:last-child, table.olds th:last-child { padding-right: 0; }
+table.states td {
+  padding: 8px 16px 8px 0;
+  border-top: 1px solid var(--rule);
+  vertical-align: top;
+  line-height: 1.45;
+}
+table.states td:first-child {
+  font: 700 13px/1.45 var(--mono);
+  color: var(--accent); white-space: nowrap;
+}
+html[data-mode="calm"] table.states td:first-child { color: #9c3309; }
+table.states td:last-child { color: var(--muted); padding-right: 0; }
+
+table.olds { min-width: 420px; font-size: 14.5px; }
+table.olds td { padding: 9px 16px 9px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+table.olds td:first-child a { color: var(--head); font-weight: 700; text-decoration: none; }
+table.olds td:first-child a:hover { color: var(--accent); text-decoration: underline; }
+table.olds td:last-child { color: var(--muted); font-family: var(--mono); font-size: 12.5px; padding-right: 0; }
+
+/* --- links ---------------------------------------------------- */
+.golinks { display: flex; flex-wrap: wrap; gap: 8px; }
 .go {
-  display: inline-flex; align-items: center; gap: 9px;
-  font: 700 13px/1 var(--sans);
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 700 12.5px/1 var(--sans);
   text-decoration: none; color: var(--head);
   border: 1px solid var(--panel-edge); border-radius: 999px;
-  padding: 12px 18px; background: transparent;
+  padding: 11px 15px; background: transparent;
 }
 .go:hover { border-color: var(--accent); background: var(--chip); }
-.go .arw { color: var(--accent); font-weight: 800; }
+.go::before { content: "\2192"; color: var(--accent); font-weight: 800; }
 .go.solid { background: var(--accent); border-color: var(--accent); color: #1a0803; }
-.go.solid .arw { color: #1a0803; }
+.go.solid::before { color: #1a0803; }
 html[data-mode="calm"] .go.solid { color: #fff; }
-html[data-mode="calm"] .go.solid .arw { color: #fff; }
+html[data-mode="calm"] .go.solid::before { color: #fff; }
 
 /* --- hero ----------------------------------------------------- */
-.hero .panel { max-width: 60ch; }
-.hero-sub { font-size: clamp(16px, 2vw, 18px); color: var(--muted); max-width: 54ch; }
+.hero .panel { max-width: 900px; }
+.hero .lede {
+  margin: 0 0 8px;
+  font-size: clamp(19px, 2.5vw, 25px);
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--head);
+  letter-spacing: -0.015em;
+}
+.hero .sub { font-size: clamp(15px, 1.8vw, 17px); color: var(--muted); max-width: 58ch; margin: 0 0 20px; }
+
+ul.herowork {
+  list-style: none; margin: 0 0 18px; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+}
+ul.herowork a {
+  display: block; height: 100%;
+  text-decoration: none;
+  border: 1px solid var(--panel-edge); border-radius: 11px;
+  padding: 12px 13px;
+  background: var(--chip);
+}
+ul.herowork a:hover { border-color: var(--accent); }
+ul.herowork .nm { display: block; font-weight: 800; color: var(--head); font-size: 15px; letter-spacing: -0.01em; }
+ul.herowork .ds { display: block; font: 500 11.5px/1.4 var(--mono); color: var(--muted); margin-top: 4px; }
+
+ul.strip {
+  list-style: none; margin: 18px 0 0; padding: 14px 0 0;
+  border-top: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; gap: 6px 22px;
+}
+ul.strip li { font: 600 11px/1.4 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+ul.strip b { color: var(--head); font-weight: 800; font-size: 13px; }
+
 .scroll-cue {
-  margin-top: 26px;
-  font: 600 11px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase;
+  margin: 16px 0 0;
+  font: 600 10.5px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase;
   color: var(--faint);
   display: flex; align-items: center; gap: 10px;
 }
-.scroll-cue .tick { display: inline-block; width: 34px; height: 1px; background: var(--accent); }
+.scroll-cue .tick { display: inline-block; width: 30px; height: 1px; background: var(--accent); }
+
+/* --- base area (about + earlier) ------------------------------- */
+.basegrid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px 40px; align-items: start; margin-top: 18px;
+}
+.about p { font-size: 15.5px; line-height: 1.55; max-width: 52ch; }
+.eduspec { list-style: none; margin: 14px 0 0; padding: 12px 0 0; border-top: 1px solid var(--rule); display: grid; gap: 5px; }
+.eduspec li { font: 500 12.5px/1.5 var(--mono); color: var(--muted); }
+.eduspec b { color: var(--head); font-weight: 700; }
 
 /* --- HUD ------------------------------------------------------ */
 .hud {
@@ -327,15 +458,15 @@ html[data-mode="calm"] .go.solid .arw { color: #fff; }
   display: grid; grid-template-columns: auto auto; gap: 2px 16px;
   pointer-events: none;
 }
-.hud .lbl { font-size: 9px; letter-spacing: .18em; color: #8ba4bd; text-transform: uppercase; align-self: center; }
+.hud .lbl { font-size: 9px; letter-spacing: .18em; color: #a2b8ce; text-transform: uppercase; align-self: center; }
 .hud .val { font-size: 15px; font-weight: 700; text-align: right; }
-.hud .u { font-size: 9px; color: #8ba4bd; font-weight: 500; margin-left: 3px; letter-spacing: .1em; }
+.hud .u { font-size: 9px; color: #a2b8ce; font-weight: 500; margin-left: 3px; letter-spacing: .1em; }
 html[data-mode="calm"] .hud { display: none; }
 
 /* --- vertical run rail ---------------------------------------- */
 .rail {
   position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-  z-index: 30; width: 168px; height: 56vh; min-height: 300px;
+  z-index: 30; width: 168px; height: 52vh; min-height: 280px;
   pointer-events: none;
 }
 .rail .spine {
@@ -368,22 +499,11 @@ html[data-mode="calm"] .hud { display: none; }
   border-radius: 2px;
 }
 html[data-mode="calm"] .rail { display: none; }
-@media (max-width: 1100px) { .rail { display: none; } }
-
-/* --- earlier work --------------------------------------------- */
-.olds { list-style: none; margin: 0; padding: 0; }
-.olds li { border-top: 1px solid var(--rule); }
-.olds a {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 12px;
-  padding: 14px 2px; text-decoration: none;
-}
-.olds a:hover .nm { color: var(--accent); }
-.olds .nm { font-weight: 700; color: var(--head); }
-.olds .ds { font-size: 13.5px; color: var(--muted); font-family: var(--mono); }
+@media (max-width: 1180px) { .rail { display: none; } }
 
 /* --- finish --------------------------------------------------- */
 .finish-band {
-  height: 14px; width: 100%; margin: 0 0 22px;
+  height: 14px; width: 100%; margin: 0 0 18px;
   border-radius: 3px;
   background-image:
     linear-gradient(45deg, var(--head) 25%, transparent 25%, transparent 75%, var(--head) 75%),
@@ -394,30 +514,50 @@ html[data-mode="calm"] .rail { display: none; }
   border: 1px solid var(--panel-edge);
 }
 html[data-mode="calm"] .finish-band { background-color: #eef3f8; }
+.finishrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 30px; }
 
+/* --- footer --------------------------------------------------- */
 footer {
   position: relative; z-index: 2;
-  padding: 40px 20px 64px;
+  padding: 40px 20px 56px;
   border-top: 1px solid var(--rule);
   background: var(--panel-solid);
 }
-.colophon {
-  font: 400 13px/1.75 var(--mono);
-  color: var(--faint);
-  max-width: 78ch;
+.footcols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px 34px;
 }
-.colophon b { color: var(--muted); font-weight: 700; }
+.footcols h2 {
+  font: 700 10px/1.4 var(--mono); letter-spacing: .18em; text-transform: uppercase;
+  color: var(--faint); margin: 0 0 10px;
+}
+.footcols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.footcols a { color: var(--text); text-decoration: none; font-size: 14px; }
+.footcols a:hover { color: var(--accent); text-decoration: underline; }
+.footcols p { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0 0 8px; }
+.footnote {
+  margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--rule);
+  font: 400 12px/1.6 var(--mono); color: var(--faint);
+}
+.footnote b { color: var(--muted); font-weight: 700; }
 
 /* --- responsive ----------------------------------------------- */
-@media (max-width: 760px) {
+@media (max-width: 960px) {
+  .pgrid { grid-template-columns: 1fr; }
+  .basegrid { grid-template-columns: 1fr; }
+  .footcols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
   body { font-size: 16px; }
-  .stop { padding: 8vh 14px; min-height: auto; }
-  .stop.hero { min-height: 86vh; padding-top: 80px; }
+  .stop { padding: 7vh 13px; min-height: auto; }
+  .stop.hero { min-height: 88vh; padding-top: 76px; }
   .push.right { justify-content: flex-start; }
+  ul.fgrid { grid-template-columns: 1fr; }
+  ul.herowork { grid-template-columns: 1fr; }
   .hud { left: 10px; bottom: 10px; padding: 8px 10px; gap: 1px 12px; }
   .hud .val { font-size: 13px; }
-  ul.beats > li { padding-left: 22px; }
-  .colophon { font-size: 12px; }
+  .footcols { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -437,11 +577,10 @@ footer {
   <a class="mark" href="#top"><span class="dia" aria-hidden="true">&#9670;</span> Siddharth Yellur</a>
   <nav aria-label="Sections">
     <ul>
-      <li><a href="#base">Base</a></li>
       <li><a href="#tether">tether</a></li>
       <li><a href="#cleat">cleat</a></li>
-      <li><a href="#brawl">Black Diamond Brawl</a></li>
-      <li><a href="#earlier">Earlier</a></li>
+      <li><a href="#brawl">Brawl</a></li>
+      <li><a href="#base">Base</a></li>
       <li><a href="#finish">Contact</a></li>
     </ul>
   </nav>
@@ -453,169 +592,287 @@ footer {
 <main id="main">
 
   <!-- ===== HERO ===== -->
-  <section class="stop hero" id="top">
+  <section class="stop hero" id="top" aria-labelledby="h-name">
     <div class="inner">
       <div class="panel">
-        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> The run &middot; <span class="num">start</span></p>
-        <h1>Siddharth Yellur</h1>
-        <p class="lede">I build the unglamorous layer underneath AI agents &mdash; memory that survives the session, a terminal that reports what actually happened &mdash; and, lately, a video game.</p>
-        <p class="hero-sub">You are looking down a mountain that does not exist. The piste, the pines, the gates and the peaks on the horizon were all generated in code when this page loaded; there is not a single image file here. That is the rule the game further down holds itself to, so it seemed only fair.</p>
-        <div class="scroll-cue"><span class="tick" aria-hidden="true"></span> Scroll to drop in</div>
+        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> The run &middot; <span class="num">start</span> &middot; 640&nbsp;m vertical</p>
+        <h1 id="h-name">Siddharth Yellur</h1>
+        <p class="lede">I build developer tooling for AI agents.</p>
+        <p class="sub">Memory that outlives the session, a terminal that reports what actually happened &mdash; and a snowboarding game with no image files.</p>
+
+        <ul class="herowork">
+          <li><a href="#tether"><span class="nm">tether</span><span class="ds">durable memory</span></a></li>
+          <li><a href="#cleat"><span class="nm">cleat</span><span class="ds">a real terminal</span></a></li>
+          <li><a href="#brawl"><span class="nm">Black Diamond Brawl</span><span class="ds">combat racer</span></a></li>
+        </ul>
+
+        <div class="golinks">
+          <a class="go solid" href="https://github.com/sidyellur">GitHub</a>
+          <a class="go" href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a>
+        </div>
+
+        <ul class="strip">
+          <li><b>3</b> projects shipped</li>
+          <li><b>2</b> on PyPI</li>
+          <li><b>0</b> image files</li>
+          <li><b>100%</b> local-first</li>
+        </ul>
+
+        <p class="scroll-cue"><span class="tick" aria-hidden="true"></span> Scroll to drop in</p>
       </div>
     </div>
   </section>
 
-  <!-- ===== BASE ===== -->
-  <section class="stop" id="base" data-gate="BASE" data-sym="&#9679;">
-    <div class="inner"><div class="push right">
-      <div class="panel">
-        <p class="marker"><span class="sym green" aria-hidden="true">&#9679;</span> Gate <span class="num">01</span> &middot; Green circle</p>
-        <h2>Tooling for things that don&rsquo;t remember</h2>
-        <p class="kicker">what I work on</p>
-        <p>Most of what I build sits one layer below the interesting part. An agent is only as good as what it can recall and what it can actually run, and both of those turn out to be much harder than they look from the outside.</p>
-        <p><b>tether</b> gives an agent durable memory in a local SQLite file that can quietly become a synced replica across every machine you own. <b>cleat</b> gives it a real, persistent shell and a truthful answer about how a command ended. Both are MCP servers, both install in one line, and both are built to degrade rather than break.</p>
-        <p><b>Black Diamond Brawl</b> is the opposite of unglamorous: a downhill snowboarding combat racer built solo, where every pixel is generated at boot and a build gate fails the whole thing if a tree stops being visible against the snow.</p>
-        <p class="muted">M.S. Computer Science, University of Florida. B.E. Computer Science, Anna University.</p>
-      </div>
-    </div></div>
-  </section>
-
   <!-- ===== TETHER ===== -->
-  <section class="stop" id="tether" data-gate="TETHER" data-sym="&#9670;">
+  <section class="stop" id="tether" data-gate="TETHER" data-sym="&#9670;" aria-labelledby="h-tether">
     <div class="inner">
-      <div class="panel wide">
-        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">02</span> &middot; Black diamond</p>
-        <h2>tether</h2>
-        <p class="kicker">a shared memory layer for personal agents &middot; v0.5.1 &middot; Python</p>
-
-        <p class="lede">An MCP server backed by a plain SQLite file. Any MCP-compatible agent can <code>remember</code>, <code>recall</code>, <code>link</code> and <code>forget</code> durable notes &mdash; facts about you, your projects, your preferences &mdash; so context follows you between sessions instead of dying with each one.</p>
-
-<pre><span class="cm"># install</span>
-claude mcp add tether -- uvx tether-memory</pre>
-
-        <h3>Why it&rsquo;s interesting</h3>
-        <ul class="beats">
-          <li><b>Local-first, zero configuration.</b> It runs entirely off one file on your disk. Point it at a hosted libSQL/Turso primary and that same file becomes an embedded replica &mdash; memory syncs across every device in near-real-time, and nothing about the local API changes.</li>
-          <li><b>Recall is hybrid.</b> Keyword results from FTS5 are fused with semantic vector results, so &ldquo;automobile&rdquo; finds the note about your &ldquo;car&rdquo;. The embedding model is small and static and runs locally: no network call, no API key.</li>
-          <li><b>An associative usage graph.</b> Hits pull in related memories along edges from three local, deterministic sources: semantic nearest-neighbours, explicit <code>link()</code> calls, and <em>hebbian</em> edges &mdash; memories recalled together get wired together over time. Every hit carries a <code>via</code> receipt explaining why it surfaced.</li>
-          <li><b>Recall is seed-dominant.</b> Top direct matches are locked in place and associations only fill the slots below them. Turning association on can never demote a good hit &mdash; which is what makes the feature safe to leave switched on.</li>
-          <li><b>The store self-organizes.</b> A hub-curated boot index surfaces load-bearing memories &mdash; the ones with the highest behavioral degree &mdash; alongside recent ones. An opt-in sweep soft-archives memories that are both old <em>and</em> behaviorally isolated. Nothing is ever hard-deleted.</li>
-          <li><b>Optional crystallization.</b> It detects dense clusters of related memories and offers them up to be <em>named</em> as principles. tether finds the structure; the agent supplies the words.</li>
-          <li><b>Everything degrades cleanly</b> to plain keyword recall. It is deliberately a convenience layer: more useful when present, never breaking the agent when degraded.</li>
-        </ul>
-
-        <div class="stat">
-          <span class="big">66.9&nbsp;KB &rarr; 2.0&nbsp;KB</span>
-          <span class="why">one recall response, after returning query-centered excerpts instead of full bodies</span>
+      <div class="panel">
+        <div class="phead">
+          <div>
+            <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">01</span> &middot; Black diamond</p>
+            <h2 id="h-tether">tether</h2>
+            <p class="tagline">Durable memory for AI agents.</p>
+            <p class="oneline">An MCP server backed by one local SQLite file, so what an agent learns about you survives the session it learned it in.</p>
+          </div>
+          <div class="readout">
+            <span class="rl">Recall payload</span>
+            <span class="rv">66.9&nbsp;KB&nbsp;<span class="arw" aria-hidden="true">&rarr;</span>&nbsp;2.0&nbsp;KB</span>
+            <span class="rn">query-centered excerpts, not full bodies</span>
+          </div>
         </div>
 
-        <ul class="chips">
-          <li>Python</li><li>MCP</li><li>SQLite / FTS5</li><li>libSQL / Turso</li><li>local static embeddings</li>
-        </ul>
+        <div class="pgrid">
+          <div class="spec">
+            <div>
+              <h3>Stack</h3>
+              <ul class="chips">
+                <li class="hot">v0.5.1</li><li>Python</li><li>MCP</li><li>SQLite / FTS5</li><li>libSQL / Turso</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Install</h3>
+<pre><span class="pr">$</span> claude mcp add tether -- uvx tether-memory</pre>
+            </div>
+            <div class="golinks">
+              <a class="go solid" href="https://github.com/sidyellur/tether">Repo</a>
+              <a class="go" href="https://pypi.org/project/tether-memory/">tether-memory</a>
+            </div>
+          </div>
 
-        <div class="golinks">
-          <a class="go solid" href="https://github.com/sidyellur/tether"><span class="arw" aria-hidden="true">&rarr;</span> tether on GitHub</a>
-          <a class="go" href="https://pypi.org/project/tether-memory/"><span class="arw" aria-hidden="true">&rarr;</span> tether-memory on PyPI</a>
+          <div>
+            <h3>What it does</h3>
+            <ul class="fgrid">
+              <li><b>Four verbs</b> <code>remember</code>, <code>recall</code>, <code>link</code>, <code>forget</code>.</li>
+              <li><b>Local-first</b> one SQLite file, zero configuration, nothing leaves the machine.</li>
+              <li><b>Hybrid recall</b> FTS5 keyword hits fused with local semantic vectors, so &ldquo;automobile&rdquo; finds your note about a car.</li>
+              <li><b>Associative graph</b> related memories surface along three edge types: semantic, explicit <code>link()</code>, and hebbian.</li>
+              <li><b>Optional sync</b> point it at libSQL/Turso and the same file becomes an embedded replica across every device.</li>
+              <li><b>Degrades cleanly</b> every feature falls back to plain keyword recall.</li>
+            </ul>
+
+            <details class="more">
+              <summary>Five more internals</summary>
+              <ul class="fgrid">
+                <li><b>Hebbian edges</b> memories recalled together get wired together over time.</li>
+                <li><b><code>via</code> receipts</b> every hit reports which edge it came down.</li>
+                <li><b>Seed-dominant</b> associations fill the slots below direct hits, never demoting a good one.</li>
+                <li><b>Self-organizing</b> a hub-curated boot index surfaces load-bearing memories, and nothing is ever hard-deleted.</li>
+                <li><b>Crystallization</b> dense memory clusters are detected and offered up to be named as principles.</li>
+              </ul>
+            </details>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ===== CLEAT ===== -->
-  <section class="stop" id="cleat" data-gate="CLEAT" data-sym="&#9670;">
+  <section class="stop" id="cleat" data-gate="CLEAT" data-sym="&#9670;" aria-labelledby="h-cleat">
     <div class="inner"><div class="push right">
-      <div class="panel wide">
-        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">03</span> &middot; Black diamond</p>
-        <h2>cleat</h2>
-        <p class="kicker">a headless terminal layer for AI agents &middot; Python</p>
+      <div class="panel">
+        <div class="phead">
+          <div>
+            <p class="marker"><span class="sym black" aria-hidden="true">&#9670;</span> Gate <span class="num">02</span> &middot; Black diamond</p>
+            <h2 id="h-cleat">cleat</h2>
+            <p class="tagline">A real terminal for AI agents.</p>
+            <p class="oneline">A persistent shell behind a PTY that returns structured results &mdash; <code>stdout</code>, a real exit code, files touched &mdash; instead of escape-code soup.</p>
+          </div>
+          <div class="readout quote">
+            <span class="rl">The hook</span>
+            <span class="rv">&ldquo;The exit code isn&rsquo;t in the stream at all.&rdquo;</span>
+            <span class="rn">so cleat injects it, signs it, and parses it back out</span>
+          </div>
+        </div>
 
-        <p class="lede">cleat runs a <em>persistent</em> shell session behind a PTY, parses its byte stream for OSC 133 shell-integration marks, and exposes it to an agent over MCP as structured results &mdash; <code>stdout</code>, a real <code>exit_code</code>, the files that were touched &mdash; instead of raw escape-code soup.</p>
+        <div class="pgrid">
+          <div class="spec">
+            <div>
+              <h3>Stack</h3>
+              <ul class="chips">
+                <li>Python</li><li>MCP</li><li>PTY / termios</li><li class="hot">OSC 133</li><li>pyte</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Install &middot; and what comes back</h3>
+<pre><span class="pr">$</span> claude mcp add cleat -- uvx cleat
 
-<pre><span class="cm"># install</span>
-claude mcp add cleat -- uvx cleat
+{ <span class="ky">"stdout"</span>: <span class="st">"..."</span>, <span class="ky">"exit_code"</span>: 0,
+  <span class="ky">"completed"</span>: true, <span class="ky">"state"</span>: <span class="st">"idle"</span> }</pre>
+            </div>
+            <div class="golinks">
+              <a class="go solid" href="https://github.com/sidyellur/cleat">Repo</a>
+              <a class="go" href="https://pypi.org/project/cleat/">cleat</a>
+            </div>
+          </div>
 
-<span class="cm"># what the agent actually receives</span>
-{ <span class="ky">"stdout"</span>: <span class="st">"..."</span>, <span class="ky">"exit_code"</span>: 0, <span class="ky">"completed"</span>: true, <span class="ky">"state"</span>: <span class="st">"idle"</span> }</pre>
+          <div>
+            <h3>What it does</h3>
+            <ul class="fgrid">
+              <li><b>The problem</b> a shell knows <code>$?</code> but never prints it, so scraping a PTY can&rsquo;t recover it.</li>
+              <li><b>The fix</b> cleat injects OSC 133 marks into the shells it spawns and parses them back out.</li>
+              <li><b>Persistent session</b> <code>cd</code>, <code>export</code>, venvs and <code>ssh</code> all carry across calls.</li>
+              <li><b>State is read, not guessed</b> it is derived from termios flags and the foreground process group.</li>
+              <li><b>Password consent</b> it refuses to type into a password prompt without a human go-ahead.</li>
+              <li><b>Nonce-signed marks</b> a program can&rsquo;t forge itself a clean exit code.</li>
+              <li><b>Spoof reporting</b> a bad mark is ignored and surfaced as <code>spoofed_marks</code>.</li>
+              <li><b>Terminal-agnostic</b> not an emulator, and not a patch to yours.</li>
+            </ul>
+          </div>
+        </div>
 
-        <h3>Why it&rsquo;s interesting</h3>
-        <ul class="beats">
-          <li><b>The exit code isn&rsquo;t in the stream at all.</b> That is the core insight. A shell knows <code>$?</code> but never prints it, so no amount of scraping a PTY will recover it. cleat injects OSC 133 marks into the shells it spawns and parses them back out.</li>
-          <li><b>The session persists.</b> <code>cd</code>, <code>export</code>, activated venvs and <code>ssh</code> sessions all carry across calls &mdash; something a fresh subprocess per command fundamentally cannot do.</li>
-          <li><b>State is read, not guessed.</b> Every response carries a <code>state</code> derived from termios flags and the foreground process group: facts only the process holding the PTY can see, rather than inferences from output timing. The states are <code>idle</code>, <code>running</code>, <code>awaiting-input</code>, <code>password</code> and <code>tui</code>.</li>
-          <li><b>It refuses to type into a <code>password</code> prompt</b> without explicit human consent.</li>
-          <li><b>Marks are nonce-authenticated.</b> A command could print a fake OSC 133 sequence to its own stdout and forge a clean exit code. So each session gets a fresh <code>secrets.token_hex(8)</code> nonce embedded in every mark cleat injects; a mark with a missing or wrong <code>k=</code> is ignored outright and surfaced as <code>spoofed_marks</code>, so the agent can tell when a program lied about how it finished.</li>
-          <li><b>Terminal-agnostic.</b> Not a terminal emulator, and not a modification to yours.</li>
-        </ul>
-
-        <ul class="chips">
-          <li>Python</li><li>MCP</li><li>PTY / termios</li><li>OSC 133</li><li>pyte</li>
-        </ul>
-
-        <div class="golinks">
-          <a class="go solid" href="https://github.com/sidyellur/cleat"><span class="arw" aria-hidden="true">&rarr;</span> cleat on GitHub</a>
-          <a class="go" href="https://pypi.org/project/cleat/"><span class="arw" aria-hidden="true">&rarr;</span> cleat on PyPI</a>
+        <div class="tscroll">
+          <table class="states">
+            <caption>Five states</caption>
+            <thead>
+              <tr><th scope="col">State</th><th scope="col">What it means</th><th scope="col">What the agent does</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>idle</td><td>The prompt is back and the last command finished.</td><td>Read <code>exit_code</code>, send the next command.</td></tr>
+              <tr><td>running</td><td>A foreground job still holds the PTY.</td><td>Wait, or poll for partial output.</td></tr>
+              <tr><td>awaiting-input</td><td>The process is reading from stdin.</td><td>Answer the question it asked.</td></tr>
+              <tr><td>password</td><td>Echo is off at the termios layer.</td><td>Stop and hand over to a human.</td></tr>
+              <tr><td>tui</td><td>A full-screen app owns the screen.</td><td>Send keys, not a command line.</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div></div>
   </section>
 
   <!-- ===== BLACK DIAMOND BRAWL ===== -->
-  <section class="stop" id="brawl" data-gate="BLACK DIAMOND BRAWL" data-sym="&#9670;&#9670;">
+  <section class="stop" id="brawl" data-gate="BLACK DIAMOND BRAWL" data-sym="&#9670;&#9670;" aria-labelledby="h-brawl">
     <div class="inner">
-      <div class="panel wide">
-        <p class="marker"><span class="sym black" aria-hidden="true">&#9670;&#9670;</span> Gate <span class="num">04</span> &middot; Double black diamond</p>
-        <h2>Black Diamond Brawl</h2>
-        <p class="kicker">a downhill snowboarding combat racer &middot; v1 complete, 9 phases &middot; v2 visual overhaul complete</p>
+      <div class="panel">
+        <div class="phead">
+          <div>
+            <p class="marker"><span class="sym black" aria-hidden="true">&#9670;&#9670;</span> Gate <span class="num">03</span> &middot; Double black diamond</p>
+            <h2 id="h-brawl">Black Diamond Brawl</h2>
+            <p class="tagline">A downhill snowboarding combat racer.</p>
+            <p class="oneline">Road Rash on a snowboard &mdash; one seeded procedural slope, a finish line, and rivals who&rsquo;d rather you didn&rsquo;t reach it.</p>
+          </div>
+          <div class="readout">
+            <span class="rl">Image files in repo</span>
+            <span class="rv">0</span>
+            <span class="rn">every sprite and gradient is generated at boot</span>
+          </div>
+        </div>
 
-        <p class="lede">A Road Rash-style downhill snowboarding combat racer, built solo as a learning project. Each run is a single race down a fixed-length, seeded, procedurally generated slope, ending at a finish line.</p>
+        <div class="pgrid">
+          <div class="spec">
+            <div>
+              <h3>Stack</h3>
+              <ul class="chips">
+                <li>Phaser 3</li><li>TypeScript</li><li>Vite</li><li class="hot">segment-based pseudo-3D</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Status</h3>
+              <ul class="chips">
+                <li>v1 complete &middot; 9 phases</li><li>v2 visual overhaul complete</li>
+              </ul>
+            </div>
+            <div class="readout small">
+              <span class="rl">Also driving this page</span>
+              <span class="rv">Same projection</span>
+              <span class="rn">the slope behind these panels is the game&rsquo;s renderer, rebuilt on one canvas</span>
+            </div>
+            <div class="golinks">
+              <a class="go solid" href="https://github.com/sidyellur/black-diamond-brawl">Repo</a>
+            </div>
+          </div>
 
-        <h3>Why it&rsquo;s interesting</h3>
-        <ul class="beats">
-          <li><b>The run itself.</b> Dodge trees, rocks and moguls. Catch trick air off moguls and hill crests &mdash; crests launch you automatically at speed. Shove or ski-pole your way past AI rivals racing the same course.</li>
-          <li><b>Scoring rewards commitment.</b> Points come from finishing fast, landing hits on rivals, near-misses and tricks. Wipe out hard before the line and the run ends early.</li>
-          <li><b>A classic segment-based pseudo-3D renderer</b> gives it the behind-the-rider, slope-rushing-at-you look &mdash; OutRun and Road Rash &mdash; with pixel art sprites. It is the same projection driving the mountain behind this page: a list of segments with world-space z, projected out to trapezoidal bands and painted back to front.</li>
-          <li><b>All art and atmosphere is generated in code at boot. There are no image files in the repository at all.</b> Colour is governed by a palette module and enforced by a build gate that fails the build if any gameplay-relevant edge drops below &Delta;L* 12, or any sprite outline below &Delta;L* 25 against the snow behind it.</li>
-          <li><b>Balance is verified without a browser.</b> It ships with a headless seeded combat simulation and a solvability model, so a course can be proven survivable before anyone plays it.</li>
-        </ul>
-
-        <ul class="chips">
-          <li>Phaser 3</li><li>TypeScript</li><li>Vite</li><li>segment-based pseudo-3D</li><li>seeded procedural generation</li>
-        </ul>
-
-        <div class="golinks">
-          <a class="go solid" href="https://github.com/sidyellur/black-diamond-brawl"><span class="arw" aria-hidden="true">&rarr;</span> Black Diamond Brawl on GitHub</a>
+          <div>
+            <h3>What it does</h3>
+            <ul class="fgrid">
+              <li><b>Seeded slopes</b> every run is a fixed-length procedurally generated course ending at a finish line.</li>
+              <li><b>Trick air</b> moguls and hill crests launch you automatically at speed.</li>
+              <li><b>Combat mid-race</b> shove or ski-pole your way past AI rivals on the same course.</li>
+              <li><b>Scoring</b> finish fast, land hits, thread near-misses, stomp tricks.</li>
+              <li><b>Wipe out</b> crash hard before the line and the run ends early.</li>
+              <li><b>Pseudo-3D renderer</b> segment-based projection, the OutRun and Road Rash lineage.</li>
+              <li><b>Art in code</b> every sprite and gradient is generated at boot, so there are no image files at all.</li>
+              <li><b>Contrast build gate</b> the build fails below &Delta;L*&nbsp;12 on gameplay edges or &Delta;L*&nbsp;25 on sprite outlines.</li>
+              <li><b>Headless sim</b> balance is verified by a seeded combat simulation, without a browser.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== EARLIER ===== -->
-  <section class="stop" id="earlier" data-gate="EARLIER" data-sym="&#9632;">
+  <!-- ===== BASE AREA: about + earlier work ===== -->
+  <section class="stop" id="base" data-gate="BASE" data-sym="&#9679;" aria-labelledby="h-base">
     <div class="inner"><div class="push right">
-      <div class="panel">
-        <p class="marker"><span class="sym blue" aria-hidden="true">&#9632;</span> Gate <span class="num">05</span> &middot; Blue square</p>
-        <h2>Earlier runs</h2>
-        <p class="kicker">smaller, older, still around</p>
-        <ul class="olds">
-          <li><a href="https://github.com/sidyellur/Vue-Weather-App"><span class="nm">Vue Weather App</span> <span class="ds">Vue.js &middot; OpenWeather API</span></a></li>
-          <li><a href="https://github.com/sidyellur/RBT-Min-Heap-"><span class="nm">Red-Black Tree / Min-Heap city builder</span> <span class="ds">Java &middot; academic</span></a></li>
-          <li><a href="https://github.com/sidyellur/TicTacToe"><span class="nm">TicTacToe</span> <span class="ds">React</span></a></li>
-        </ul>
+      <div class="panel mid">
+        <p class="marker"><span class="sym green" aria-hidden="true">&#9679;</span> Gate <span class="num">04</span> &middot; Green circle &middot; run-out</p>
+        <h2 id="h-base">Base area</h2>
+
+        <div class="basegrid">
+          <div class="about">
+            <h3>About</h3>
+            <p>I build the layer underneath AI agents &mdash; the part nobody demos. Memory that persists, a terminal that can prove what a command returned, a renderer whose colours are checked by the build instead of by eye.</p>
+            <p class="muted">Most of it is Python and TypeScript, runs locally, and is open source.</p>
+            <ul class="eduspec">
+              <li><b>M.S. Computer Science</b> &middot; University of Florida</li>
+              <li><b>B.E. Computer Science</b> &middot; Anna University</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3>Earlier work</h3>
+            <div class="tscroll">
+              <table class="olds">
+                <thead>
+                  <tr><th scope="col">Project</th><th scope="col">Stack</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><a href="https://github.com/sidyellur/Vue-Weather-App">Vue Weather App</a></td><td>Vue.js &middot; OpenWeather API</td></tr>
+                  <tr><td><a href="https://github.com/sidyellur/RBT-Min-Heap-">Red-Black Tree / Min-Heap city builder</a></td><td>Java &middot; academic</td></tr>
+                  <tr><td><a href="https://github.com/sidyellur/TicTacToe">TicTacToe</a></td><td>React</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div></div>
   </section>
 
   <!-- ===== FINISH ===== -->
-  <section class="stop" id="finish" data-gate="FINISH" data-sym="&#9646;&#9647;">
+  <section class="stop" id="finish" data-gate="FINISH" data-sym="&#9646;&#9647;" aria-labelledby="h-finish">
     <div class="inner">
-      <div class="panel">
+      <div class="panel narrow">
         <div class="finish-band" aria-hidden="true"></div>
-        <p class="marker">Gate <span class="num">06</span> &middot; Finish line</p>
-        <h2>Get in touch</h2>
-        <p class="lede">Two places, both real. Happy to talk about agent tooling, terminals, or why a snowboarding game needs a contrast build gate.</p>
-        <div class="golinks">
-          <a class="go solid" href="https://github.com/sidyellur"><span class="arw" aria-hidden="true">&rarr;</span> github.com/sidyellur</a>
-          <a class="go" href="https://www.linkedin.com/in/siddharth-yellur-682351142/"><span class="arw" aria-hidden="true">&rarr;</span> LinkedIn</a>
+        <p class="marker">Gate <span class="num">05</span> &middot; Finish line</p>
+        <div class="finishrow">
+          <div>
+            <h2 id="h-finish">Get in touch</h2>
+            <p class="oneline" style="margin-top:6px">Two places, both real.</p>
+          </div>
+          <div class="golinks">
+            <a class="go solid" href="https://github.com/sidyellur">github.com/sidyellur</a>
+            <a class="go" href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a>
+          </div>
         </div>
       </div>
     </div>
@@ -625,9 +882,36 @@ claude mcp add cleat -- uvx cleat
 
 <footer>
   <div class="inner">
-    <p class="colophon">
-      <b>Colophon.</b> One HTML file. No images, no fonts fetched, no frameworks, no network requests of any kind &mdash; this page renders identically with the network switched off. The mountain is a segment-based pseudo-3D projection drawn on a canvas; the piste, the pines, the rocks, the gates and the peaks are placed by a seeded PRNG, so the run is identical on every visit. <b>Calm mode</b> switches all of it off for a plain document, and is the default when your system asks for reduced motion.
-    </p>
+    <div class="footcols">
+      <div>
+        <h2>Work</h2>
+        <ul>
+          <li><a href="https://github.com/sidyellur/tether">tether</a></li>
+          <li><a href="https://github.com/sidyellur/cleat">cleat</a></li>
+          <li><a href="https://github.com/sidyellur/black-diamond-brawl">Black Diamond Brawl</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Packages</h2>
+        <ul>
+          <li><a href="https://pypi.org/project/tether-memory/">tether-memory on PyPI</a></li>
+          <li><a href="https://pypi.org/project/cleat/">cleat on PyPI</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/sidyellur">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/siddharth-yellur-682351142/">LinkedIn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Colophon</h2>
+        <p>One HTML file. No images, no fonts fetched, no network requests of any kind.</p>
+        <p>The mountain is a seeded pseudo-3D canvas, so the run is identical on every visit.</p>
+      </div>
+    </div>
+    <p class="footnote"><b>Calm mode</b> switches the slope off for a plain document, and is the default when your system asks for reduced motion.</p>
   </div>
 </footer>
 
@@ -1403,6 +1687,15 @@ claude mcp add cleat -- uvx cleat
     try { resize(); } catch (e) { return; }
     if (mode === "run") { if (motionOK) onScroll(); else renderStatic(); }
   }, { passive: true });
+
+  // Opening a <details> changes the page height, which moves every gate's
+  // scroll fraction. Re-bind them whenever one toggles.
+  document.addEventListener("toggle", function (e) {
+    if (!ctx) return;
+    if (!e.target || e.target.tagName !== "DETAILS") return;
+    try { syncGates(); } catch (err) {}
+    if (mode === "run" && !motionOK) renderStatic();
+  }, true);
 
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
